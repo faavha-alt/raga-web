@@ -28,6 +28,9 @@
                     <x-nav-link :href="route('recovery')" :active="request()->routeIs('recovery')">
                         {{ __('Recovery') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('analytics')" :active="request()->routeIs('analytics*')">
+                        {{ __('Analytics') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('ai')" :active="request()->routeIs('ai')">
                         {{ __('AI') }}
                     </x-nav-link>
@@ -103,6 +106,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('recovery')" :active="request()->routeIs('recovery')">
                 {{ __('Recovery') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('analytics')" :active="request()->routeIs('analytics*')">
+                {{ __('Analytics') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('ai')" :active="request()->routeIs('ai')">
                 {{ __('AI') }}

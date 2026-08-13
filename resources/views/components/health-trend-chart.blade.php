@@ -29,7 +29,7 @@
                     @click="range = r"
                     :class="range === r ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-white' : 'text-gray-400'"
                     class="px-3 py-1 rounded-full text-xs font-bold transition"
-                    x-text="r >= 365 ? '1Y' : r + 'D'"
+                    x-text="r >= 365 ? '1Y' : (r >= 180 ? '6M' : r + 'D')"
                 ></button>
             </template>
         </div>

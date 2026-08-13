@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AiController;
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GarminConnectionController;
 use App\Http\Controllers\HealthController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\RunningController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TrailController;
 use App\Http\Controllers\TrainingController;
+use App\Services\Analytics\RelationshipCatalog;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -39,6 +41,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/health/body-battery', [HealthController::class, 'bodyBattery'])->name('health.body_battery');
     Route::get('/health/daily-metrics', [HealthController::class, 'dailyMetrics'])->name('health.daily_metrics');
     Route::get('/recovery', [RecoveryController::class, 'index'])->name('recovery');
+    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
+    Route::get('/analytics/health-trends', [AnalyticsController::class, 'healthTrends'])->name('analytics.health_trends');
+    Route::get('/analytics/training-trends', [AnalyticsController::class, 'trainingTrends'])->name('analytics.training_trends');
+    Route::get('/analytics/{pair}', [AnalyticsController::class, 'relationship'])
+        ->whereIn('pair', (new RelationshipCatalog)->slugs())
+        ->name('analytics.relationship');
     Route::get('/ai', [AiController::class, 'index'])->name('ai');
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
 
