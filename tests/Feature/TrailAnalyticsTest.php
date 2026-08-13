@@ -96,7 +96,7 @@ class TrailAnalyticsTest extends TestCase
         $response = $this->actingAs($user)->get("/trail/{$workout->id}");
 
         $response->assertOk();
-        $response->assertSee('Elevation & Grade Profile');
+        $response->assertSee('Elevation & Grade Profile', false);
         $response->assertDontSee('Belum cukup data GPS/elevasi');
     }
 
