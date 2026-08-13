@@ -6,13 +6,14 @@ use App\Models\ActivitySummary;
 use App\Models\BodyMeasurement;
 use App\Models\HeartRateSample;
 use App\Models\HrvSample;
+use App\Models\PersonalRecord;
 use App\Models\SleepSession;
 use App\Models\User;
 use App\Models\VitalMeasurement;
 use App\Models\Workout;
+use App\Models\WorkoutSample;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class ImportGarminData extends Command
 {
@@ -51,7 +52,9 @@ class ImportGarminData extends Command
         }
 
         $this->importBodyComposition($user, $payload['body_composition'] ?? null);
+        $this->importBodyBattery($user, $payload['body_battery'] ?? []);
         $this->importActivities($user, $payload['activities'] ?? []);
+        $this->importPersonalRecords($user, $payload['personal_records'] ?? null);
 
         $this->info('Garmin import complete for '.$user->email);
 
@@ -72,6 +75,9 @@ class ImportGarminData extends Command
         $this->importHeartRate($user, $date, $day['heart_rate'] ?? null);
         $this->importStress($user, $date, $day['stress'] ?? null);
         $this->importSpo2($user, $date, $day['spo2'] ?? null);
+        $this->importMaxMetrics($user, $date, $day['max_metrics'] ?? null);
+        $this->importRespiration($user, $date, $day['respiration'] ?? null);
+        $this->importTrainingReadiness($user, $date, $day['training_readiness'] ?? null);
     }
 
     private function importStats(User $user, string $date, ?array $stats): void
@@ -236,6 +242,95 @@ class ImportGarminData extends Command
         }
     }
 
+    private function importMaxMetrics(User $user, string $date, ?array $maxMetrics): void
+    {
+        if (! $maxMetrics) {
+            return;
+        }
+
+        $generic = $maxMetrics['generic'] ?? ($maxMetrics[0]['generic'] ?? null);
+        $vo2max = $generic['vo2MaxPreciseValue'] ?? $generic['vo2MaxValue'] ?? null;
+
+        if ($vo2max !== null) {
+            $this->putVital($user, 'vo2max', (float) $vo2max, 'ml/kg/min', $date);
+        }
+    }
+
+    private function importRespiration(User $user, string $date, ?array $respiration): void
+    {
+        if (! $respiration) {
+            return;
+        }
+
+        $value = $respiration['avgWakingRespirationValue']
+            ?? $respiration['avgSleepRespirationValue']
+            ?? null;
+
+        if ($value !== null) {
+            $this->putVital($user, 'respiration_rate', (float) $value, 'breaths/min', $date);
+        }
+    }
+
+    private function importTrainingReadiness(User $user, string $date, ?array $trainingReadiness): void
+    {
+        $entry = $trainingReadiness[0] ?? null;
+        $score = $entry['score'] ?? null;
+
+        if ($score !== null) {
+            $this->putVital($user, 'training_readiness', (float) $score, 'score', $date);
+        }
+    }
+
+    private function importBodyBattery(User $user, array $bodyBatteryDays): void
+    {
+        foreach ($bodyBatteryDays as $day) {
+            $date = $day['date'] ?? null;
+            if (! $date) {
+                continue;
+            }
+
+            if (isset($day['charged'])) {
+                $this->putVital($user, 'body_battery_charged', (float) $day['charged'], 'points', $date);
+            }
+            if (isset($day['drained'])) {
+                $this->putVital($user, 'body_battery_drained', (float) $day['drained'], 'points', $date);
+            }
+        }
+    }
+
+    private function importPersonalRecords(User $user, mixed $personalRecords): void
+    {
+        $records = is_array($personalRecords) ? $personalRecords : [];
+
+        // Some accounts return a flat list, others nest it under a key — handle both.
+        if (isset($records['personalRecords']) && is_array($records['personalRecords'])) {
+            $records = $records['personalRecords'];
+        }
+
+        foreach ($records as $record) {
+            if (! is_array($record) || ! isset($record['value'])) {
+                continue;
+            }
+
+            $type = $record['typeKey'] ?? $record['prTypeLabel'] ?? null;
+            if (! $type) {
+                continue;
+            }
+
+            $achievedDate = isset($record['prStartTimeGmt'])
+                ? Carbon::parse($record['prStartTimeGmt'])->toDateString()
+                : now()->toDateString();
+
+            PersonalRecord::updateOrCreate(
+                ['user_id' => $user->id, 'type' => $type, 'achieved_date' => $achievedDate],
+                [
+                    'value' => $record['value'],
+                    'unit' => $record['activityType'] ?? 'unknown',
+                ]
+            );
+        }
+    }
+
     private function importBodyComposition(User $user, ?array $bodyComposition): void
     {
         $entries = $bodyComposition['dateWeightList'] ?? [];
@@ -280,7 +375,7 @@ class ImportGarminData extends Command
             $avgSpeed = $activity['averageSpeed'] ?? null;
             $pace = ($avgSpeed && $avgSpeed > 0) ? 1000 / $avgSpeed : null;
 
-            Workout::create([
+            $workout = Workout::create([
                 'user_id' => $user->id,
                 'type' => $activity['activityType']['typeKey'] ?? 'unknown',
                 'start_date' => $start,
@@ -293,6 +388,64 @@ class ImportGarminData extends Command
                 'elevation_gain_meters' => $activity['elevationGain'] ?? null,
                 'source' => self::SOURCE,
             ]);
+
+            $this->importWorkoutSamples($workout, $activity['details'] ?? null);
+        }
+    }
+
+    private function importWorkoutSamples(Workout $workout, ?array $details): void
+    {
+        $descriptors = $details['metricDescriptors'] ?? [];
+        $metrics = $details['activityDetailMetrics'] ?? [];
+
+        if (empty($descriptors) || empty($metrics)) {
+            return;
+        }
+
+        $indexFor = [];
+        foreach ($descriptors as $descriptor) {
+            if (isset($descriptor['key'], $descriptor['metricsIndex'])) {
+                $indexFor[$descriptor['key']] = $descriptor['metricsIndex'];
+            }
+        }
+
+        $tsIdx = $indexFor['directTimestamp'] ?? null;
+        if ($tsIdx === null) {
+            return;
+        }
+
+        $hrIdx = $indexFor['directHeartRate'] ?? null;
+        $speedIdx = $indexFor['directSpeed'] ?? null;
+        $elevationIdx = $indexFor['directElevation'] ?? null;
+        $cadenceIdx = $indexFor['directDoubleCadence'] ?? $indexFor['directRunCadence'] ?? null;
+
+        $rows = [];
+        $now = now();
+
+        foreach ($metrics as $point) {
+            $values = $point['metrics'] ?? null;
+            if (! is_array($values) || ! isset($values[$tsIdx])) {
+                continue;
+            }
+
+            $speed = $speedIdx !== null ? ($values[$speedIdx] ?? null) : null;
+
+            $rows[] = [
+                'workout_id' => $workout->id,
+                'timestamp' => Carbon::createFromTimestampMs($values[$tsIdx]),
+                'heart_rate' => $hrIdx !== null ? ($values[$hrIdx] ?? null) : null,
+                'pace_seconds_per_km' => ($speed && $speed > 0) ? 1000 / $speed : null,
+                'altitude_meters' => $elevationIdx !== null ? ($values[$elevationIdx] ?? null) : null,
+                'cadence' => $cadenceIdx !== null ? ($values[$cadenceIdx] ?? null) : null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        if ($rows) {
+            foreach (array_chunk($rows, 500) as $chunk) {
+                WorkoutSample::insert($chunk);
+            }
         }
     }
 

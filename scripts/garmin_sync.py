@@ -75,6 +75,9 @@ def safe(fn, *args, label: str = "", **kwargs):
         return None
 
 
+MAX_ACTIVITY_DETAILS = 15  # cap per-activity time-series calls per run
+
+
 def collect(client: garminconnect.Garmin, days: int) -> dict:
     today = date.today()
     daily: list[dict] = []
@@ -91,6 +94,11 @@ def collect(client: garminconnect.Garmin, days: int) -> dict:
             "heart_rate": safe(client.get_heart_rates, cdate, label=f"heart_rate {cdate}"),
             "stress": safe(client.get_stress_data, cdate, label=f"stress {cdate}"),
             "spo2": safe(client.get_spo2_data, cdate, label=f"spo2 {cdate}"),
+            "max_metrics": safe(client.get_max_metrics, cdate, label=f"max_metrics {cdate}"),
+            "respiration": safe(client.get_respiration_data, cdate, label=f"respiration {cdate}"),
+            "training_readiness": safe(
+                client.get_training_readiness, cdate, label=f"training_readiness {cdate}"
+            ),
         }
         daily.append(entry)
 
@@ -103,7 +111,16 @@ def collect(client: garminconnect.Garmin, days: int) -> dict:
     body_battery = safe(client.get_body_battery, start, end, label="body_battery")
     activities = safe(
         client.get_activities_by_date, start, end, label="activities"
-    )
+    ) or []
+    personal_records = safe(client.get_personal_record, label="personal_records")
+
+    for activity in activities[:MAX_ACTIVITY_DETAILS]:
+        activity_id = activity.get("activityId")
+        if activity_id is None:
+            continue
+        activity["details"] = safe(
+            client.get_activity_details, str(activity_id), label=f"activity_details {activity_id}"
+        )
 
     return {
         "generated_at": date.today().isoformat(),
@@ -111,7 +128,8 @@ def collect(client: garminconnect.Garmin, days: int) -> dict:
         "daily": daily,
         "body_composition": body_composition,
         "body_battery": body_battery,
-        "activities": activities or [],
+        "activities": activities,
+        "personal_records": personal_records,
     }
 
 
