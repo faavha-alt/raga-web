@@ -14,16 +14,22 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Plus Jakarta Sans', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 raga: {
                     accent: '#21A08C',
+                    primary: '#6C5CE7',
+                    energy: '#FF6B57',
                     excellent: '#2A9968',
                     good: '#4A8FD9',
                     moderate: '#D9992A',
                     low: '#D14747',
                 },
+            },
+            boxShadow: {
+                glow: '0 20px 60px -20px rgba(108, 92, 231, 0.35)',
+                'glow-accent': '0 20px 60px -20px rgba(33, 160, 140, 0.35)',
             },
         },
     },

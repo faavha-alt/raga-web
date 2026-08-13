@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+    .text-gradient {
+        @apply bg-gradient-to-r from-raga-accent to-raga-primary bg-clip-text text-transparent;
+    }
+
+    .bg-mesh {
+        background-image:
+            radial-gradient(circle at 15% 15%, rgba(33, 160, 140, 0.16), transparent 40%),
+            radial-gradient(circle at 85% 20%, rgba(108, 92, 231, 0.18), transparent 45%),
+            radial-gradient(circle at 50% 90%, rgba(255, 107, 87, 0.10), transparent 40%);
+    }
+}
