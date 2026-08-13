@@ -8,7 +8,7 @@ class SettingsController extends Controller
 {
     public function index(): View
     {
-        $rows = ['HealthKit', 'Garmin', 'Goals', 'Training Preferences', 'AI', 'Privacy', 'Data'];
+        $rows = ['HealthKit', 'Goals', 'Training Preferences', 'AI', 'Privacy', 'Data'];
 
         return view('settings.index', compact('rows'));
     }
