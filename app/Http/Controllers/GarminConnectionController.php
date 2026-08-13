@@ -73,7 +73,7 @@ class GarminConnectionController extends Controller
 
         $result = Process::path(base_path())
             ->timeout(120)
-            ->run([self::PYTHON, 'scripts/garmin_sync.py', '--days', '3']);
+            ->run([self::PYTHON, 'scripts/garmin_sync.py', '--days', '2']);
 
         if ($result->failed()) {
             $connection->update([
