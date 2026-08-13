@@ -2,24 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\Dashboard\HealthTrendService;
+use App\Services\Dashboard\InsightEngine;
+use App\Services\Dashboard\RecentActivityService;
+use App\Services\Dashboard\TodaySnapshotService;
+use App\Services\Dashboard\WeeklyTrainingService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
+    public function __construct(
+        private TodaySnapshotService $todaySnapshot,
+        private RecentActivityService $recentActivity,
+        private WeeklyTrainingService $weeklyTraining,
+        private HealthTrendService $healthTrend,
+        private InsightEngine $insights,
+    ) {}
+
     public function index(Request $request): View
     {
         $user = $request->user();
 
-        $healthScore = $user->healthScores()->latest('date')->first();
-        $recoveryScore = $user->recoveryScores()->latest('date')->first();
-        $sleep = $user->sleepSessions()->latest('bedtime')->first();
-        $activity = $user->activitySummaries()->latest('date')->first();
-
-        $restingHr = $user->vitalMeasurements()->where('type', 'resting_heart_rate')->latest('date')->first();
-        $trainingReadiness = $user->vitalMeasurements()->where('type', 'training_readiness')->latest('date')->first();
-        $stress = $user->vitalMeasurements()->where('type', 'stress_avg')->latest('date')->first();
-
-        return view('dashboard.index', compact('healthScore', 'recoveryScore', 'sleep', 'activity', 'restingHr', 'trainingReadiness', 'stress'));
+        return view('dashboard.index', [
+            'today' => $this->todaySnapshot->forUser($user),
+            'recentWorkout' => $this->recentActivity->latestForUser($user),
+            'week' => $this->weeklyTraining->summaryForUser($user),
+            'trendSeries' => $this->healthTrend->allSeries($user),
+            'insights' => $this->insights->generate($user),
+        ]);
     }
 }
