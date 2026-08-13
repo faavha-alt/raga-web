@@ -26,6 +26,7 @@ class MetricSeriesService
         'spo2' => ['label' => 'SpO2', 'unit' => '%', 'color' => '#1baf7a', 'decimals' => 0],
         'steps' => ['label' => 'Steps', 'unit' => 'steps', 'color' => '#eda100', 'decimals' => 0],
         'calories' => ['label' => 'Calories', 'unit' => 'kcal', 'color' => '#4a3aa7', 'decimals' => 0],
+        'recovery_time' => ['label' => 'Recovery Time', 'unit' => 'min', 'color' => '#e34948', 'decimals' => 0],
     ];
 
     public function meta(string $metric): array
@@ -44,6 +45,7 @@ class MetricSeriesService
             'stress' => $this->vitalSeries($user, 'stress_avg', $since),
             'respiration' => $this->vitalSeries($user, 'respiration_rate', $since),
             'spo2' => $this->vitalSeries($user, 'spo2_avg', $since),
+            'recovery_time' => $this->vitalSeries($user, 'recovery_time', $since),
             'body_battery_charged' => $this->vitalSeries($user, 'body_battery_charged', $since),
             'body_battery_drained' => $this->vitalSeries($user, 'body_battery_drained', $since),
             'body_battery_net' => $this->bodyBatteryNetSeries($user, $since),

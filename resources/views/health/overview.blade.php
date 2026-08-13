@@ -18,7 +18,7 @@
                     'Heart & HRV' => ['route' => 'health.heart', 'metrics' => ['resting_hr' => '❤️', 'avg_hr' => '💓', 'max_hr' => '🔺', 'hrv' => '📈']],
                     'Stress' => ['route' => 'health.stress', 'metrics' => ['stress' => '🧠']],
                     'Body Battery' => ['route' => 'health.body_battery', 'metrics' => ['body_battery_net' => '🔋']],
-                    'Daily Metrics' => ['route' => 'health.daily_metrics', 'metrics' => ['respiration' => '🫁', 'spo2' => '🩸', 'steps' => '👣', 'calories' => '🔥']],
+                    'Daily Metrics' => ['route' => 'health.daily_metrics', 'metrics' => ['respiration' => '🫁', 'spo2' => '🩸', 'steps' => '👣', 'calories' => '🔥', 'recovery_time' => '🔴']],
                 ];
             @endphp
 

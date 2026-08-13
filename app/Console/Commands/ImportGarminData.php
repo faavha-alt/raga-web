@@ -11,6 +11,7 @@ use App\Models\SleepSession;
 use App\Models\User;
 use App\Models\VitalMeasurement;
 use App\Models\Workout;
+use App\Models\WorkoutLap;
 use App\Models\WorkoutSample;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -295,6 +296,11 @@ class ImportGarminData extends Command
         if ($score !== null) {
             $this->putVital($user, 'training_readiness', (float) $score, 'score', $date);
         }
+
+        $recoveryTime = $entry['recoveryTime'] ?? null;
+        if ($recoveryTime !== null) {
+            $this->putVital($user, 'recovery_time', (float) $recoveryTime, 'minutes', $date);
+        }
     }
 
     private function importBodyBattery(User $user, array $bodyBatteryDays): void
@@ -391,6 +397,7 @@ class ImportGarminData extends Command
             $workout = Workout::create([
                 'user_id' => $user->id,
                 'type' => $activity['activityType']['typeKey'] ?? 'unknown',
+                'name' => $activity['activityName'] ?? null,
                 'start_date' => $start,
                 'end_date' => $end,
                 'distance_meters' => $activity['distance'] ?? null,
@@ -399,10 +406,16 @@ class ImportGarminData extends Command
                 'max_heart_rate' => $activity['maxHR'] ?? null,
                 'average_pace_seconds_per_km' => $pace,
                 'elevation_gain_meters' => $activity['elevationGain'] ?? null,
+                'elevation_loss_meters' => $activity['elevationLoss'] ?? null,
+                'training_effect_aerobic' => $activity['aerobicTrainingEffect'] ?? null,
+                'training_effect_anaerobic' => $activity['anaerobicTrainingEffect'] ?? null,
+                'training_effect_label' => $activity['trainingEffectLabel'] ?? null,
+                'training_load' => $activity['activityTrainingLoad'] ?? null,
                 'source' => self::SOURCE,
             ]);
 
             $this->importWorkoutSamples($workout, $activity['details'] ?? null);
+            $this->importLaps($workout, $activity['laps'] ?? null);
         }
     }
 
@@ -431,6 +444,8 @@ class ImportGarminData extends Command
         $speedIdx = $indexFor['directSpeed'] ?? null;
         $elevationIdx = $indexFor['directElevation'] ?? null;
         $cadenceIdx = $indexFor['directDoubleCadence'] ?? $indexFor['directRunCadence'] ?? null;
+        $latIdx = $indexFor['directLatitude'] ?? null;
+        $lngIdx = $indexFor['directLongitude'] ?? null;
 
         $rows = [];
         $now = now();
@@ -450,6 +465,8 @@ class ImportGarminData extends Command
                 'pace_seconds_per_km' => ($speed && $speed > 0) ? 1000 / $speed : null,
                 'altitude_meters' => $elevationIdx !== null ? ($values[$elevationIdx] ?? null) : null,
                 'cadence' => $cadenceIdx !== null ? ($values[$cadenceIdx] ?? null) : null,
+                'latitude' => $latIdx !== null ? ($values[$latIdx] ?? null) : null,
+                'longitude' => $lngIdx !== null ? ($values[$lngIdx] ?? null) : null,
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
@@ -459,6 +476,49 @@ class ImportGarminData extends Command
             foreach (array_chunk($rows, 500) as $chunk) {
                 WorkoutSample::insert($chunk);
             }
+        }
+    }
+
+    private function importLaps(Workout $workout, ?array $lapsPayload): void
+    {
+        $laps = $lapsPayload['lapDTOs'] ?? [];
+
+        if (empty($laps)) {
+            return;
+        }
+
+        WorkoutLap::where('workout_id', $workout->id)->delete();
+
+        $rows = [];
+        $now = now();
+
+        foreach ($laps as $index => $lap) {
+            if (! isset($lap['startTimeGMT'])) {
+                continue;
+            }
+
+            $speed = $lap['averageSpeed'] ?? null;
+            $pace = ($speed && $speed > 0) ? 1000 / $speed : null;
+
+            $rows[] = [
+                'workout_id' => $workout->id,
+                'lap_index' => $lap['lapIndex'] ?? ($index + 1),
+                'start_time' => Carbon::parse($lap['startTimeGMT']),
+                'distance_meters' => $lap['distance'] ?? null,
+                'duration_seconds' => $lap['duration'] ?? null,
+                'elevation_gain_meters' => $lap['elevationGain'] ?? null,
+                'elevation_loss_meters' => $lap['elevationLoss'] ?? null,
+                'average_heart_rate' => $lap['averageHR'] ?? null,
+                'max_heart_rate' => $lap['maxHR'] ?? null,
+                'average_pace_seconds_per_km' => $pace,
+                'calories' => $lap['calories'] ?? null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        if ($rows) {
+            WorkoutLap::insert($rows);
         }
     }
 

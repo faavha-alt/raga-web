@@ -121,6 +121,9 @@ def collect(client: garminconnect.Garmin, days: int) -> dict:
         activity["details"] = safe(
             client.get_activity_details, str(activity_id), label=f"activity_details {activity_id}"
         )
+        activity["laps"] = safe(
+            client.get_activity_splits, str(activity_id), label=f"activity_splits {activity_id}"
+        )
 
     return {
         "generated_at": date.today().isoformat(),

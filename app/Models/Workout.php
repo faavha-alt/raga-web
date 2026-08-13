@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
-    'user_id', 'type', 'start_date', 'end_date', 'distance_meters',
+    'user_id', 'type', 'name', 'start_date', 'end_date', 'distance_meters',
     'active_calories', 'average_heart_rate', 'max_heart_rate',
-    'average_pace_seconds_per_km', 'elevation_gain_meters', 'source',
+    'average_pace_seconds_per_km', 'elevation_gain_meters', 'elevation_loss_meters',
+    'training_effect_aerobic', 'training_effect_anaerobic', 'training_effect_label',
+    'training_load', 'source',
 ])]
 class Workout extends Model
 {
@@ -30,6 +32,11 @@ class Workout extends Model
     public function samples(): HasMany
     {
         return $this->hasMany(WorkoutSample::class);
+    }
+
+    public function laps(): HasMany
+    {
+        return $this->hasMany(WorkoutLap::class)->orderBy('lap_index');
     }
 
     public function durationSeconds(): int

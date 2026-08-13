@@ -57,4 +57,16 @@ class ActivityDetailService
 
         return sprintf('%d:%02d', $minutes, $secs);
     }
+
+    /** @return list<array{lat: float, lng: float}> empty when this workout has no GPS samples */
+    public function routePoints(Workout $workout): array
+    {
+        return $workout->samples()
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->orderBy('timestamp')
+            ->get(['latitude', 'longitude'])
+            ->map(fn ($s) => ['lat' => (float) $s->latitude, 'lng' => (float) $s->longitude])
+            ->all();
+    }
 }

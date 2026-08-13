@@ -44,6 +44,17 @@ class HealthManagementTest extends TestCase
         }
     }
 
+    public function test_daily_metrics_page_offers_recovery_time(): void
+    {
+        $user = User::factory()->create();
+        $this->makeVital($user, 'recovery_time', 12, Carbon::today());
+
+        $response = $this->actingAs($user)->get('/health/daily-metrics');
+
+        $response->assertOk();
+        $response->assertSee('Recovery Time');
+    }
+
     public function test_heart_page_offers_1y_range(): void
     {
         $user = User::factory()->create();

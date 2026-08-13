@@ -48,6 +48,8 @@ class ActivityController extends Controller
         return view('activities.show', [
             'workout' => $workout,
             'charts' => $this->activityDetail->chartsFor($workout),
+            'routePoints' => $this->activityDetail->routePoints($workout),
+            'laps' => $workout->laps,
         ]);
     }
 }

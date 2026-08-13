@@ -12,7 +12,7 @@ class HealthController extends Controller
 {
     private const OVERVIEW_METRICS = [
         'resting_hr', 'avg_hr', 'max_hr', 'hrv', 'stress',
-        'body_battery_net', 'respiration', 'spo2', 'steps', 'calories',
+        'body_battery_net', 'respiration', 'spo2', 'steps', 'calories', 'recovery_time',
     ];
 
     public function __construct(
@@ -58,7 +58,7 @@ class HealthController extends Controller
 
     public function dailyMetrics(Request $request): View
     {
-        return $this->detailPage($request, ['respiration', 'spo2', 'steps', 'calories'], 'health.daily-metrics');
+        return $this->detailPage($request, ['respiration', 'spo2', 'steps', 'calories', 'recovery_time'], 'health.daily-metrics');
     }
 
     private function detailPage(Request $request, array $metrics, string $view): View
