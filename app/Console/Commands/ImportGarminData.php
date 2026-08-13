@@ -23,6 +23,22 @@ class ImportGarminData extends Command
 
     private const SOURCE = 'garmin';
 
+    // Garmin's personal-record "typeId" is an undocumented internal enum. These first few
+    // are inferred with reasonably high confidence from Garmin Connect's known PR ordering
+    // (1K/1mi/5K/10K/half/full-marathon/longest run) and cross-checked against real pace
+    // and activity-name data. Anything else (e.g. cycling PRs) is intentionally left as a
+    // raw "garmin_pr_type_N" label rather than guessed, to avoid mislabeling data that may
+    // later feed AI training decisions.
+    private const PR_TYPE_LABELS = [
+        1 => 'fastest_1k',
+        2 => 'fastest_1_mile',
+        3 => 'fastest_5k',
+        4 => 'fastest_10k',
+        5 => 'fastest_half_marathon',
+        6 => 'fastest_marathon',
+        7 => 'longest_run',
+    ];
+
     public function handle(): int
     {
         $raw = $this->argument('path') === '-'
@@ -308,24 +324,21 @@ class ImportGarminData extends Command
         }
 
         foreach ($records as $record) {
-            if (! is_array($record) || ! isset($record['value'])) {
+            if (! is_array($record) || ! isset($record['value'], $record['typeId'])) {
                 continue;
             }
 
-            $type = $record['typeKey'] ?? $record['prTypeLabel'] ?? null;
-            if (! $type) {
-                continue;
-            }
+            $type = self::PR_TYPE_LABELS[$record['typeId']] ?? 'garmin_pr_type_'.$record['typeId'];
 
             $achievedDate = isset($record['prStartTimeGmt'])
-                ? Carbon::parse($record['prStartTimeGmt'])->toDateString()
+                ? Carbon::createFromTimestampMs($record['prStartTimeGmt'])->toDateString()
                 : now()->toDateString();
 
             PersonalRecord::updateOrCreate(
                 ['user_id' => $user->id, 'type' => $type, 'achieved_date' => $achievedDate],
                 [
                     'value' => $record['value'],
-                    'unit' => $record['activityType'] ?? 'unknown',
+                    'unit' => ($record['activityType'] ?? 'unknown').'_raw',
                 ]
             );
         }
