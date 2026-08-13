@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white leading-tight">
+        <h2 class="text-2xl font-extrabold text-gray-900 leading-tight">
             {{ __('Good Morning, :name 👋', ['name' => explode(' ', auth()->user()->name)[0]]) }}
         </h2>
-        <p class="mt-1 text-sm font-medium text-gray-500 dark:text-gray-400">Bagaimana tubuh dan latihan kamu hari ini?</p>
+        <p class="mt-1 text-sm font-medium text-gray-500">Bagaimana tubuh dan latihan kamu hari ini?</p>
     </x-slot>
 
     <div class="py-6 pb-16">
@@ -11,25 +11,41 @@
 
             {{-- 1. TODAY --}}
             <section>
-                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Hari Ini</h3>
+                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">Hari Ini</h3>
 
-                <x-card class="bg-gradient-to-br from-raga-accent/5 to-raga-primary/5 border-raga-primary/10 mb-3">
-                    <p class="text-xs font-bold uppercase tracking-wider text-raga-primary">🔋 Readiness</p>
-                    <p class="mt-1 text-5xl font-black text-gray-900 dark:text-gray-100">
-                        {{ $today['readiness'] !== null ? round($today['readiness']) : '--' }}
+                @php
+                    $readinessValue = $today['readiness'];
+                    [$statusLabel, $statusClasses] = match (true) {
+                        $readinessValue === null => ['Belum ada data', 'bg-gray-100 text-gray-400'],
+                        $readinessValue >= 75 => ['Siap', 'bg-emerald-50 text-emerald-600'],
+                        $readinessValue >= 50 => ['Cukup', 'bg-amber-50 text-amber-600'],
+                        default => ['Recovery', 'bg-rose-50 text-rose-600'],
+                    };
+                @endphp
+
+                <div class="rounded-3xl bg-white border border-gray-100 p-6 shadow-[0_1px_3px_rgba(16,24,40,0.06)] mb-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-raga-accent to-raga-primary text-white text-base shadow-glow">🔋</span>
+                            <p class="text-sm font-bold text-gray-500">Readiness</p>
+                        </div>
+                        <span class="rounded-full px-3 py-1 text-xs font-bold {{ $statusClasses }}">{{ $statusLabel }}</span>
+                    </div>
+                    <p class="mt-4 text-6xl font-black text-gray-900 tracking-tight">
+                        {{ $readinessValue !== null ? round($readinessValue) : '--' }}
                     </p>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        @if ($today['readiness'] === null)
+                    <p class="mt-2 text-sm text-gray-500">
+                        @if ($readinessValue === null)
                             Belum ada data readiness dari Garmin.
-                        @elseif ($today['readiness'] >= 75)
+                        @elseif ($readinessValue >= 75)
                             Kondisi bagus, siap untuk latihan lebih berat.
-                        @elseif ($today['readiness'] >= 50)
+                        @elseif ($readinessValue >= 50)
                             Kondisi cukup, latihan moderat masih aman.
                         @else
                             Kondisi rendah, pertimbangkan recovery hari ini.
                         @endif
                     </p>
-                </x-card>
+                </div>
 
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     <x-metric-tile icon="😴" label="Sleep" :value="$today['sleep']['minutes'] ? intdiv((int) $today['sleep']['minutes'], 60).'h '.((int) $today['sleep']['minutes'] % 60).'m' : null" />
@@ -43,7 +59,7 @@
 
             {{-- 2. RECENT ACTIVITY --}}
             <section>
-                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Aktivitas Terakhir</h3>
+                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">Aktivitas Terakhir</h3>
                 <x-card>
                     @if ($recentWorkout)
                         @php
@@ -57,66 +73,64 @@
                             };
                             $durationMin = intdiv($recentWorkout->durationSeconds(), 60);
                         @endphp
-                        <div class="flex items-start justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="text-2xl">{{ $icon }}</span>
-                                <div>
-                                    <p class="font-bold text-gray-900 dark:text-gray-100">{{ ucwords(str_replace('_', ' ', $recentWorkout->type)) }}</p>
-                                    <p class="text-xs text-gray-400">{{ $isToday ? 'Hari ini, '.$recentWorkout->start_date->format('H:i') : $recentWorkout->start_date->diffForHumans() }}</p>
-                                </div>
+                        <div class="flex items-center gap-3">
+                            <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gray-50 text-xl">{{ $icon }}</span>
+                            <div>
+                                <p class="font-bold text-gray-900">{{ ucwords(str_replace('_', ' ', $recentWorkout->type)) }}</p>
+                                <p class="text-xs text-gray-400">{{ $isToday ? 'Hari ini, '.$recentWorkout->start_date->format('H:i') : $recentWorkout->start_date->diffForHumans() }}</p>
                             </div>
                         </div>
-                        <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div class="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4">
                             <div>
                                 <p class="text-[10px] font-bold uppercase text-gray-400">Distance</p>
-                                <p class="font-bold text-gray-900 dark:text-gray-100">{{ $recentWorkout->distance_meters ? number_format($recentWorkout->distance_meters / 1000, 2).' km' : '--' }}</p>
+                                <p class="mt-0.5 font-bold text-gray-900">{{ $recentWorkout->distance_meters ? number_format($recentWorkout->distance_meters / 1000, 2).' km' : '--' }}</p>
                             </div>
                             <div>
                                 <p class="text-[10px] font-bold uppercase text-gray-400">Duration</p>
-                                <p class="font-bold text-gray-900 dark:text-gray-100">{{ intdiv($durationMin, 60) }}h {{ $durationMin % 60 }}m</p>
+                                <p class="mt-0.5 font-bold text-gray-900">{{ intdiv($durationMin, 60) }}h {{ $durationMin % 60 }}m</p>
                             </div>
                             <div>
                                 <p class="text-[10px] font-bold uppercase text-gray-400">Calories</p>
-                                <p class="font-bold text-gray-900 dark:text-gray-100">{{ $recentWorkout->active_calories ? round($recentWorkout->active_calories) : '--' }}</p>
+                                <p class="mt-0.5 font-bold text-gray-900">{{ $recentWorkout->active_calories ? round($recentWorkout->active_calories) : '--' }}</p>
                             </div>
                             <div>
                                 <p class="text-[10px] font-bold uppercase text-gray-400">Avg HR</p>
-                                <p class="font-bold text-gray-900 dark:text-gray-100">{{ $recentWorkout->average_heart_rate ? round($recentWorkout->average_heart_rate).' bpm' : '--' }}</p>
+                                <p class="mt-0.5 font-bold text-gray-900">{{ $recentWorkout->average_heart_rate ? round($recentWorkout->average_heart_rate).' bpm' : '--' }}</p>
                             </div>
                             @if ($recentWorkout->elevation_gain_meters)
                                 <div>
                                     <p class="text-[10px] font-bold uppercase text-gray-400">Elevation</p>
-                                    <p class="font-bold text-gray-900 dark:text-gray-100">{{ round($recentWorkout->elevation_gain_meters) }} m</p>
+                                    <p class="mt-0.5 font-bold text-gray-900">{{ round($recentWorkout->elevation_gain_meters) }} m</p>
                                 </div>
                             @endif
                         </div>
                     @else
-                        <p class="text-gray-400 dark:text-gray-500">Belum ada aktivitas tercatat.</p>
+                        <p class="text-gray-400">Belum ada aktivitas tercatat.</p>
                     @endif
                 </x-card>
             </section>
 
             {{-- 3. TRAINING THIS WEEK --}}
             <section>
-                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Training Minggu Ini</h3>
+                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">Training Minggu Ini</h3>
                 <x-card>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
                         <div>
                             <p class="text-[10px] font-bold uppercase text-gray-400">Total Distance</p>
-                            <p class="text-xl font-black text-gray-900 dark:text-gray-100">{{ number_format($week['total_distance_meters'] / 1000, 1) }} km</p>
+                            <p class="mt-0.5 text-xl font-black text-gray-900">{{ number_format($week['total_distance_meters'] / 1000, 1) }} km</p>
                         </div>
                         <div>
                             <p class="text-[10px] font-bold uppercase text-gray-400">Total Duration</p>
                             @php $wMin = intdiv($week['total_duration_seconds'], 60); @endphp
-                            <p class="text-xl font-black text-gray-900 dark:text-gray-100">{{ intdiv($wMin, 60) }}h {{ $wMin % 60 }}m</p>
+                            <p class="mt-0.5 text-xl font-black text-gray-900">{{ intdiv($wMin, 60) }}h {{ $wMin % 60 }}m</p>
                         </div>
                         <div>
                             <p class="text-[10px] font-bold uppercase text-gray-400">Elevation</p>
-                            <p class="text-xl font-black text-gray-900 dark:text-gray-100">{{ round($week['total_elevation_meters']) }} m</p>
+                            <p class="mt-0.5 text-xl font-black text-gray-900">{{ round($week['total_elevation_meters']) }} m</p>
                         </div>
                         <div>
                             <p class="text-[10px] font-bold uppercase text-gray-400">Activities</p>
-                            <p class="text-xl font-black text-gray-900 dark:text-gray-100">{{ $week['activity_count'] }}</p>
+                            <p class="mt-0.5 text-xl font-black text-gray-900">{{ $week['activity_count'] }}</p>
                         </div>
                     </div>
 
@@ -130,7 +144,7 @@
 
             {{-- 4. HEALTH TREND --}}
             <section>
-                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Health Trend</h3>
+                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">Health Trend</h3>
                 <x-card>
                     <x-health-trend-chart :series="$trendSeries" />
                 </x-card>
@@ -138,28 +152,28 @@
 
             {{-- 5. INSIGHTS --}}
             <section>
-                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">✨ Insights</h3>
+                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">✨ Insights</h3>
                 @if (count($insights) > 0)
                     <div class="space-y-3">
                         @foreach ($insights as $insight)
                             <x-card class="!p-4 flex items-start gap-3">
                                 <span class="text-lg">💡</span>
-                                <p class="text-sm text-gray-700 dark:text-gray-200">{{ $insight }}</p>
+                                <p class="text-sm text-gray-700">{{ $insight }}</p>
                             </x-card>
                         @endforeach
                     </div>
                 @else
                     <x-card class="text-center py-8">
-                        <p class="text-gray-400 dark:text-gray-500">Belum cukup data untuk insight yang bermakna. Terus sync Garmin kamu tiap hari.</p>
+                        <p class="text-gray-400">Belum cukup data untuk insight yang bermakna. Terus sync Garmin kamu tiap hari.</p>
                     </x-card>
                 @endif
             </section>
 
             <div class="flex gap-3">
-                <a href="{{ route('health') }}" class="flex-1 text-center rounded-full border-2 border-gray-200 dark:border-gray-700 px-5 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-300 hover:border-raga-primary hover:text-raga-primary transition">
+                <a href="{{ route('health') }}" class="flex-1 text-center rounded-full border-2 border-gray-200 px-5 py-2.5 text-sm font-bold text-gray-600 hover:border-raga-primary hover:text-raga-primary transition">
                     Lihat Data Kesehatan →
                 </a>
-                <a href="{{ route('training') }}" class="flex-1 text-center rounded-full border-2 border-gray-200 dark:border-gray-700 px-5 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-300 hover:border-raga-primary hover:text-raga-primary transition">
+                <a href="{{ route('training') }}" class="flex-1 text-center rounded-full border-2 border-gray-200 px-5 py-2.5 text-sm font-bold text-gray-600 hover:border-raga-primary hover:text-raga-primary transition">
                     Lihat Training →
                 </a>
             </div>

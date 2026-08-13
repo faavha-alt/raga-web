@@ -3,7 +3,12 @@ import forms from '@tailwindcss/forms';
 
 /** @type {import('tailwindcss').Config} */
 export default {
-    darkMode: 'media',
+    // Class-based rather than OS-media-based: nothing in the app currently
+    // toggles a `dark` class, so this makes every `dark:` variant inert and
+    // the app renders its light-mode design consistently regardless of the
+    // visitor's OS theme. The auth/welcome pages' dark look is hardcoded
+    // (not `dark:` variants), so they're unaffected by this.
+    darkMode: 'class',
 
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',

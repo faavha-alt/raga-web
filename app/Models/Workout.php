@@ -34,6 +34,6 @@ class Workout extends Model
 
     public function durationSeconds(): int
     {
-        return $this->end_date->diffInSeconds($this->start_date);
+        return abs($this->end_date->diffInSeconds($this->start_date));
     }
 }
