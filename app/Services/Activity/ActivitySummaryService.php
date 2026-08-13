@@ -13,7 +13,7 @@ class ActivitySummaryService
      */
     public function summarize(User $user, array $filters): array
     {
-        $query = $this->queryService->applyFilters($user->workouts()->newQuery(), $filters);
+        $query = $this->queryService->applyFilters($user->workouts()->getQuery(), $filters);
 
         $count = (clone $query)->count();
 
@@ -29,7 +29,7 @@ class ActivitySummaryService
         $totals = (clone $query)->selectRaw('
             SUM(distance_meters) as total_distance,
             SUM(active_calories) as total_calories,
-            SUM(ABS(TIMESTAMPDIFF(SECOND, start_date, end_date))) as total_duration
+            SUM(ABS('.$this->queryService->durationSqlExpression().')) as total_duration
         ')->first();
 
         return [

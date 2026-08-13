@@ -47,8 +47,7 @@ class ActivityManagementTest extends TestCase
         $response = $this->actingAs($user)->get('/activities?search=run');
 
         $response->assertOk();
-        $response->assertSee('Running');
-        $response->assertDontSee('Road Biking');
+        $response->assertViewHas('activities', fn ($p) => $p->count() === 1 && $p->first()->type === 'running');
     }
 
     public function test_type_filter_narrows_results(): void
@@ -60,8 +59,7 @@ class ActivityManagementTest extends TestCase
         $response = $this->actingAs($user)->get('/activities?type=walking');
 
         $response->assertOk();
-        $response->assertSee('Walking');
-        $response->assertDontSee('Running');
+        $response->assertViewHas('activities', fn ($p) => $p->count() === 1 && $p->first()->type === 'walking');
     }
 
     public function test_date_range_filter_narrows_results(): void
@@ -73,8 +71,7 @@ class ActivityManagementTest extends TestCase
         $response = $this->actingAs($user)->get('/activities?from=2026-07-01&to=2026-08-31');
 
         $response->assertOk();
-        $response->assertSee('Walking');
-        $response->assertDontSee('Running');
+        $response->assertViewHas('activities', fn ($p) => $p->count() === 1 && $p->first()->type === 'walking');
     }
 
     public function test_pagination_splits_results_across_pages(): void

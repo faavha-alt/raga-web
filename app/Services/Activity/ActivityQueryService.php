@@ -3,7 +3,8 @@
 namespace App\Services\Activity;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class ActivityQueryService
 {
@@ -18,10 +19,10 @@ class ActivityQueryService
     /** Filtered + sorted, ready to paginate. */
     public function forUser(User $user, array $filters): Builder
     {
-        $query = $this->applyFilters($user->workouts()->newQuery(), $filters);
+        $query = $this->applyFilters($user->workouts()->getQuery(), $filters);
 
         $query->addSelect('workouts.*')
-            ->selectRaw('ABS(TIMESTAMPDIFF(SECOND, start_date, end_date)) as duration_seconds');
+            ->selectRaw('ABS('.$this->durationSqlExpression().') as duration_seconds');
 
         $sortKey = $filters['sort'] ?? 'date';
         $direction = ($filters['direction'] ?? 'desc') === 'asc' ? 'asc' : 'desc';
@@ -66,5 +67,17 @@ class ActivityQueryService
     public function sortOptions(): array
     {
         return array_keys(self::SORTABLE);
+    }
+
+    /**
+     * TIMESTAMPDIFF() is MySQL-only; strftime() is SQLite-only (used by the
+     * test suite). Driver-aware so duration sorting/aggregation works
+     * identically against production (MySQL) and tests (SQLite).
+     */
+    public function durationSqlExpression(): string
+    {
+        return DB::connection()->getDriverName() === 'sqlite'
+            ? "(strftime('%s', end_date) - strftime('%s', start_date))"
+            : 'TIMESTAMPDIFF(SECOND, start_date, end_date)';
     }
 }
