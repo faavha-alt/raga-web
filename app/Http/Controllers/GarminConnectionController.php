@@ -90,6 +90,7 @@ class GarminConnectionController extends Controller
 
         try {
             Artisan::call('garmin:import', ['path' => $tmpFile, '--user' => $user->id]);
+            Artisan::call('recovery:calculate', ['--days' => 2, '--user' => $user->id]);
         } finally {
             @unlink($tmpFile);
         }
