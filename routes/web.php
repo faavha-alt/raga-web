@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GarminConnectionController;
@@ -16,6 +17,8 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/training', [TrainingController::class, 'index'])->name('training');
+    Route::get('/activities', [ActivityController::class, 'index'])->name('activities');
+    Route::get('/activities/{workout}', [ActivityController::class, 'show'])->name('activities.show');
     Route::get('/health', [HealthController::class, 'index'])->name('health');
     Route::get('/ai', [AiController::class, 'index'])->name('ai');
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');

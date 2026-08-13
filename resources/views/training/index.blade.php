@@ -40,7 +40,10 @@
             @endif
 
             <div>
-                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">📋 Aktivitas Terakhir</h3>
+                <div class="mb-3 flex items-center justify-between">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">📋 Aktivitas Terakhir</h3>
+                    <a href="{{ route('activities') }}" class="text-xs font-bold text-raga-primary hover:text-raga-accent transition">Lihat semua →</a>
+                </div>
                 <x-card class="!p-0 divide-y divide-gray-100 dark:divide-gray-700 overflow-hidden">
                     @forelse ($recentWorkouts as $workout)
                         @php
@@ -53,7 +56,7 @@
                             };
                             $pace = $workout->average_pace_seconds_per_km ? (int) round($workout->average_pace_seconds_per_km) : null;
                         @endphp
-                        <div class="flex items-center justify-between px-5 py-3.5">
+                        <a href="{{ route('activities.show', $workout) }}" class="flex items-center justify-between px-5 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
                             <div class="flex items-center gap-3">
                                 <span class="text-xl">{{ $icon }}</span>
                                 <div>
@@ -70,7 +73,7 @@
                                     @if ($workout->average_heart_rate) · {{ round($workout->average_heart_rate) }} bpm @endif
                                 </p>
                             </div>
-                        </div>
+                        </a>
                     @empty
                         <div class="px-5 py-6 text-center text-gray-400">Belum ada aktivitas</div>
                     @endforelse

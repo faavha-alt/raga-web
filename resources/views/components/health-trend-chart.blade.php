@@ -1,5 +1,7 @@
 @props(['series'])
 
+<x-chart-math />
+
 <div x-data="healthTrendChart(@js($series))">
     <div class="flex flex-wrap gap-2">
         <template x-for="key in metricKeys" :key="key">
@@ -77,117 +79,81 @@
 </div>
 
 @once
-        <script>
-            document.addEventListener('alpine:init', () => {
-                Alpine.data('healthTrendChart', (seriesData) => ({
-                    series: seriesData,
-                    metricKeys: Object.keys(seriesData),
-                    activeMetric: Object.keys(seriesData)[0],
-                    range: 7,
-                    width: 600,
-                    height: 190,
-                    padTop: 10,
-                    padBottom: 10,
-                    hoverIndex: null,
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('healthTrendChart', (seriesData) => ({
+                series: seriesData,
+                metricKeys: Object.keys(seriesData),
+                activeMetric: Object.keys(seriesData)[0],
+                range: 7,
+                width: 600,
+                height: 190,
+                padTop: 10,
+                padBottom: 10,
+                hoverIndex: null,
 
-                    get currentSeries() {
-                        return this.series[this.activeMetric];
-                    },
+                get currentSeries() {
+                    return this.series[this.activeMetric];
+                },
 
-                    get currentPoints() {
-                        const all = this.currentSeries.points;
-                        return all.slice(Math.max(0, all.length - this.range));
-                    },
+                get currentPoints() {
+                    const all = this.currentSeries.points;
+                    return all.slice(Math.max(0, all.length - this.range));
+                },
 
-                    get scaledPoints() {
-                        const points = this.currentPoints;
-                        if (points.length === 0) return [];
+                get scaledPoints() {
+                    return window.RagaChartMath.scale(this.currentPoints, this.width, this.height, this.padTop, this.padBottom);
+                },
 
-                        const values = points.map(p => p.value);
-                        const min = Math.min(...values);
-                        const max = Math.max(...values);
-                        const span = (max - min) || 1;
-                        const usableHeight = this.height - this.padTop - this.padBottom;
-                        const stepX = points.length > 1 ? this.width / (points.length - 1) : 0;
+                get linePath() {
+                    return window.RagaChartMath.linePath(this.scaledPoints);
+                },
 
-                        return points.map((p, i) => ({
-                            x: points.length > 1 ? i * stepX : this.width / 2,
-                            y: this.padTop + usableHeight - ((p.value - min) / span) * usableHeight,
-                            date: p.date,
-                            value: p.value,
-                        }));
-                    },
+                get areaPath() {
+                    return window.RagaChartMath.areaPath(this.scaledPoints, this.width, this.height, this.padBottom);
+                },
 
-                    get linePath() {
-                        const pts = this.scaledPoints;
-                        if (pts.length === 0) return '';
-                        return pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
-                    },
+                get lastPoint() {
+                    const pts = this.scaledPoints;
+                    return pts.length ? pts[pts.length - 1] : null;
+                },
 
-                    get areaPath() {
-                        const pts = this.scaledPoints;
-                        if (pts.length === 0) return '';
-                        const baseline = this.height - this.padBottom;
-                        const first = pts[0];
-                        const last = pts[pts.length - 1];
-                        return `${this.linePath} L ${last.x.toFixed(1)} ${baseline} L ${first.x.toFixed(1)} ${baseline} Z`;
-                    },
+                get latestLabel() {
+                    const last = this.lastPoint;
+                    if (!last) return '--';
+                    return this.formatValue(last.value);
+                },
 
-                    get lastPoint() {
-                        const pts = this.scaledPoints;
-                        return pts.length ? pts[pts.length - 1] : null;
-                    },
+                get hoverPoint() {
+                    return this.hoverIndex !== null ? this.scaledPoints[this.hoverIndex] : null;
+                },
 
-                    get latestLabel() {
-                        const last = this.lastPoint;
-                        if (!last) return '--';
-                        return this.formatValue(last.value);
-                    },
+                get hoverPercent() {
+                    return this.hoverPoint ? (this.hoverPoint.x / this.width) * 100 : 0;
+                },
 
-                    get hoverPoint() {
-                        return this.hoverIndex !== null ? this.scaledPoints[this.hoverIndex] : null;
-                    },
+                get hoverValueLabel() {
+                    return this.hoverPoint ? this.formatValue(this.hoverPoint.value) : '';
+                },
 
-                    get hoverPercent() {
-                        return this.hoverPoint ? (this.hoverPoint.x / this.width) * 100 : 0;
-                    },
+                get hoverDateLabel() {
+                    if (!this.hoverPoint) return '';
+                    const d = new Date(this.hoverPoint.date + 'T00:00:00');
+                    return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                },
 
-                    get hoverValueLabel() {
-                        return this.hoverPoint ? this.formatValue(this.hoverPoint.value) : '';
-                    },
+                formatValue(value) {
+                    const decimals = this.activeMetric === 'sleep' ? 1 : 0;
+                    return value.toLocaleString('id-ID', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+                },
 
-                    get hoverDateLabel() {
-                        if (!this.hoverPoint) return '';
-                        const d = new Date(this.hoverPoint.date + 'T00:00:00');
-                        return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-                    },
-
-                    formatValue(value) {
-                        const decimals = this.activeMetric === 'sleep' ? 1 : 0;
-                        return value.toLocaleString('id-ID', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
-                    },
-
-                    onMove(evt) {
-                        const pts = this.scaledPoints;
-                        if (pts.length === 0) return;
-
-                        const svg = evt.currentTarget.closest('svg') || evt.target.closest('svg');
-                        const rect = svg.getBoundingClientRect();
-                        const relativeX = ((evt.clientX - rect.left) / rect.width) * this.width;
-
-                        let nearest = 0;
-                        let nearestDist = Infinity;
-                        pts.forEach((p, i) => {
-                            const dist = Math.abs(p.x - relativeX);
-                            if (dist < nearestDist) {
-                                nearestDist = dist;
-                                nearest = i;
-                            }
-                        });
-
-                        this.hoverIndex = nearest;
-                    },
-                }));
-            });
-        </script>
+                onMove(evt) {
+                    const pts = this.scaledPoints;
+                    if (pts.length === 0) return;
+                    const relativeX = window.RagaChartMath.relativeX(evt, this.width);
+                    this.hoverIndex = window.RagaChartMath.nearestIndex(pts, relativeX);
+                },
+            }));
+        });
+    </script>
 @endonce
