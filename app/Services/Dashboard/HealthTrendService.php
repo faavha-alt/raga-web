@@ -11,11 +11,11 @@ class HealthTrendService
 
     /** Fixed per-metric identity — validated against the dataviz skill's CVD-safe categorical order. */
     private const METRICS = [
-        'resting_hr' => ['label' => 'Resting HR', 'unit' => 'bpm', 'color' => '#2a78d6'],
-        'training_load' => ['label' => 'Training Load (est.)', 'unit' => 'kcal', 'color' => '#eb6834'],
-        'hrv' => ['label' => 'HRV', 'unit' => 'ms', 'color' => '#1baf7a'],
-        'body_battery' => ['label' => 'Body Battery (net)', 'unit' => 'pts', 'color' => '#eda100'],
-        'sleep' => ['label' => 'Sleep', 'unit' => 'hrs', 'color' => '#e87ba4'],
+        'resting_hr' => ['label' => 'Resting HR', 'unit' => 'bpm', 'color' => '#2a78d6', 'decimals' => 0],
+        'training_load' => ['label' => 'Training Load (est.)', 'unit' => 'kcal', 'color' => '#eb6834', 'decimals' => 0],
+        'hrv' => ['label' => 'HRV', 'unit' => 'ms', 'color' => '#1baf7a', 'decimals' => 0],
+        'body_battery' => ['label' => 'Body Battery (net)', 'unit' => 'pts', 'color' => '#eda100', 'decimals' => 0],
+        'sleep' => ['label' => 'Sleep', 'unit' => 'hrs', 'color' => '#e87ba4', 'decimals' => 1],
     ];
 
     public function __construct(private TrainingLoadCalculator $trainingLoad) {}

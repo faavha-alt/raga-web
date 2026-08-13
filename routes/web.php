@@ -19,7 +19,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/training', [TrainingController::class, 'index'])->name('training');
     Route::get('/activities', [ActivityController::class, 'index'])->name('activities');
     Route::get('/activities/{workout}', [ActivityController::class, 'show'])->name('activities.show');
-    Route::get('/health', [HealthController::class, 'index'])->name('health');
+    Route::get('/health', [HealthController::class, 'overview'])->name('health');
+    Route::get('/health/heart', [HealthController::class, 'heart'])->name('health.heart');
+    Route::get('/health/stress', [HealthController::class, 'stress'])->name('health.stress');
+    Route::get('/health/body-battery', [HealthController::class, 'bodyBattery'])->name('health.body_battery');
+    Route::get('/health/daily-metrics', [HealthController::class, 'dailyMetrics'])->name('health.daily_metrics');
     Route::get('/ai', [AiController::class, 'index'])->name('ai');
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
 

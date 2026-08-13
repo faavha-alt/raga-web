@@ -1,8 +1,8 @@
-@props(['series'])
+@props(['series', 'ranges' => [7, 30, 90]])
 
 <x-chart-math />
 
-<div x-data="healthTrendChart(@js($series))">
+<div x-data="healthTrendChart(@js($series), @js($ranges))">
     <div class="flex flex-wrap gap-2">
         <template x-for="key in metricKeys" :key="key">
             <button
@@ -23,13 +23,13 @@
             <p class="text-xs font-semibold text-gray-400" x-text="currentSeries.label + (currentSeries.unit ? ' (' + currentSeries.unit + ')' : '')"></p>
         </div>
         <div class="flex gap-1 rounded-full bg-gray-100 dark:bg-gray-800 p-1">
-            <template x-for="r in [7, 30, 90]" :key="r">
+            <template x-for="r in availableRanges" :key="r">
                 <button
                     type="button"
                     @click="range = r"
                     :class="range === r ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-white' : 'text-gray-400'"
                     class="px-3 py-1 rounded-full text-xs font-bold transition"
-                    x-text="r + 'D'"
+                    x-text="r >= 365 ? '1Y' : r + 'D'"
                 ></button>
             </template>
         </div>
@@ -81,11 +81,12 @@
 @once
     <script>
         document.addEventListener('alpine:init', () => {
-            Alpine.data('healthTrendChart', (seriesData) => ({
+            Alpine.data('healthTrendChart', (seriesData, ranges) => ({
                 series: seriesData,
                 metricKeys: Object.keys(seriesData),
                 activeMetric: Object.keys(seriesData)[0],
-                range: 7,
+                availableRanges: ranges,
+                range: ranges[0],
                 width: 600,
                 height: 190,
                 padTop: 10,
@@ -143,7 +144,7 @@
                 },
 
                 formatValue(value) {
-                    const decimals = this.activeMetric === 'sleep' ? 1 : 0;
+                    const decimals = this.currentSeries.decimals ?? 0;
                     return value.toLocaleString('id-ID', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
                 },
 
