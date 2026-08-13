@@ -51,7 +51,7 @@
                                 str_contains($workout->type, 'strength') => '🏋️',
                                 default => '💪',
                             };
-                            $pace = $workout->average_pace_seconds_per_km;
+                            $pace = $workout->average_pace_seconds_per_km ? (int) round($workout->average_pace_seconds_per_km) : null;
                         @endphp
                         <div class="flex items-center justify-between px-5 py-3.5">
                             <div class="flex items-center gap-3">
@@ -66,7 +66,7 @@
                                     <p class="font-bold text-gray-900 dark:text-gray-100">{{ number_format($workout->distance_meters / 1000, 2) }} km</p>
                                 @endif
                                 <p class="text-xs text-gray-400">
-                                    @if ($pace) {{ sprintf('%d:%02d', intdiv((int) $pace, 60), $pace % 60) }}/km @endif
+                                    @if ($pace) {{ sprintf('%d:%02d', intdiv($pace, 60), $pace % 60) }}/km @endif
                                     @if ($workout->average_heart_rate) · {{ round($workout->average_heart_rate) }} bpm @endif
                                 </p>
                             </div>
