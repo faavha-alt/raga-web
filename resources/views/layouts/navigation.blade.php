@@ -16,8 +16,11 @@
                     <x-nav-link :href="route('training')" :active="request()->routeIs('training')">
                         {{ __('Training') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('health')" :active="request()->routeIs('health')">
+                    <x-nav-link :href="route('health')" :active="request()->routeIs('health*')">
                         {{ __('Health') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('recovery')" :active="request()->routeIs('recovery')">
+                        {{ __('Recovery') }}
                     </x-nav-link>
                     <x-nav-link :href="route('ai')" :active="request()->routeIs('ai')">
                         {{ __('AI') }}
@@ -83,8 +86,11 @@
             <x-responsive-nav-link :href="route('training')" :active="request()->routeIs('training')">
                 {{ __('Training') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('health')" :active="request()->routeIs('health')">
+            <x-responsive-nav-link :href="route('health')" :active="request()->routeIs('health*')">
                 {{ __('Health') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('recovery')" :active="request()->routeIs('recovery')">
+                {{ __('Recovery') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('ai')" :active="request()->routeIs('ai')">
                 {{ __('AI') }}

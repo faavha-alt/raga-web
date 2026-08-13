@@ -51,6 +51,18 @@
                 </div>
             @endforeach
 
+            @php $garminReadiness = $today['garmin_readiness']; @endphp
+            <div>
+                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">Untuk Perbandingan</h3>
+                <x-card class="!p-4">
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400">🔵 {{ $garminReadiness['meta']['label'] }}</p>
+                    <p class="mt-1 text-2xl font-black text-gray-900">
+                        {{ $garminReadiness['value'] !== null ? round($garminReadiness['value']) : '--' }}
+                    </p>
+                    <p class="mt-1 text-[11px] text-gray-400">Skor readiness bawaan Garmin (perhitungannya tertutup) — beda dengan <a href="{{ route('recovery') }}" class="font-semibold text-raga-primary hover:text-raga-accent">Readiness Score</a> kita yang transparan.</p>
+                </x-card>
+            </div>
+
         </div>
     </div>
 </x-app-layout>

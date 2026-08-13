@@ -24,7 +24,11 @@ class TodaySnapshotService
     {
         $today = Carbon::today();
 
-        $readiness = $this->latestVital($user, 'training_readiness');
+        // The computed Readiness Score (App\Services\Recovery\RecoveryEngine) — a
+        // transparent factor breakdown, not Garmin's own opaque training_readiness
+        // vital (that one's still visible, labeled "Garmin Readiness", on the
+        // Health Overview page).
+        $readinessScore = $user->readinessScores()->whereDate('date', $today)->first();
         $hrv = $this->latestVital($user, 'hrv_overnight_avg');
         $restingHr = $this->latestVital($user, 'resting_heart_rate');
         $stress = $this->latestVital($user, 'stress_avg');
@@ -36,7 +40,7 @@ class TodaySnapshotService
         $todayActivity = $user->activitySummaries()->whereDate('date', $today)->first();
 
         return [
-            'readiness' => $readiness?->value,
+            'readiness' => $readinessScore?->score,
             'sleep' => [
                 'minutes' => $sleep?->totalDurationMinutes(),
                 'score' => $sleep?->sleep_score,

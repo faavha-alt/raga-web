@@ -13,6 +13,7 @@ class HealthController extends Controller
     private const OVERVIEW_METRICS = [
         'resting_hr', 'avg_hr', 'max_hr', 'hrv', 'stress',
         'body_battery_net', 'respiration', 'spo2', 'steps', 'calories', 'recovery_time',
+        'garmin_readiness',
     ];
 
     public function __construct(

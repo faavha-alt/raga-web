@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
-    'user_id', 'date', 'score', 'hrv_contribution', 'resting_heart_rate_contribution',
-    'sleep_contribution', 'stress_contribution', 'training_load_contribution', 'calculated_at',
+    'user_id', 'date', 'score', 'body_battery_contribution', 'recent_activity_contribution',
+    'hrv_contribution', 'resting_heart_rate_contribution', 'calculated_at',
 ])]
-class RecoveryScore extends Model
+class ReadinessScore extends Model
 {
     protected function casts(): array
     {

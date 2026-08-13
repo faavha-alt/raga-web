@@ -42,6 +42,11 @@ class User extends Authenticatable
         return $this->hasMany(RecoveryScore::class);
     }
 
+    public function readinessScores(): HasMany
+    {
+        return $this->hasMany(ReadinessScore::class);
+    }
+
     public function sleepSessions(): HasMany
     {
         return $this->hasMany(SleepSession::class);

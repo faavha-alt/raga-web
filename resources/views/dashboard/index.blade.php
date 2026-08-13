@@ -23,11 +23,11 @@
                     };
                 @endphp
 
-                <div class="rounded-3xl bg-white border border-gray-100 p-6 shadow-[0_1px_3px_rgba(16,24,40,0.06)] mb-3">
+                <a href="{{ route('recovery') }}" class="block rounded-3xl bg-white border border-gray-100 p-6 shadow-[0_1px_3px_rgba(16,24,40,0.06)] mb-3 hover:border-raga-primary/30 transition">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2.5">
                             <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-raga-accent to-raga-primary text-white text-base shadow-glow">🔋</span>
-                            <p class="text-sm font-bold text-gray-500">Readiness</p>
+                            <p class="text-sm font-bold text-gray-500">Readiness Score</p>
                         </div>
                         <span class="rounded-full px-3 py-1 text-xs font-bold {{ $statusClasses }}">{{ $statusLabel }}</span>
                     </div>
@@ -36,7 +36,7 @@
                     </p>
                     <p class="mt-2 text-sm text-gray-500">
                         @if ($readinessValue === null)
-                            Belum ada data readiness dari Garmin.
+                            Belum ada skor readiness — buka Recovery untuk hitung sekarang.
                         @elseif ($readinessValue >= 75)
                             Kondisi bagus, siap untuk latihan lebih berat.
                         @elseif ($readinessValue >= 50)
@@ -44,8 +44,9 @@
                         @else
                             Kondisi rendah, pertimbangkan recovery hari ini.
                         @endif
+                        <span class="font-semibold text-raga-primary">Lihat rincian →</span>
                     </p>
-                </div>
+                </a>
 
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     <x-metric-tile icon="😴" label="Sleep" :value="$today['sleep']['minutes'] ? intdiv((int) $today['sleep']['minutes'], 60).'h '.((int) $today['sleep']['minutes'] % 60).'m' : null" />

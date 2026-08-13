@@ -27,6 +27,9 @@ class MetricSeriesService
         'steps' => ['label' => 'Steps', 'unit' => 'steps', 'color' => '#eda100', 'decimals' => 0],
         'calories' => ['label' => 'Calories', 'unit' => 'kcal', 'color' => '#4a3aa7', 'decimals' => 0],
         'recovery_time' => ['label' => 'Recovery Time', 'unit' => 'min', 'color' => '#e34948', 'decimals' => 0],
+        'sleep' => ['label' => 'Sleep', 'unit' => 'hrs', 'color' => '#e87ba4', 'decimals' => 1],
+        'training_load' => ['label' => 'Training Load', 'unit' => 'pts', 'color' => '#eb6834', 'decimals' => 0],
+        'garmin_readiness' => ['label' => 'Garmin Readiness', 'unit' => '', 'color' => '#4a3aa7', 'decimals' => 0],
     ];
 
     public function meta(string $metric): array
@@ -46,6 +49,7 @@ class MetricSeriesService
             'respiration' => $this->vitalSeries($user, 'respiration_rate', $since),
             'spo2' => $this->vitalSeries($user, 'spo2_avg', $since),
             'recovery_time' => $this->vitalSeries($user, 'recovery_time', $since),
+            'garmin_readiness' => $this->vitalSeries($user, 'training_readiness', $since),
             'body_battery_charged' => $this->vitalSeries($user, 'body_battery_charged', $since),
             'body_battery_drained' => $this->vitalSeries($user, 'body_battery_drained', $since),
             'body_battery_net' => $this->bodyBatteryNetSeries($user, $since),
@@ -53,6 +57,8 @@ class MetricSeriesService
             'max_hr' => $this->heartRateAggregateSeries($user, $since, 'MAX'),
             'steps' => $this->activitySummarySeries($user, $since, 'steps'),
             'calories' => $this->activitySummarySeries($user, $since, 'active_calories'),
+            'sleep' => $this->sleepSeries($user, $since),
+            'training_load' => $this->trainingLoadSeries($user, $since),
             default => [],
         };
     }
@@ -114,5 +120,33 @@ class MetricSeriesService
             ->map(fn ($a) => ['date' => $a->date->toDateString(), 'value' => (float) $a->{$column}])
             ->values()
             ->all();
+    }
+
+    private function sleepSeries(User $user, Carbon $since): array
+    {
+        return $user->sleepSessions()
+            ->where('bedtime', '>=', $since)
+            ->orderBy('bedtime')
+            ->get()
+            ->map(fn ($s) => [
+                'date' => $s->bedtime->toDateString(),
+                'value' => round($s->totalDurationMinutes() / 60, 2),
+            ])
+            ->values()
+            ->all();
+    }
+
+    /** SUM()/DATE()/GROUP BY are standard SQL — safe on both MySQL (prod) and SQLite (tests). */
+    private function trainingLoadSeries(User $user, Carbon $since): array
+    {
+        $rows = $user->workouts()
+            ->where('start_date', '>=', $since)
+            ->whereNotNull('training_load')
+            ->selectRaw('DATE(start_date) as workout_date, SUM(training_load) as total_load')
+            ->groupBy('workout_date')
+            ->orderBy('workout_date')
+            ->get();
+
+        return $rows->map(fn ($row) => ['date' => $row->workout_date, 'value' => (float) $row->total_load])->all();
     }
 }
