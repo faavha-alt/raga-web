@@ -30,6 +30,7 @@ class MetricSeriesService
         'sleep' => ['label' => 'Sleep', 'unit' => 'hrs', 'color' => '#e87ba4', 'decimals' => 1],
         'training_load' => ['label' => 'Training Load', 'unit' => 'pts', 'color' => '#eb6834', 'decimals' => 0],
         'garmin_readiness' => ['label' => 'Garmin Readiness', 'unit' => '', 'color' => '#4a3aa7', 'decimals' => 0],
+        'vo2max' => ['label' => 'VO2 Max', 'unit' => 'ml/kg/min', 'color' => '#1baf7a', 'decimals' => 1],
     ];
 
     public function meta(string $metric): array
@@ -59,6 +60,7 @@ class MetricSeriesService
             'calories' => $this->activitySummarySeries($user, $since, 'active_calories'),
             'sleep' => $this->sleepSeries($user, $since),
             'training_load' => $this->trainingLoadSeries($user, $since),
+            'vo2max' => $this->vitalSeries($user, 'vo2max', $since),
             default => [],
         };
     }

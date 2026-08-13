@@ -66,11 +66,32 @@ class TrainingConsistencyServiceTest extends TestCase
         $this->assertSame(0, $result['current_streak_days']); // Aug 11-13 have no workouts
     }
 
-    private function makeWorkout(User $user, Carbon $date): void
+    public function test_forperiod_filters_by_type_when_given(): void
+    {
+        $user = User::factory()->create();
+        $from = Carbon::parse('2026-08-04');
+        $to = Carbon::parse('2026-08-13');
+
+        // Running on days 1-5, cycling on days 6-10 of the period.
+        for ($d = $from->copy(); $d->lte($from->copy()->addDays(4)); $d->addDay()) {
+            $this->makeWorkout($user, $d, 'running');
+        }
+        for ($d = $from->copy()->addDays(5); $d->lte($to); $d->addDay()) {
+            $this->makeWorkout($user, $d, 'cycling');
+        }
+
+        $runningOnly = app(TrainingConsistencyService::class)->forPeriod($user, $from, $to, type: 'running');
+        $allTypes = app(TrainingConsistencyService::class)->forPeriod($user, $from, $to);
+
+        $this->assertSame(5, $runningOnly['days_with_workout']);
+        $this->assertSame(10, $allTypes['days_with_workout']);
+    }
+
+    private function makeWorkout(User $user, Carbon $date, string $type = 'running'): void
     {
         Workout::create([
             'user_id' => $user->id,
-            'type' => 'running',
+            'type' => $type,
             'start_date' => $date->copy()->setTime(7, 0),
             'end_date' => $date->copy()->setTime(7, 30),
             'source' => 'garmin',

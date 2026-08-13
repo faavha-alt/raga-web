@@ -7,7 +7,9 @@ use App\Http\Controllers\GarminConnectionController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecoveryController;
+use App\Http\Controllers\RunningController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\TrailController;
 use App\Http\Controllers\TrainingController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +24,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/training/load', [TrainingController::class, 'load'])->name('training.load');
     Route::get('/training/calendar', [TrainingController::class, 'calendar'])->name('training.calendar');
     Route::get('/training/distribution', [TrainingController::class, 'distribution'])->name('training.distribution');
+    Route::get('/running', [RunningController::class, 'index'])->name('running');
+    Route::get('/running/distance', [RunningController::class, 'distance'])->name('running.distance');
+    Route::get('/running/pace', [RunningController::class, 'pace'])->name('running.pace');
+    Route::get('/running/records', [RunningController::class, 'records'])->name('running.records');
+    Route::get('/trail', [TrailController::class, 'index'])->name('trail');
+    Route::get('/trail/routes', [TrailController::class, 'routes'])->name('trail.routes');
+    Route::get('/trail/{workout}', [TrailController::class, 'show'])->name('trail.show');
     Route::get('/activities', [ActivityController::class, 'index'])->name('activities');
     Route::get('/activities/{workout}', [ActivityController::class, 'show'])->name('activities.show');
     Route::get('/health', [HealthController::class, 'overview'])->name('health');

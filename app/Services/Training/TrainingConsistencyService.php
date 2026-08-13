@@ -23,13 +23,14 @@ class TrainingConsistencyService
      *     longest_streak_days: int,
      * }
      */
-    public function forPeriod(User $user, Carbon $from, Carbon $to): array
+    public function forPeriod(User $user, Carbon $from, Carbon $to, ?string $type = null): array
     {
         $from = $from->copy()->startOfDay();
         $to = $to->copy()->startOfDay();
 
         $trainedDates = $user->workouts()
             ->whereBetween('start_date', [$from, $to->copy()->endOfDay()])
+            ->when($type, fn ($query) => $query->where('type', $type))
             ->selectRaw('DISTINCT DATE(start_date) as workout_date')
             ->pluck('workout_date')
             ->all();

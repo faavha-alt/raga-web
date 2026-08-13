@@ -16,6 +16,12 @@
                     <x-nav-link :href="route('training')" :active="request()->routeIs('training*')">
                         {{ __('Training') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('running')" :active="request()->routeIs('running*')">
+                        {{ __('Running') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('trail')" :active="request()->routeIs('trail*')">
+                        {{ __('Trail') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('health')" :active="request()->routeIs('health*')">
                         {{ __('Health') }}
                     </x-nav-link>
@@ -85,6 +91,12 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('training')" :active="request()->routeIs('training*')">
                 {{ __('Training') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('running')" :active="request()->routeIs('running*')">
+                {{ __('Running') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('trail')" :active="request()->routeIs('trail*')">
+                {{ __('Trail') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('health')" :active="request()->routeIs('health*')">
                 {{ __('Health') }}
