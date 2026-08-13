@@ -13,6 +13,21 @@
                 <x-score-tile title="Recovery" :score="$recoveryScore?->score" :category="$recoveryScore?->category()" />
             </div>
 
+            <div class="grid grid-cols-3 gap-3">
+                <x-card class="!p-4 text-center">
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">❤️ Resting HR</p>
+                    <p class="mt-1 text-xl font-black text-gray-900 dark:text-gray-100">{{ $restingHr ? round($restingHr->value).' bpm' : '--' }}</p>
+                </x-card>
+                <x-card class="!p-4 text-center">
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">🔋 Readiness</p>
+                    <p class="mt-1 text-xl font-black text-gray-900 dark:text-gray-100">{{ $trainingReadiness ? round($trainingReadiness->value) : '--' }}</p>
+                </x-card>
+                <x-card class="!p-4 text-center">
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">🧠 Stress</p>
+                    <p class="mt-1 text-xl font-black text-gray-900 dark:text-gray-100">{{ $stress ? round($stress->value) : '--' }}</p>
+                </x-card>
+            </div>
+
             <div class="grid gap-4 sm:grid-cols-2">
                 <x-card>
                     <p class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">😴 Sleep</p>
@@ -45,6 +60,15 @@
                 <p class="text-xs font-bold uppercase tracking-wider text-raga-primary">✨ AI Insight</p>
                 <p class="mt-2 text-gray-700 dark:text-gray-200">Hubungkan sumber data kesehatan untuk dapat insight yang personal buat kamu.</p>
             </x-card>
+
+            <div class="flex gap-3">
+                <a href="{{ route('health') }}" class="flex-1 text-center rounded-full border-2 border-gray-200 dark:border-gray-700 px-5 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-300 hover:border-raga-primary hover:text-raga-primary transition">
+                    Lihat Data Kesehatan →
+                </a>
+                <a href="{{ route('training') }}" class="flex-1 text-center rounded-full border-2 border-gray-200 dark:border-gray-700 px-5 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-300 hover:border-raga-primary hover:text-raga-primary transition">
+                    Lihat Training →
+                </a>
+            </div>
         </div>
     </div>
 </x-app-layout>

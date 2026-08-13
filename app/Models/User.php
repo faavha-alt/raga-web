@@ -71,4 +71,24 @@ class User extends Authenticatable
     {
         return $this->hasOne(GarminConnection::class);
     }
+
+    public function vitalMeasurements(): HasMany
+    {
+        return $this->hasMany(VitalMeasurement::class);
+    }
+
+    public function bodyMeasurements(): HasMany
+    {
+        return $this->hasMany(BodyMeasurement::class);
+    }
+
+    public function personalRecords(): HasMany
+    {
+        return $this->hasMany(PersonalRecord::class);
+    }
+
+    public function heartRateSamples(): HasMany
+    {
+        return $this->hasMany(HeartRateSample::class);
+    }
 }

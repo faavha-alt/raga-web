@@ -16,6 +16,10 @@ class DashboardController extends Controller
         $sleep = $user->sleepSessions()->latest('bedtime')->first();
         $activity = $user->activitySummaries()->latest('date')->first();
 
-        return view('dashboard.index', compact('healthScore', 'recoveryScore', 'sleep', 'activity'));
+        $restingHr = $user->vitalMeasurements()->where('type', 'resting_heart_rate')->latest('date')->first();
+        $trainingReadiness = $user->vitalMeasurements()->where('type', 'training_readiness')->latest('date')->first();
+        $stress = $user->vitalMeasurements()->where('type', 'stress_avg')->latest('date')->first();
+
+        return view('dashboard.index', compact('healthScore', 'recoveryScore', 'sleep', 'activity', 'restingHr', 'trainingReadiness', 'stress'));
     }
 }
