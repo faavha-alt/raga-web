@@ -13,7 +13,7 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('training')" :active="request()->routeIs('training')">
+                    <x-nav-link :href="route('training')" :active="request()->routeIs('training*')">
                         {{ __('Training') }}
                     </x-nav-link>
                     <x-nav-link :href="route('health')" :active="request()->routeIs('health*')">
@@ -83,7 +83,7 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('training')" :active="request()->routeIs('training')">
+            <x-responsive-nav-link :href="route('training')" :active="request()->routeIs('training*')">
                 {{ __('Training') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('health')" :active="request()->routeIs('health*')">

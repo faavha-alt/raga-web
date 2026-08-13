@@ -76,20 +76,14 @@
             <x-card class="!p-0 divide-y divide-gray-100 overflow-hidden">
                 @forelse ($activities as $workout)
                     @php
-                        $icon = match (true) {
-                            str_contains($workout->type, 'run') || $workout->type === 'walking' => '🏃',
-                            str_contains($workout->type, 'bik') || str_contains($workout->type, 'cycl') => '🚴',
-                            str_contains($workout->type, 'swim') => '🏊',
-                            str_contains($workout->type, 'strength') => '🏋️',
-                            default => '💪',
-                        };
+                        $icon = \App\Support\ActivityTypeIcon::icon($workout->type);
                         $durationMin = intdiv($workout->duration_seconds, 60);
                     @endphp
                     <a href="{{ route('activities.show', $workout) }}" class="flex items-center justify-between gap-4 px-5 py-4 hover:bg-gray-50 transition">
                         <div class="flex items-center gap-3 min-w-0">
                             <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gray-50 text-xl">{{ $icon }}</span>
                             <div class="min-w-0">
-                                <p class="font-bold text-gray-900 truncate">{{ ucwords(str_replace('_', ' ', $workout->type)) }}</p>
+                                <p class="font-bold text-gray-900 truncate">{{ \App\Support\ActivityTypeIcon::label($workout->type) }}</p>
                                 <p class="text-xs text-gray-400">{{ $workout->start_date->translatedFormat('d M Y, H:i') }}</p>
                             </div>
                         </div>

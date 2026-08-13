@@ -96,4 +96,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(HeartRateSample::class);
     }
+
+    public function trainingLoads(): HasMany
+    {
+        return $this->hasMany(TrainingLoad::class);
+    }
 }

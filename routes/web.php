@@ -18,6 +18,10 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/training', [TrainingController::class, 'index'])->name('training');
+    Route::get('/training/volume', [TrainingController::class, 'volume'])->name('training.volume');
+    Route::get('/training/load', [TrainingController::class, 'load'])->name('training.load');
+    Route::get('/training/calendar', [TrainingController::class, 'calendar'])->name('training.calendar');
+    Route::get('/training/distribution', [TrainingController::class, 'distribution'])->name('training.distribution');
     Route::get('/activities', [ActivityController::class, 'index'])->name('activities');
     Route::get('/activities/{workout}', [ActivityController::class, 'show'])->name('activities.show');
     Route::get('/health', [HealthController::class, 'overview'])->name('health');
