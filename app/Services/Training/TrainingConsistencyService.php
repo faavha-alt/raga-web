@@ -35,7 +35,7 @@ class TrainingConsistencyService
             ->all();
 
         $trainedSet = array_flip($trainedDates);
-        $totalDays = $from->diffInDays($to) + 1;
+        $totalDays = (int) $from->diffInDays($to) + 1;
         $daysWithWorkout = count($trainedDates);
 
         [$currentStreak, $longestStreak] = $this->streaks($trainedSet, $from, $to);

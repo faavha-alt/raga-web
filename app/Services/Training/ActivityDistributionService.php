@@ -17,7 +17,7 @@ class ActivityDistributionService
         $durationExpr = $this->activityQuery->durationSqlExpression();
 
         $rows = $user->workouts()
-            ->whereBetween('start_date', [$from, $to])
+            ->whereBetween('start_date', [$from, $to->copy()->endOfDay()])
             ->selectRaw("type, COUNT(*) as cnt, SUM(distance_meters) as dist, SUM(ABS({$durationExpr})) as dur")
             ->groupBy('type')
             ->orderByDesc('cnt')

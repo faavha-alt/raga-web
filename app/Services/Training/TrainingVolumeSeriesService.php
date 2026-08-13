@@ -47,7 +47,7 @@ class TrainingVolumeSeriesService
         $durationExpr = $this->activityQuery->durationSqlExpression();
 
         $row = $user->workouts()
-            ->whereBetween('start_date', [$from, $to])
+            ->whereBetween('start_date', [$from, $to->copy()->endOfDay()])
             ->selectRaw("SUM(distance_meters) as distance, SUM(elevation_gain_meters) as elevation, COUNT(*) as workout_count, SUM(ABS({$durationExpr})) as duration")
             ->first();
 

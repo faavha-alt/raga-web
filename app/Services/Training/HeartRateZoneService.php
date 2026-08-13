@@ -54,7 +54,7 @@ class HeartRateZoneService
         $maxHr = $this->estimatedMaxHeartRate($user);
 
         $workouts = $user->workouts()
-            ->whereBetween('start_date', [$from, $to])
+            ->whereBetween('start_date', [$from, $to->copy()->endOfDay()])
             ->get(['id']);
 
         if ($maxHr === null || $workouts->isEmpty()) {
@@ -125,7 +125,7 @@ class HeartRateZoneService
             $current = $samples[$i];
             $next = $samples[$i + 1];
 
-            $gapSeconds = abs($current['timestamp']->diffInSeconds($next['timestamp']));
+            $gapSeconds = (int) round(abs($current['timestamp']->diffInSeconds($next['timestamp'])));
 
             if ($gapSeconds <= 0 || $gapSeconds > self::MAX_SAMPLE_GAP_SECONDS) {
                 continue;
