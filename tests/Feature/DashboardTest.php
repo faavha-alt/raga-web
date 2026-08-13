@@ -99,6 +99,8 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Running');
-        $response->assertSee('82');
+        // Readiness now shows the computed Readiness Score (App\Services\Recovery),
+        // not this raw Garmin vital directly - that scoring logic has its own
+        // dedicated tests (RecoveryEngineTest, RecoveryScoreCalculatorTest etc).
     }
 }

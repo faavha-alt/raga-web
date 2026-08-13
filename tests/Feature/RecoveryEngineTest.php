@@ -44,10 +44,15 @@ class RecoveryEngineTest extends TestCase
         $response = $this->actingAs($user)->get('/recovery');
 
         $response->assertOk();
-        $this->assertDatabaseHas('recovery_scores', ['user_id' => $user->id, 'date' => Carbon::today()->toDateString()]);
-        $this->assertDatabaseHas('readiness_scores', ['user_id' => $user->id, 'date' => Carbon::today()->toDateString()]);
 
+        // whereDate() rather than an exact-string assertDatabaseHas() match -
+        // the 'date' cast's raw stored representation isn't guaranteed
+        // byte-identical across database drivers (see RecoveryEngine::upsertByDate).
         $recovery = $user->recoveryScores()->whereDate('date', Carbon::today())->first();
+        $readiness = $user->readinessScores()->whereDate('date', Carbon::today())->first();
+
+        $this->assertNotNull($recovery);
+        $this->assertNotNull($readiness);
         $this->assertGreaterThanOrEqual(0, $recovery->score);
         $this->assertLessThanOrEqual(100, $recovery->score);
     }

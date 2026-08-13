@@ -32,30 +32,24 @@ class RecoveryEngine
         $recoveryResult = $this->recoveryCalculator->calculate($this->gateway->recoveryInputs($user, $date));
         $readinessResult = $this->readinessCalculator->calculate($this->gateway->readinessInputs($user, $date));
 
-        $recoveryScore = RecoveryScore::updateOrCreate(
-            ['user_id' => $user->id, 'date' => $date->toDateString()],
-            [
-                'score' => $recoveryResult['score'],
-                'sleep_contribution' => $this->contributionFor($recoveryResult, 'sleep'),
-                'hrv_contribution' => $this->contributionFor($recoveryResult, 'hrv'),
-                'resting_heart_rate_contribution' => $this->contributionFor($recoveryResult, 'resting_hr'),
-                'stress_contribution' => $this->contributionFor($recoveryResult, 'stress'),
-                'training_load_contribution' => $this->contributionFor($recoveryResult, 'training_load'),
-                'calculated_at' => now(),
-            ]
-        );
+        $recoveryScore = $this->upsertByDate(RecoveryScore::class, $user, $date, [
+            'score' => $recoveryResult['score'],
+            'sleep_contribution' => $this->contributionFor($recoveryResult, 'sleep'),
+            'hrv_contribution' => $this->contributionFor($recoveryResult, 'hrv'),
+            'resting_heart_rate_contribution' => $this->contributionFor($recoveryResult, 'resting_hr'),
+            'stress_contribution' => $this->contributionFor($recoveryResult, 'stress'),
+            'training_load_contribution' => $this->contributionFor($recoveryResult, 'training_load'),
+            'calculated_at' => now(),
+        ]);
 
-        $readinessScore = ReadinessScore::updateOrCreate(
-            ['user_id' => $user->id, 'date' => $date->toDateString()],
-            [
-                'score' => $readinessResult['score'],
-                'body_battery_contribution' => $this->contributionFor($readinessResult, 'body_battery'),
-                'recent_activity_contribution' => $this->contributionFor($readinessResult, 'recent_activity'),
-                'hrv_contribution' => $this->contributionFor($readinessResult, 'hrv'),
-                'resting_heart_rate_contribution' => $this->contributionFor($readinessResult, 'resting_hr'),
-                'calculated_at' => now(),
-            ]
-        );
+        $readinessScore = $this->upsertByDate(ReadinessScore::class, $user, $date, [
+            'score' => $readinessResult['score'],
+            'body_battery_contribution' => $this->contributionFor($readinessResult, 'body_battery'),
+            'recent_activity_contribution' => $this->contributionFor($readinessResult, 'recent_activity'),
+            'hrv_contribution' => $this->contributionFor($readinessResult, 'hrv'),
+            'resting_heart_rate_contribution' => $this->contributionFor($readinessResult, 'resting_hr'),
+            'calculated_at' => now(),
+        ]);
 
         return [
             'recovery' => ['model' => $recoveryScore, 'breakdown' => $recoveryResult['factors']],
@@ -70,6 +64,35 @@ class RecoveryEngine
         for ($i = 0; $i < $days; $i++) {
             $this->calculateAndStoreForDate($user, $today->copy()->subDays($i));
         }
+    }
+
+    /**
+     * Finds-or-creates by (user_id, date) via whereDate() rather than
+     * Model::updateOrCreate()'s exact-string WHERE match — the 'date' cast's
+     * stored string representation isn't byte-identical between a fresh
+     * insert and a later re-fetch on SQLite (fine on MySQL), which made
+     * updateOrCreate() fail to find its own just-created row and attempt a
+     * duplicate insert. whereDate() compares by calendar date on both.
+     *
+     * @template TModel of \Illuminate\Database\Eloquent\Model
+     *
+     * @param  class-string<TModel>  $modelClass
+     * @return TModel
+     */
+    private function upsertByDate(string $modelClass, User $user, Carbon $date, array $attributes)
+    {
+        $existing = $modelClass::query()
+            ->where('user_id', $user->id)
+            ->whereDate('date', $date->toDateString())
+            ->first();
+
+        if ($existing) {
+            $existing->update($attributes);
+
+            return $existing;
+        }
+
+        return $modelClass::create($attributes + ['user_id' => $user->id, 'date' => $date->toDateString()]);
     }
 
     /** @param array{factors: list<array{key: string, contribution: int, insufficient_data: bool}>} $result */

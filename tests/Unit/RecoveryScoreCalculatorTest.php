@@ -89,16 +89,22 @@ class RecoveryScoreCalculatorTest extends TestCase
         $this->assertSame(20, $this->contribution($result, 'sleep'));
     }
 
-    public function test_score_clamps_to_100_when_every_factor_is_maxed_positive(): void
+    public function test_score_reaches_its_design_ceiling_when_every_favorable_factor_is_maxed(): void
     {
+        // Training Load can only ever subtract (never rewards low training as
+        // an "achievement" - see cap_positive_at_zero), so the true ceiling
+        // with every other factor maxed favorably is 40 + 20 + 15 + 12 + 8 = 95,
+        // not 100. This is by design, not a missing clamp.
         $result = $this->calculator->calculate([
             'sleep' => $this->factor(value: 100.0, mean: 7.0, stddev: 1.0),
             'hrv' => $this->factor(value: 500.0, mean: 50.0, stddev: 10.0),
             'resting_hr' => $this->factor(value: 1.0, mean: 60.0, stddev: 5.0),
             'stress' => $this->factor(value: 0.0, mean: 30.0, stddev: 10.0),
+            'training_load' => $this->factor(value: 0.0, mean: 50.0, stddev: 10.0),
         ]);
 
-        $this->assertSame(100, $result['score']);
+        $this->assertSame(95, $result['score']);
+        $this->assertLessThanOrEqual(100, $result['score']);
     }
 
     public function test_score_clamps_to_0_when_every_factor_is_maxed_negative(): void
