@@ -1,6 +1,6 @@
 @props(['series', 'baselines', 'metrics', 'dailyRows', 'disclaimer', 'ranges' => [7, 30, 90, 365]])
 
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+<div class="px-4 sm:px-6 lg:px-8 space-y-6">
 
     <x-card>
         <x-health-trend-chart :series="$series" :ranges="$ranges" />

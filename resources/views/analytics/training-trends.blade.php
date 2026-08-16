@@ -7,7 +7,7 @@
     </x-slot>
 
     <div class="py-6 pb-16">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+        <div class="px-4 sm:px-6 lg:px-8 space-y-6">
 
             <x-card>
                 <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">Tren</h3>

@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+        <div class="sm:px-6 lg:px-8">
             <div class="flex gap-2 mb-6">
                 <span class="px-4 py-2 rounded-full bg-raga-accent text-white text-sm font-medium">Chat</span>
                 <span class="px-4 py-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium">Daily Brief</span>

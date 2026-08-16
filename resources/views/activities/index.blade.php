@@ -7,7 +7,7 @@
     </x-slot>
 
     <div class="py-6 pb-16">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+        <div class="px-4 sm:px-6 lg:px-8 space-y-6">
 
             {{-- Filter bar --}}
             <x-card class="!p-4">

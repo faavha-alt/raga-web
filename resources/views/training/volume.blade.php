@@ -7,7 +7,7 @@
     </x-slot>
 
     <div class="py-6 pb-16">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+        <div class="px-4 sm:px-6 lg:px-8 space-y-6">
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <x-metric-tile icon="📏" label="Distance" :value="number_format($totals['distance_meters'] / 1000, 1)" unit="km" />

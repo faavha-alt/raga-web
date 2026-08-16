@@ -7,7 +7,7 @@
     </x-slot>
 
     <div class="py-6 pb-16">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+        <div class="px-4 sm:px-6 lg:px-8 space-y-6">
 
             <div class="rounded-2xl bg-gray-50 border border-gray-100 px-4 py-3 text-xs font-semibold text-gray-500">
                 ℹ️ {{ $disclaimer }} Skor ini bukan angka medis — cuma cara transparan buat lihat pola tubuh kamu sendiri.
