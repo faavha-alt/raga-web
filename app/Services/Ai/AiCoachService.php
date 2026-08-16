@@ -55,7 +55,7 @@ class AiCoachService
            a report. This is a chat, not a printout of the context.
 
         RAGA_CONTEXT:
-        %s
+        {{RAGA_CONTEXT}}
         PROMPT;
 
     public function __construct(private AiContextBuilder $contextBuilder) {}
@@ -69,7 +69,11 @@ class AiCoachService
         }
 
         $context = $this->contextBuilder->buildFor($user);
-        $system = sprintf(self::SYSTEM_PROMPT, json_encode($context, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        $system = str_replace(
+            '{{RAGA_CONTEXT}}',
+            json_encode($context, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
+            self::SYSTEM_PROMPT,
+        );
 
         $conversation->messages()->create([
             'role' => 'user',
