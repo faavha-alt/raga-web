@@ -102,4 +102,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(TrainingLoad::class);
     }
+
+    /**
+     * Passport's TokenGuard calls this unconditionally on every OAuth-authenticated
+     * request. We deliberately don't pull in Passport's HasApiTokens trait here — its
+     * methods (tokens(), createToken(), etc.) collide by name with Sanctum's, which
+     * this app already uses for the plain REST API. This is the one method Passport
+     * actually needs at runtime; scopes aren't used anywhere, so it's a no-op.
+     */
+    public function withAccessToken($accessToken): static
+    {
+        return $this;
+    }
 }

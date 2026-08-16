@@ -6,6 +6,9 @@ use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GarminConnectionController;
 use App\Http\Controllers\HealthController;
+use App\Http\Controllers\Mcp\McpTransportController;
+use App\Http\Controllers\Oauth\ClientRegistrationController;
+use App\Http\Controllers\Oauth\ResourceMetadataController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecoveryController;
 use App\Http\Controllers\RunningController;
@@ -18,6 +21,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/.well-known/oauth-authorization-server', [ResourceMetadataController::class, 'authorizationServer']);
+Route::get('/.well-known/oauth-protected-resource', [ResourceMetadataController::class, 'protectedResource']);
+Route::post('/oauth/register', [ClientRegistrationController::class, 'store']);
+Route::post('/mcp', [McpTransportController::class, 'handle'])->middleware('mcp.auth');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
