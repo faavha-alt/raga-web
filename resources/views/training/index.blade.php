@@ -97,21 +97,37 @@
                 </x-card>
             </div>
 
-            @if ($plans->isEmpty())
-                <x-card class="text-center py-10">
-                    <p class="text-lg font-bold text-gray-900 dark:text-gray-100">Belum Ada Training Plan</p>
-                    <p class="mt-2 text-gray-500 dark:text-gray-400">Buat training plan untuk lihat jadwal mingguan kamu di sini.</p>
-                </x-card>
-            @else
-                <div class="space-y-4">
-                    @foreach ($plans as $plan)
-                        <x-card>
-                            <p class="font-bold text-gray-900 dark:text-gray-100">{{ $plan->name }}</p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ ucfirst($plan->status) }}</p>
-                        </x-card>
-                    @endforeach
+            <div>
+                <div class="mb-3 flex items-center justify-between">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">🗓️ Training Plan</h3>
+                    <a href="{{ route('training.calendar') }}" class="text-xs font-bold text-raga-primary hover:text-raga-accent transition">Lihat Kalender →</a>
                 </div>
-            @endif
+
+                @if ($plans->isEmpty())
+                    <x-card class="text-center py-10">
+                        <p class="text-lg font-bold text-gray-900 dark:text-gray-100">Belum Ada Training Plan</p>
+                        <p class="mt-2 text-gray-500 dark:text-gray-400">Buat training plan untuk lihat jadwal mingguan kamu di sini.</p>
+                    </x-card>
+                @else
+                    <div class="space-y-4">
+                        @foreach ($plans as $plan)
+                            <a href="{{ route('training.calendar') }}">
+                                <x-card class="hover:border-raga-primary/30 transition">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="font-bold text-gray-900 dark:text-gray-100">{{ $plan->name }}</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                {{ ucfirst($plan->status) }} · {{ $plan->start_date->translatedFormat('d M') }} – {{ $plan->target_date->translatedFormat('d M Y') }}
+                                            </p>
+                                        </div>
+                                        <span class="text-raga-primary text-sm font-bold">→</span>
+                                    </div>
+                                </x-card>
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
 
             @if ($personalRecords->isNotEmpty())
                 <div>
