@@ -151,7 +151,28 @@
                 </x-card>
             </section>
 
-            {{-- 5. INSIGHTS --}}
+            {{-- 5. AI RECOMMENDATIONS --}}
+            @if (count($recommendations) > 0)
+                <section>
+                    <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">🤖 Rekomendasi AI</h3>
+                    <div class="space-y-3">
+                        @foreach ($recommendations as $recommendation)
+                            <x-card class="!p-4">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div>
+                                        <p class="text-[10px] font-bold uppercase text-raga-primary">{{ $recommendation->category }}</p>
+                                        <p class="mt-0.5 font-bold text-gray-900">{{ $recommendation->title }}</p>
+                                        <p class="mt-1 text-sm text-gray-600">{{ $recommendation->message }}</p>
+                                    </div>
+                                    <span class="shrink-0 text-xs text-gray-400">{{ $recommendation->date->translatedFormat('d M') }}</span>
+                                </div>
+                            </x-card>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
+
+            {{-- 6. INSIGHTS --}}
             <section>
                 <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">✨ Insights</h3>
                 @if (count($insights) > 0)

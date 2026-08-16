@@ -17,5 +17,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/health', [McpController::class, 'health'])->name('health');
         Route::get('/running', [McpController::class, 'running'])->name('running');
         Route::get('/trail', [McpController::class, 'trail'])->name('trail');
+        Route::post('/training-plan', [McpController::class, 'saveTrainingPlan'])->name('training-plan.store');
+        Route::post('/recommendation', [McpController::class, 'saveRecommendation'])->name('recommendation.store');
     });
 });

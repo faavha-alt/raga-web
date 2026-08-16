@@ -16,11 +16,14 @@ if (!TOKEN) {
   process.exit(1);
 }
 
-async function fetchJson(path) {
+async function fetchJson(path, options = {}) {
   const res = await fetch(BASE_URL + path, {
+    ...options,
     headers: {
       Authorization: `Bearer ${TOKEN}`,
       Accept: 'application/json',
+      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+      ...options.headers,
     },
   });
 
@@ -31,6 +34,10 @@ async function fetchJson(path) {
   }
 
   return JSON.parse(body);
+}
+
+function postJson(path, data) {
+  return fetchJson(path, { method: 'POST', body: JSON.stringify(data) });
 }
 
 function jsonContent(data) {
@@ -83,6 +90,56 @@ server.registerTool(
 
     return jsonContent(Object.fromEntries(entries));
   }
+);
+
+const plannedWorkoutSchema = z.object({
+  type: z.string().describe('e.g. running, trail_running, cycling, strength'),
+  duration_minutes: z.number().optional(),
+  distance_meters: z.number().optional(),
+  target_pace_seconds_per_km: z.number().optional(),
+  target_heart_rate_zone: z.number().int().min(1).max(5).optional(),
+  intensity: z.string().optional().describe('e.g. easy, moderate, hard'),
+  warm_up: z.string().optional(),
+  main_set: z.string().optional(),
+  cool_down: z.string().optional(),
+  notes: z.string().optional(),
+});
+
+server.registerTool(
+  'raga_save_training_plan',
+  {
+    description: "Save a structured multi-day training plan into RAGA so it shows up on the user's Training Calendar. Organize it as weeks, each with days, each with zero or more planned workouts. Call this once you and the user have agreed on a plan — don't call it speculatively.",
+    inputSchema: {
+      name: z.string().describe('Short name for the plan, e.g. "Half Marathon Base Build".'),
+      start_date: z.string().describe('YYYY-MM-DD'),
+      target_date: z.string().describe('YYYY-MM-DD'),
+      weeks: z.array(z.object({
+        week_number: z.number().int().min(1),
+        start_date: z.string(),
+        end_date: z.string(),
+        days: z.array(z.object({
+          date: z.string(),
+          workouts: z.array(plannedWorkoutSchema).optional().describe('Leave empty for a rest day.'),
+        })),
+      })),
+    },
+  },
+  async (args) => jsonContent(await postJson('/mcp/training-plan', args))
+);
+
+server.registerTool(
+  'raga_save_recommendation',
+  {
+    description: 'Save a short, dated recommendation into RAGA — shows up on the user\'s Dashboard. Use for a single piece of advice (e.g. "take it easy today"), not a multi-day plan (use raga_save_training_plan for that).',
+    inputSchema: {
+      date: z.string().describe('YYYY-MM-DD, the date this recommendation applies to.'),
+      category: z.string().describe('Short category label, e.g. "recovery", "training", "health".'),
+      title: z.string(),
+      message: z.string(),
+      priority: z.number().int().min(0).max(10).optional().describe('Higher = more important. Optional, defaults to 0.'),
+    },
+  },
+  async (args) => jsonContent(await postJson('/mcp/recommendation', args))
 );
 
 const transport = new StdioServerTransport();

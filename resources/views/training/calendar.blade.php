@@ -33,13 +33,18 @@
                     @foreach ($calendar['days'] as $day)
                         <a
                             href="{{ route('activities', ['from' => $day['date'], 'to' => $day['date']]) }}"
-                            class="aspect-square rounded-xl flex flex-col items-center justify-center gap-0.5 text-xs transition hover:ring-2 hover:ring-raga-primary/40
+                            class="relative aspect-square rounded-xl flex flex-col items-center justify-center gap-0.5 text-xs transition hover:ring-2 hover:ring-raga-primary/40
                                 {{ $day['is_today'] ? 'ring-2 ring-raga-primary' : '' }}
                                 {{ $day['in_month'] && count($day['workouts']) > 0 ? 'bg-emerald-50' : ($day['in_month'] && $day['is_rest_day'] ? 'bg-gray-50' : '') }}"
                         >
                             <span class="font-bold {{ $day['in_month'] ? 'text-gray-700' : 'text-gray-300' }}">{{ $day['day'] }}</span>
                             @if (count($day['workouts']) > 0)
                                 <span class="text-[10px] leading-none">{{ $day['workouts'][0]['icon'] }}</span>
+                            @elseif (count($day['planned_workouts']) > 0)
+                                <span class="text-[10px] leading-none opacity-50">{{ $day['planned_workouts'][0]['icon'] }}</span>
+                            @endif
+                            @if (count($day['planned_workouts']) > 0)
+                                <span class="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-raga-accent" title="Ada rencana latihan"></span>
                             @endif
                         </a>
                     @endforeach

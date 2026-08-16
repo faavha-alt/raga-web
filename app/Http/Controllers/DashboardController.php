@@ -30,6 +30,7 @@ class DashboardController extends Controller
             'week' => $this->weeklyTraining->summaryForUser($user),
             'trendSeries' => $this->healthTrend->allSeries($user),
             'insights' => $this->insights->generate($user),
+            'recommendations' => $user->recommendations()->where('is_read', false)->latest('date')->take(5)->get(),
         ]);
     }
 }

@@ -20,11 +20,13 @@ use App\Services\Training\TrainingStatusEngine;
 use App\Services\Training\TrainingVolumeSeriesService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
- * Read-only, per-user JSON views onto the same services the web controllers
- * use — built for external tool-callers (the MCP server) that need
- * structured data to reason about a plan, not a page to render.
+ * Per-user JSON views onto the same services the web controllers use, plus
+ * write-back endpoints — built for external tool-callers (the MCP server)
+ * that need structured data to reason about a plan, and a way to hand a
+ * plan back to RAGA once they've built one, not just read from it.
  */
 class McpController extends Controller
 {
@@ -168,6 +170,104 @@ class McpController extends Controller
             'moving_seconds_90d' => $recentTrailRuns->sum(fn ($workout) => $movingTime->movingSecondsForWorkout($workout)),
             'repeated_routes' => count($routeGrouping->repeatedRoutes($user)),
             'recent_runs' => $recentTrailRuns->take(10)->values(),
+        ];
+    }
+
+    public function saveTrainingPlan(Request $request): array
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'start_date' => ['required', 'date'],
+            'target_date' => ['required', 'date', 'after_or_equal:start_date'],
+            'weeks' => ['required', 'array', 'min:1'],
+            'weeks.*.week_number' => ['required', 'integer', 'min:1'],
+            'weeks.*.start_date' => ['required', 'date'],
+            'weeks.*.end_date' => ['required', 'date', 'after_or_equal:weeks.*.start_date'],
+            'weeks.*.days' => ['required', 'array', 'min:1'],
+            'weeks.*.days.*.date' => ['required', 'date'],
+            'weeks.*.days.*.workouts' => ['sometimes', 'array'],
+            'weeks.*.days.*.workouts.*.type' => ['required', 'string', 'max:255'],
+            'weeks.*.days.*.workouts.*.duration_minutes' => ['nullable', 'numeric', 'min:0'],
+            'weeks.*.days.*.workouts.*.distance_meters' => ['nullable', 'numeric', 'min:0'],
+            'weeks.*.days.*.workouts.*.target_pace_seconds_per_km' => ['nullable', 'numeric', 'min:0'],
+            'weeks.*.days.*.workouts.*.target_heart_rate_zone' => ['nullable', 'integer', 'min:1', 'max:5'],
+            'weeks.*.days.*.workouts.*.intensity' => ['nullable', 'string', 'max:255'],
+            'weeks.*.days.*.workouts.*.warm_up' => ['nullable', 'string'],
+            'weeks.*.days.*.workouts.*.main_set' => ['nullable', 'string'],
+            'weeks.*.days.*.workouts.*.cool_down' => ['nullable', 'string'],
+            'weeks.*.days.*.workouts.*.notes' => ['nullable', 'string'],
+        ]);
+
+        $user = $request->user();
+
+        $plan = DB::transaction(function () use ($user, $data) {
+            $plan = $user->trainingPlans()->create([
+                'name' => $data['name'],
+                'start_date' => $data['start_date'],
+                'target_date' => $data['target_date'],
+                'status' => 'active',
+            ]);
+
+            foreach ($data['weeks'] as $weekData) {
+                $week = $plan->weeks()->create([
+                    'week_number' => $weekData['week_number'],
+                    'start_date' => $weekData['start_date'],
+                    'end_date' => $weekData['end_date'],
+                ]);
+
+                foreach ($weekData['days'] as $dayData) {
+                    $day = $week->days()->create(['date' => $dayData['date']]);
+
+                    foreach ($dayData['workouts'] ?? [] as $workoutData) {
+                        $day->plannedWorkouts()->create([
+                            'type' => $workoutData['type'],
+                            'duration_minutes' => $workoutData['duration_minutes'] ?? null,
+                            'distance_meters' => $workoutData['distance_meters'] ?? null,
+                            'target_pace_seconds_per_km' => $workoutData['target_pace_seconds_per_km'] ?? null,
+                            'target_heart_rate_zone' => $workoutData['target_heart_rate_zone'] ?? null,
+                            'intensity' => $workoutData['intensity'] ?? null,
+                            'warm_up' => $workoutData['warm_up'] ?? null,
+                            'main_set' => $workoutData['main_set'] ?? null,
+                            'cool_down' => $workoutData['cool_down'] ?? null,
+                            'notes' => $workoutData['notes'] ?? null,
+                            'status' => 'planned',
+                        ]);
+                    }
+                }
+            }
+
+            return $plan;
+        });
+
+        return [
+            'training_plan_id' => $plan->id,
+            'weeks_created' => count($data['weeks']),
+            'view_url' => url('/training/calendar'),
+        ];
+    }
+
+    public function saveRecommendation(Request $request): array
+    {
+        $data = $request->validate([
+            'date' => ['required', 'date'],
+            'category' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'string', 'max:255'],
+            'message' => ['required', 'string'],
+            'priority' => ['sometimes', 'integer', 'min:0', 'max:10'],
+        ]);
+
+        $recommendation = $request->user()->recommendations()->create([
+            'date' => $data['date'],
+            'category' => $data['category'],
+            'title' => $data['title'],
+            'message' => $data['message'],
+            'priority' => $data['priority'] ?? 0,
+            'source' => 'ai',
+        ]);
+
+        return [
+            'recommendation_id' => $recommendation->id,
+            'view_url' => url('/dashboard'),
         ];
     }
 }

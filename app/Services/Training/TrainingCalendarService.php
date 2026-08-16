@@ -2,6 +2,7 @@
 
 namespace App\Services\Training;
 
+use App\Models\PlannedWorkout;
 use App\Models\User;
 use App\Support\ActivityTypeIcon;
 use Illuminate\Support\Carbon;
@@ -13,7 +14,7 @@ class TrainingCalendarService
      *     month_label: string,
      *     prev_month: string,
      *     next_month: string,
-     *     days: list<array{date:string,day:int,in_month:bool,is_today:bool,is_rest_day:bool,workouts:list<array{id:int,type:string,icon:string,distance_meters:?float}>}>,
+     *     days: list<array{date:string,day:int,in_month:bool,is_today:bool,is_rest_day:bool,workouts:list<array{id:int,type:string,icon:string,distance_meters:?float}>,planned_workouts:list<array{type:string,icon:string}>}>,
      *     summary: array{total_days:int,active_days:int,rest_days:int,total_distance_meters:float,total_duration_seconds:int},
      * }
      */
@@ -29,6 +30,15 @@ class TrainingCalendarService
             ->whereBetween('start_date', [$monthStart, $monthEnd->copy()->endOfDay()])
             ->get()
             ->groupBy(fn ($w) => $w->start_date->toDateString());
+
+        $plannedByDate = PlannedWorkout::query()
+            ->whereHas('day', function ($query) use ($user, $monthStart, $monthEnd) {
+                $query->whereBetween('date', [$monthStart, $monthEnd])
+                    ->whereHas('week.plan', fn ($q) => $q->where('user_id', $user->id));
+            })
+            ->with('day')
+            ->get()
+            ->groupBy(fn ($pw) => $pw->day->date->toDateString());
 
         $today = Carbon::today();
         $days = [];
@@ -62,6 +72,10 @@ class TrainingCalendarService
                     'type' => $w->type,
                     'icon' => ActivityTypeIcon::icon($w->type),
                     'distance_meters' => $w->distance_meters,
+                ])->values()->all(),
+                'planned_workouts' => $plannedByDate->get($dateKey, collect())->map(fn ($pw) => [
+                    'type' => $pw->type,
+                    'icon' => ActivityTypeIcon::icon($pw->type),
                 ])->values()->all(),
             ];
 

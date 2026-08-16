@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Mcp;
 use App\Http\Controllers\Api\McpController;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 /**
@@ -48,6 +49,78 @@ class McpTransportController extends Controller
         'raga_full_context' => [
             'method' => null,
             'description' => 'Everything above (overview, training, recovery, health, running, trail) in one call. Use this when building or revising a full training/recovery plan, so you have the complete picture instead of guessing which slice you need.',
+        ],
+        'raga_save_training_plan' => [
+            'method' => 'saveTrainingPlan',
+            'readable' => false,
+            'description' => "Save a structured multi-day training plan into RAGA so it shows up on the user's Training Calendar. Organize it as weeks, each with days, each with zero or more planned workouts. Call this once you and the user have agreed on a plan — don't call it speculatively.",
+            'inputSchema' => [
+                'type' => 'object',
+                'properties' => [
+                    'name' => ['type' => 'string', 'description' => 'Short name for the plan, e.g. "Half Marathon Base Build".'],
+                    'start_date' => ['type' => 'string', 'format' => 'date'],
+                    'target_date' => ['type' => 'string', 'format' => 'date'],
+                    'weeks' => [
+                        'type' => 'array',
+                        'items' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'week_number' => ['type' => 'integer', 'minimum' => 1],
+                                'start_date' => ['type' => 'string', 'format' => 'date'],
+                                'end_date' => ['type' => 'string', 'format' => 'date'],
+                                'days' => [
+                                    'type' => 'array',
+                                    'items' => [
+                                        'type' => 'object',
+                                        'properties' => [
+                                            'date' => ['type' => 'string', 'format' => 'date'],
+                                            'workouts' => [
+                                                'type' => 'array',
+                                                'description' => 'Leave empty for a rest day.',
+                                                'items' => [
+                                                    'type' => 'object',
+                                                    'properties' => [
+                                                        'type' => ['type' => 'string', 'description' => 'e.g. running, trail_running, cycling, strength'],
+                                                        'duration_minutes' => ['type' => 'number'],
+                                                        'distance_meters' => ['type' => 'number'],
+                                                        'target_pace_seconds_per_km' => ['type' => 'number'],
+                                                        'target_heart_rate_zone' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 5],
+                                                        'intensity' => ['type' => 'string', 'description' => 'e.g. easy, moderate, hard'],
+                                                        'warm_up' => ['type' => 'string'],
+                                                        'main_set' => ['type' => 'string'],
+                                                        'cool_down' => ['type' => 'string'],
+                                                        'notes' => ['type' => 'string'],
+                                                    ],
+                                                    'required' => ['type'],
+                                                ],
+                                            ],
+                                        ],
+                                        'required' => ['date'],
+                                    ],
+                                ],
+                            ],
+                            'required' => ['week_number', 'start_date', 'end_date', 'days'],
+                        ],
+                    ],
+                ],
+                'required' => ['name', 'start_date', 'target_date', 'weeks'],
+            ],
+        ],
+        'raga_save_recommendation' => [
+            'method' => 'saveRecommendation',
+            'readable' => false,
+            'description' => 'Save a short, dated recommendation into RAGA — shows up on the user\'s Dashboard. Use for a single piece of advice (e.g. "take it easy today"), not a multi-day plan (use raga_save_training_plan for that).',
+            'inputSchema' => [
+                'type' => 'object',
+                'properties' => [
+                    'date' => ['type' => 'string', 'format' => 'date', 'description' => 'Date this recommendation applies to.'],
+                    'category' => ['type' => 'string', 'description' => 'Short category label, e.g. "recovery", "training", "health".'],
+                    'title' => ['type' => 'string'],
+                    'message' => ['type' => 'string'],
+                    'priority' => ['type' => 'integer', 'minimum' => 0, 'maximum' => 10, 'description' => 'Higher = more important. Optional, defaults to 0.'],
+                ],
+                'required' => ['date', 'category', 'title', 'message'],
+            ],
         ],
     ];
 
@@ -108,7 +181,7 @@ class McpTransportController extends Controller
             $tools[] = [
                 'name' => $name,
                 'description' => $tool['description'],
-                'inputSchema' => ['type' => 'object', 'properties' => (object) []],
+                'inputSchema' => $tool['inputSchema'] ?? ['type' => 'object', 'properties' => (object) []],
             ];
         }
 
@@ -124,10 +197,16 @@ class McpTransportController extends Controller
             throw new \RuntimeException("Unknown tool: {$name}", -32602);
         }
 
+        $request->merge($params['arguments'] ?? []);
+
         try {
             $data = $tool['method'] === null
                 ? $this->fullContext($request, $mcp)
                 : app()->call([$mcp, $tool['method']], ['request' => $request]);
+        } catch (ValidationException $e) {
+            $errors = collect($e->errors())->map(fn ($msgs, $field) => "{$field}: ".implode(' ', $msgs))->implode("\n");
+
+            return ['content' => [['type' => 'text', 'text' => $errors]], 'isError' => true];
         } catch (Throwable $e) {
             return ['content' => [['type' => 'text', 'text' => $e->getMessage()]], 'isError' => true];
         }
@@ -140,7 +219,7 @@ class McpTransportController extends Controller
         $context = [];
 
         foreach (self::TOOLS as $name => $tool) {
-            if ($tool['method'] !== null) {
+            if ($tool['method'] !== null && ($tool['readable'] ?? true)) {
                 $context[$name] = app()->call([$mcp, $tool['method']], ['request' => $request]);
             }
         }
