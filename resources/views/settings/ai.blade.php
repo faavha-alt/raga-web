@@ -49,7 +49,7 @@
                         <x-text-input id="model" type="text" name="model" :value="old('model', $setting?->model)"
                             placeholder="Kosongkan untuk pakai default provider" />
                         <p class="mt-1.5 text-xs text-gray-400">
-                            Default: Claude → <code>claude-opus-5</code>, Gemini → <code>gemini-3.7-flash</code>.
+                            Default: Claude → <code>claude-opus-5</code>, Gemini → <code>gemini-2.5-flash</code>.
                         </p>
                         <x-input-error :messages="$errors->get('model')" class="mt-2" />
                     </div>

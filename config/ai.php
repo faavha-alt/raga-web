@@ -20,7 +20,7 @@ return [
         ],
         'gemini' => [
             'label' => 'Gemini (Google)',
-            'default_model' => 'gemini-3.7-flash',
+            'default_model' => 'gemini-2.5-flash',
         ],
     ],
 
