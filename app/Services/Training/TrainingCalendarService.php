@@ -74,8 +74,18 @@ class TrainingCalendarService
                     'distance_meters' => $w->distance_meters,
                 ])->values()->all(),
                 'planned_workouts' => $plannedByDate->get($dateKey, collect())->map(fn ($pw) => [
+                    'id' => $pw->id,
                     'type' => $pw->type,
                     'icon' => ActivityTypeIcon::icon($pw->type),
+                    'duration_minutes' => $pw->duration_minutes,
+                    'distance_meters' => $pw->distance_meters,
+                    'intensity' => $pw->intensity,
+                    'target_heart_rate_zone' => $pw->target_heart_rate_zone,
+                    'warm_up' => $pw->warm_up,
+                    'main_set' => $pw->main_set,
+                    'cool_down' => $pw->cool_down,
+                    'notes' => $pw->notes,
+                    'status' => $pw->status,
                 ])->values()->all(),
             ];
 
