@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AiController;
+use App\Http\Controllers\AiSettingsController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GarminConnectionController;
@@ -64,6 +65,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/connect', [GarminConnectionController::class, 'connect'])->name('connect');
         Route::post('/sync', [GarminConnectionController::class, 'sync'])->name('sync');
         Route::post('/disconnect', [GarminConnectionController::class, 'disconnect'])->name('disconnect');
+    });
+
+    Route::prefix('settings/ai')->name('settings.ai.')->group(function () {
+        Route::get('/', [AiSettingsController::class, 'show'])->name('show');
+        Route::post('/', [AiSettingsController::class, 'update'])->name('update');
+        Route::delete('/', [AiSettingsController::class, 'destroy'])->name('destroy');
     });
 });
 

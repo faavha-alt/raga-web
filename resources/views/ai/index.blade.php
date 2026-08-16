@@ -10,8 +10,11 @@
         <div class="px-4 sm:px-6 lg:px-8">
             @if (! $configured)
                 <x-card class="text-center py-16">
-                    <p class="text-lg font-bold text-gray-900 dark:text-gray-100">AI Coach belum aktif</p>
-                    <p class="mt-2 text-gray-500 dark:text-gray-400">ANTHROPIC_API_KEY belum diatur di server.</p>
+                    <p class="text-lg font-bold text-gray-900 dark:text-gray-100">AI Coach belum diatur</p>
+                    <p class="mt-2 text-gray-500 dark:text-gray-400">Masukkan API key kamu sendiri (Claude atau Gemini) untuk mulai chat.</p>
+                    <a href="{{ route('settings.ai.show') }}" class="mt-5 inline-block rounded-full bg-raga-primary px-6 py-2.5 text-sm font-bold text-white hover:opacity-90 transition">
+                        Atur API Key →
+                    </a>
                 </x-card>
             @else
                 <div
@@ -118,11 +121,16 @@
                                         body: JSON.stringify({ message: text, conversation_id: this.conversationId }),
                                     });
 
+                                    const data = await res.json();
+
                                     if (!res.ok) {
-                                        throw new Error('request_failed');
+                                        const msg = data.error === 'not_configured'
+                                            ? data.message + ' (buka Settings > AI Coach)'
+                                            : (data.message || 'Maaf, ada masalah saat menghubungi AI Coach. Coba lagi sebentar lagi.');
+                                        this.messages.push({ role: 'assistant', content: msg });
+                                        return;
                                     }
 
-                                    const data = await res.json();
                                     this.conversationId = data.conversation_id;
                                     this.messages.push({ role: 'assistant', content: data.reply });
 

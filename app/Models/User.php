@@ -78,6 +78,11 @@ class User extends Authenticatable
         return $this->hasMany(AiConversation::class);
     }
 
+    public function aiSetting(): HasOne
+    {
+        return $this->hasOne(AiSetting::class);
+    }
+
     public function workouts(): HasMany
     {
         return $this->hasMany(Workout::class);

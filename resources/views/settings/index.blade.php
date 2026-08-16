@@ -19,6 +19,14 @@
                         <span class="text-xs font-bold uppercase tracking-wide text-gray-400">Not connected</span>
                     @endif
                 </a>
+                <a href="{{ route('settings.ai.show') }}" class="flex items-center justify-between px-6 py-4 font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    <span>🤖 AI Coach</span>
+                    @if (auth()->user()->aiSetting?->api_key)
+                        <span class="text-xs font-bold uppercase tracking-wide text-raga-excellent">Configured</span>
+                    @else
+                        <span class="text-xs font-bold uppercase tracking-wide text-gray-400">Not configured</span>
+                    @endif
+                </a>
                 @foreach ($rows as $row)
                     <div class="px-6 py-4 text-gray-400 dark:text-gray-500">{{ $row }}</div>
                 @endforeach

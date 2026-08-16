@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Services\Ai\AiCoachService;
+use App\Services\Ai\AiNotConfiguredException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Throwable;
 
 class AiController extends Controller
 {
@@ -27,11 +30,11 @@ class AiController extends Controller
             'conversations' => $conversations,
             'conversation' => $conversation,
             'messages' => $messages,
-            'configured' => filled(config('services.anthropic.api_key')),
+            'configured' => filled($user->aiSetting?->api_key),
         ]);
     }
 
-    public function sendMessage(Request $request): array
+    public function sendMessage(Request $request): JsonResponse
     {
         $data = $request->validate([
             'message' => ['required', 'string', 'max:2000'],
@@ -46,13 +49,21 @@ class AiController extends Controller
                 'title' => str($data['message'])->limit(50)->toString(),
             ]);
 
-        $reply = $this->coach->reply($user, $conversation, $data['message']);
+        try {
+            $reply = $this->coach->reply($user, $conversation, $data['message']);
+        } catch (AiNotConfiguredException $e) {
+            return response()->json(['error' => 'not_configured', 'message' => $e->getMessage()], 422);
+        } catch (Throwable $e) {
+            report($e);
+
+            return response()->json(['error' => 'provider_error', 'message' => 'AI Coach sedang bermasalah, coba lagi sebentar lagi.'], 502);
+        }
 
         $conversation->touch();
 
-        return [
+        return response()->json([
             'conversation_id' => $conversation->id,
             'reply' => $reply,
-        ];
+        ]);
     }
 }

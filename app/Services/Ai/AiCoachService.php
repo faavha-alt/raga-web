@@ -2,21 +2,19 @@
 
 namespace App\Services\Ai;
 
-use Anthropic\Client;
 use App\Models\AiConversation;
 use App\Models\User;
-use Illuminate\Support\Facades\Log;
+use App\Services\Ai\Providers\AiProviderFactory;
 
 /**
- * Talks to Claude on behalf of the in-app AI coach. Every call rebuilds the
- * user's data context fresh (via AiContextBuilder) and puts it in the system
- * prompt, never in a raw form the model has to go dig for — the model only
- * ever sees the same structured summaries the app's own pages render from.
+ * Talks to whichever AI provider the user configured in Settings > AI Coach
+ * on their behalf. Every call rebuilds the user's data context fresh (via
+ * AiContextBuilder) and puts it in the system prompt, never in a raw form
+ * the model has to go dig for — the model only ever sees the same structured
+ * summaries the app's own pages render from.
  */
 class AiCoachService
 {
-    private const MAX_TOKENS = 2048;
-
     private const HISTORY_TURNS = 20;
 
     private const SYSTEM_PROMPT = <<<'PROMPT'
@@ -60,14 +58,16 @@ class AiCoachService
         %s
         PROMPT;
 
-    public function __construct(
-        private Client $client,
-        private AiContextBuilder $contextBuilder,
-        private string $model,
-    ) {}
+    public function __construct(private AiContextBuilder $contextBuilder) {}
 
     public function reply(User $user, AiConversation $conversation, string $userMessage): string
     {
+        $setting = $user->aiSetting;
+
+        if (! $setting || blank($setting->api_key)) {
+            throw new AiNotConfiguredException('AI Coach belum diatur. Buka Settings > AI Coach untuk memasukkan API key.');
+        }
+
         $context = $this->contextBuilder->buildFor($user);
         $system = sprintf(self::SYSTEM_PROMPT, json_encode($context, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
@@ -86,25 +86,8 @@ class AiCoachService
             ->values()
             ->all();
 
-        try {
-            $response = $this->client->messages->create(
-                model: $this->model,
-                maxTokens: self::MAX_TOKENS,
-                system: $system,
-                messages: $history,
-            );
-        } catch (\Throwable $e) {
-            Log::error('AI coach request failed', ['error' => $e->getMessage()]);
-
-            throw $e;
-        }
-
-        $reply = '';
-        foreach ($response->content as $block) {
-            if ($block->type === 'text') {
-                $reply .= $block->text;
-            }
-        }
+        $provider = AiProviderFactory::make($setting->provider, $setting->api_key, $setting->model);
+        $reply = trim($provider->sendMessage($system, $history));
 
         if ($reply === '') {
             $reply = "I couldn't generate a response for that — try rephrasing your question.";
