@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use Anthropic\Client as AnthropicClient;
 use App\Http\Responses\OauthAuthorizationViewResponse;
+use App\Services\Ai\AiCoachService;
 use App\Services\HealthData\HealthDataSource;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Contracts\AuthorizationViewResponse;
@@ -23,6 +25,14 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(AuthorizationViewResponse::class, OauthAuthorizationViewResponse::class);
+
+        $this->app->singleton(AnthropicClient::class, fn () => new AnthropicClient(
+            apiKey: config('services.anthropic.api_key'),
+        ));
+
+        $this->app->when(AiCoachService::class)
+            ->needs('$model')
+            ->give(fn () => config('services.anthropic.model'));
     }
 
     /**

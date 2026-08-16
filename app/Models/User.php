@@ -73,6 +73,11 @@ class User extends Authenticatable
         return $this->hasMany(Recommendation::class);
     }
 
+    public function aiConversations(): HasMany
+    {
+        return $this->hasMany(AiConversation::class);
+    }
+
     public function workouts(): HasMany
     {
         return $this->hasMany(Workout::class);

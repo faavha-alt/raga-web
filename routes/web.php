@@ -56,6 +56,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->whereIn('pair', (new RelationshipCatalog)->slugs())
         ->name('analytics.relationship');
     Route::get('/ai', [AiController::class, 'index'])->name('ai');
+    Route::post('/ai/messages', [AiController::class, 'sendMessage'])->name('ai.messages.store');
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
 
     Route::prefix('settings/garmin')->name('settings.garmin.')->group(function () {
