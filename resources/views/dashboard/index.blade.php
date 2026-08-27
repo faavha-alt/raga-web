@@ -49,12 +49,12 @@
                 </a>
 
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    <x-metric-tile icon="😴" label="Sleep" :value="$today['sleep']['minutes'] ? intdiv((int) $today['sleep']['minutes'], 60).'h '.((int) $today['sleep']['minutes'] % 60).'m' : null" />
-                    <x-metric-tile icon="💓" label="HRV" :value="$today['hrv'] !== null ? round($today['hrv']) : null" unit="ms" />
+                    <x-metric-tile icon="👟" label="Steps" :value="$today['steps'] !== null ? number_format((int) $today['steps']) : null" />
                     <x-metric-tile icon="❤️" label="Resting HR" :value="$today['resting_heart_rate'] !== null ? round($today['resting_heart_rate']) : null" unit="bpm" />
                     <x-metric-tile icon="🔋" label="Body Battery" :value="($today['body_battery']['charged'] !== null || $today['body_battery']['drained'] !== null) ? '+'.round($today['body_battery']['charged'] ?? 0).' / -'.round($today['body_battery']['drained'] ?? 0) : null" />
                     <x-metric-tile icon="🧠" label="Stress" :value="$today['stress'] !== null ? round($today['stress']) : null" />
                     <x-metric-tile icon="🔥" label="Training Load" :value="round($today['training_load'])" unit="kcal (est.)" />
+                    <x-metric-tile icon="🥗" label="Active Calories" :value="$today['active_calories'] !== null ? number_format(round($today['active_calories'])).' kcal' : null" />
                 </div>
             </section>
 

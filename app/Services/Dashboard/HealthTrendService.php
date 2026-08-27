@@ -13,9 +13,9 @@ class HealthTrendService
     private const METRICS = [
         'resting_hr' => ['label' => 'Resting HR', 'unit' => 'bpm', 'color' => '#2a78d6', 'decimals' => 0],
         'training_load' => ['label' => 'Training Load (est.)', 'unit' => 'kcal', 'color' => '#eb6834', 'decimals' => 0],
-        'hrv' => ['label' => 'HRV', 'unit' => 'ms', 'color' => '#1baf7a', 'decimals' => 0],
         'body_battery' => ['label' => 'Body Battery (net)', 'unit' => 'pts', 'color' => '#eda100', 'decimals' => 0],
-        'sleep' => ['label' => 'Sleep', 'unit' => 'hrs', 'color' => '#e87ba4', 'decimals' => 1],
+        // HRV & sleep sengaja tidak disertakan — mayoritas pengguna tidak memakai
+        // jam saat tidur sehingga seri datanya hampir selalu kosong.
     ];
 
     public function __construct(private TrainingLoadCalculator $trainingLoad) {}
@@ -40,8 +40,6 @@ class HealthTrendService
     {
         return match ($metric) {
             'resting_hr' => $this->vitalSeries($user, 'resting_heart_rate', $since),
-            'hrv' => $this->vitalSeries($user, 'hrv_overnight_avg', $since),
-            'sleep' => $this->sleepSeries($user, $since),
             'body_battery' => $this->bodyBatterySeries($user, $since),
             'training_load' => $this->trainingLoadSeries($user, $since),
             default => [],

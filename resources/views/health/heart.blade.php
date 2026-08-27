@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <a href="{{ route('health') }}" class="text-sm font-bold text-gray-400 hover:text-gray-600 transition">← Health</a>
-        <h2 class="mt-1 text-2xl font-extrabold text-gray-900 leading-tight">❤️ Heart &amp; HRV</h2>
+        <h2 class="mt-1 text-2xl font-extrabold text-gray-900 leading-tight">❤️ Heart Rate</h2>
     </x-slot>
 
     <div class="py-6 pb-16">

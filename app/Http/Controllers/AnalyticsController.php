@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AnalyticsController extends Controller
 {
-    private const HEALTH_METRICS = ['resting_hr', 'hrv', 'stress', 'sleep', 'body_battery_net', 'spo2'];
+    private const HEALTH_METRICS = ['resting_hr', 'stress', 'body_battery_net', 'spo2'];
 
     private const TRAINING_VOLUME_METRICS = ['distance', 'duration', 'elevation_gain', 'activity_count'];
 

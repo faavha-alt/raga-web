@@ -15,7 +15,7 @@ class AnalyticsTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const RELATIONSHIP_SLUGS = ['sleep-recovery', 'training-recovery', 'pace-heart-rate', 'hrv-sleep', 'training-load-performance'];
+    private const RELATIONSHIP_SLUGS = ['training-recovery', 'pace-heart-rate', 'training-load-performance'];
 
     public function test_all_analytics_pages_load_with_no_data(): void
     {
@@ -79,7 +79,7 @@ class AnalyticsTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/analytics/sleep-recovery');
+        $response = $this->actingAs($user)->get('/analytics/training-recovery');
 
         $response->assertOk();
         $response->assertSee('Korelasi bukan bukti sebab-akibat', false);

@@ -11,7 +11,7 @@ use Illuminate\View\View;
 class HealthController extends Controller
 {
     private const OVERVIEW_METRICS = [
-        'resting_hr', 'avg_hr', 'max_hr', 'hrv', 'stress',
+        'resting_hr', 'avg_hr', 'max_hr', 'stress',
         'body_battery_net', 'respiration', 'spo2', 'steps', 'calories', 'recovery_time',
         'garmin_readiness',
     ];
@@ -44,7 +44,7 @@ class HealthController extends Controller
 
     public function heart(Request $request): View
     {
-        return $this->detailPage($request, ['resting_hr', 'avg_hr', 'max_hr', 'hrv'], 'health.heart');
+        return $this->detailPage($request, ['resting_hr', 'avg_hr', 'max_hr'], 'health.heart');
     }
 
     public function stress(Request $request): View

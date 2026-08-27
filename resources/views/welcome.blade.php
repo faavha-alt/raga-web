@@ -56,7 +56,7 @@
                 </h1>
 
                 <p class="mt-6 text-lg text-white/60 max-w-xl mx-auto">
-                    Satu tempat buat nge-track kesehatan &amp; latihan kamu — dari sleep, recovery, sampai training load. Ditenagai data HealthKit &amp; Garmin, bukan tebak-tebakan.
+                    Satu tempat buat nge-track kesehatan &amp; latihan kamu — dari recovery, detak jantung, sampai training load. Ditenagai data HealthKit &amp; Garmin, bukan tebak-tebakan.
                 </p>
 
                 <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -86,9 +86,9 @@
                         <p class="mt-1 text-sm text-white/50">Pantau intensitas latihan biar nggak overtraining atau malah kurang gerak.</p>
                     </div>
                     <div class="rounded-3xl border border-white/10 bg-white/5 backdrop-blur p-6">
-                        <div class="text-2xl">🌙</div>
-                        <h3 class="mt-3 font-bold text-white">Sleep &amp; Recovery</h3>
-                        <p class="mt-1 text-sm text-white/50">Skor recovery harian dari HRV, sleep, dan detak jantung istirahat.</p>
+                        <div class="text-2xl">🔋</div>
+                        <h3 class="mt-3 font-bold text-white">Recovery &amp; Readiness</h3>
+                        <p class="mt-1 text-sm text-white/50">Skor recovery harian dari detak jantung istirahat, body battery, stress, dan beban latihan.</p>
                     </div>
                     <div class="rounded-3xl border border-white/10 bg-white/5 backdrop-blur p-6">
                         <div class="text-2xl">✨</div>

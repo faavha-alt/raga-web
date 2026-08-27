@@ -15,7 +15,7 @@
                         <p class="text-xs font-bold uppercase tracking-wider text-gray-400">📊 Health Trends</p>
                         <a href="{{ route('analytics.health_trends') }}" class="text-xs font-bold text-raga-primary hover:text-raga-accent transition">Lihat →</a>
                     </div>
-                    <p class="text-sm text-gray-500">Tren resting HR, HRV, stress, tidur, body battery, dan SpO2.</p>
+                    <p class="text-sm text-gray-500">Tren resting HR, stress, body battery, dan training load.</p>
                 </x-card>
 
                 <x-card>

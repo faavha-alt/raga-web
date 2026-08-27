@@ -13,11 +13,11 @@ namespace App\Services\Analytics;
 class RelationshipCatalog
 {
     private const DEFINITIONS = [
-        'sleep-recovery' => ['title' => 'Sleep vs Recovery', 'key_a' => 'sleep', 'key_b' => 'recovery_score'],
         'training-recovery' => ['title' => 'Training vs Recovery', 'key_a' => 'training_load', 'key_b' => 'recovery_score'],
         'pace-heart-rate' => ['title' => 'Pace vs Heart Rate', 'key_a' => 'running_pace', 'key_b' => 'running_avg_hr'],
-        'hrv-sleep' => ['title' => 'HRV vs Sleep', 'key_a' => 'hrv', 'key_b' => 'sleep'],
         'training-load-performance' => ['title' => 'Training Load vs Performance', 'key_a' => 'training_load', 'key_b' => 'running_pace'],
+        // Sleep & HRV pairs sengaja tidak disertakan — mayoritas pengguna tidak
+        // memakai jam saat tidur, jadi kedua seri itu hampir selalu kosong.
     ];
 
     /** @return array{slug: string, title: string, key_a: string, key_b: string}|null */

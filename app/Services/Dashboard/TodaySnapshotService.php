@@ -18,6 +18,9 @@ class TodaySnapshotService
      *     body_battery: array{charged: ?float, drained: ?float},
      *     stress: ?float,
      *     training_load: float,
+     *     steps: ?int,
+     *     distance_meters: ?float,
+     *     active_calories: ?float,
      * }
      */
     public function forUser(User $user): array
@@ -53,6 +56,9 @@ class TodaySnapshotService
             ],
             'stress' => $stress?->value,
             'training_load' => $this->trainingLoad->forActivitySummary($todayActivity),
+            'steps' => $todayActivity?->steps,
+            'distance_meters' => $todayActivity?->distance_meters,
+            'active_calories' => $todayActivity?->active_calories,
         ];
     }
 
