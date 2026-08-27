@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Mcp;
 use App\Http\Controllers\Api\McpController;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -208,7 +209,14 @@ class McpTransportController extends Controller
 
             return ['content' => [['type' => 'text', 'text' => $errors]], 'isError' => true];
         } catch (Throwable $e) {
-            return ['content' => [['type' => 'text', 'text' => $e->getMessage()]], 'isError' => true];
+            Log::error('MCP tool call failed', [
+                'tool' => $name,
+                'user_id' => $request->user()?->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return ['content' => [['type' => 'text', 'text' => 'An unexpected error occurred while running this tool. Please try again.']], 'isError' => true];
         }
 
         return ['content' => [['type' => 'text', 'text' => json_encode($data, JSON_PRETTY_PRINT)]]];

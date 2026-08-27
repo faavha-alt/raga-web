@@ -1,58 +1,160 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# RAGA — Health & Training Tracker
 
-## About Laravel
+Aplikasi web untuk melacak kesehatan dan training **lari / trail running**,
+ditenagai data dari **Garmin Connect** — lengkap dengan skor recovery/readiness,
+manajemen training, analytics, dan **AI Health Coach**.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+![Laravel](https://img.shields.io/badge/Laravel-13-red?logo=laravel)
+![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?logo=php)
+![Tailwind](https://img.shields.io/badge/Tailwind-v4-38BDF8?logo=tailwindcss)
+![Tests](https://github.com/faavha-alt/raga-web/actions/workflows/ci.yml/badge.svg)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+</div>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Apa itu RAGA?
 
-## Learning Laravel
+RAGA adalah aplikasi **tracking kesehatan & training** yang mengambil data dari
+akun Garmin Connect Anda dan mengolahnya menjadi wawasan yang bisa ditindaklanjuti:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Dashboard** — snapshot kondisi hari ini + insight otomatis.
+- **Recovery & Readiness** — skor 0–100 yang transparan, dengan breakdown faktor
+  (sleep, HRV, resting HR, stress, training load, body battery).
+- **Training** — kalender, beban latihan (acute:chronic load), volume, distribusi,
+  konsistensi.
+- **Running & Trail** — performance rating, personal records, profil elevasi,
+  pengelompokan rute (peta Leaflet).
+- **Health** — heart & HRV, stress, body battery, metrik harian, tren jangka panjang.
+- **Advanced Analytics** — korelasi antar-metrik.
+- **AI Health Coach** — asisten bertenaga AI yang menjawab dengan data pribadi Anda
+  sendiri, selalu memisahkan **data vs inferensi** dan tidak mendiagnosis kondisi medis.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+`raga-web` adalah **aplikasi monolitik Laravel** — backend, web UI, dan penyedia
+data sekaligus, bukan frontend untuk API terpisah.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Fitur utama
 
-## Agentic Development
+### Sumber data: Garmin Connect
+Data diambil dari Garmin Connect melalui script Python (`scripts/garmin_sync.py`)
+yang login ke Garmin lalu mencetak JSON, kemudian diimpor ke database oleh
+`php artisan garmin:import`. Cakupan sinkronisasi meliputi aktivitas, body battery,
+VO2max, respirasi, training readiness, personal records, time-series per-workout,
+GPS route, dan lap.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### AI Health & Performance Coach
+- **BYOK** (Bring Your Own Key) per user — pilih provider **Anthropic** atau **Gemini**
+  dan masukkan API key sendiri di *Settings > AI Coach*.
+- Setiap percakapan merekonstruksi konteks data pengguna segar (`RAGA_CONTEXT`)
+  dan menyuntikkannya ke system prompt. Model hanya melihat ringkasan terstruktur
+  yang sama dengan yang dirender halaman app — bukan dump database mentah.
+- Aturan eksplisit di prompt: pisahkan **data vs inferensi**, jangan pernah
+  mendiagnosis kondisi medis, gunakan bahasa berkalibrasi, jelaskan alasan di balik
+  rekomendasi.
+
+### Server MCP (Model Context Protocol)
+Repo ini adalah backend dari tool MCP `raga`. Ada dua jalur akses:
+
+1. **Endpoint remote** — `POST /mcp` (JSON-RPC 2.0, transport Streamable HTTP)
+   dengan OAuth penuh (Passport, dynamic client registration). Klien MCP mana pun
+   bisa connect langsung by URL.
+2. **Bridge lokal stdio** — `mcp-server/index.js` yang meneruskan setiap tool ke
+   REST API hosted (`/api/*`).
+
+Tool yang tersedia: `raga_overview`, `raga_training`, `raga_recovery`,
+`raga_health`, `raga_running`, `raga_trail`, `raga_full_context`,
+`raga_save_training_plan`, `raga_save_recommendation`.
+
+## Arsitektur
+
+| Lapisan | Teknologi |
+|---------|-----------|
+| Framework | Laravel 13 (PHP 8.3) |
+| Frontend | Blade + Alpine.js + Tailwind CSS v4 + Vite |
+| Peta | Leaflet |
+| Chart | Komponen Blade buatan sendiri (`components/*-chart.blade.php`) |
+| Auth web | Laravel Breeze (session) |
+| Auth API | Sanctum (personal access token) |
+| Auth MCP remote | Passport (OAuth2 + dynamic client registration) |
+
+Struktur domain (`app/Services/<Domain>/`): `Activity`, `Ai`, `Analytics`,
+`Dashboard`, `Health`, `HealthData`, `Recovery`, `Running`, `Trail`, `Training`.
+
+## Prasyarat
+
+- PHP 8.3+ dengan ekstensi umum Laravel
+- Composer
+- Node.js 20+ & npm
+- SQLite (untuk dev lokal)
+
+## Setup lokal
 
 ```bash
-composer require laravel/boost --dev
+# 1. Install dependency
+composer install
+npm install
 
-php artisan boost:install
+# 2. Siapkan environment
+cp .env.example .env
+php artisan key:generate
+
+# 3. Database SQLite
+touch database/database.sqlite
+php artisan migrate
+
+# 4. Kunci Passport (dibutuhkan untuk endpoint MCP remote)
+php artisan passport:keys
+
+# 5. Build aset frontend
+npm run build        # produksi
+npm run dev          # development (hot reload)
+
+# 6. Jalankan
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### Sinkronisasi data Garmin (manual)
 
-## Contributing
+```bash
+# Login ke Garmin lalu cetak JSON ke stdout
+python3 scripts/garmin_login.py
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Impor JSON ke database app
+php artisan garmin:import
+```
 
-## Code of Conduct
+## Testing
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan test
+```
 
-## Security Vulnerabilities
+Test suite mencakup unit test untuk engine/calculator (recovery, training load,
+running performance, dll.) dan feature test untuk halaman serta alur auth.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## CI/CD
 
-## License
+- **`ci.yml`** — test workflow: PHP 8.4 + Node 24, `composer install` →
+  `npm run build` → `php artisan test`, jalan di setiap push ke `main` dan PR.
+- **`deploy.yml`** — deploy otomatis ke `raga.mipa.uns.ac.id` via SSH
+  (`git reset --hard` + build di server). Di-gate sebagai `workflow_run` yang hanya
+  jalan kalau CI hijau; `workflow_dispatch` tetap bisa deploy manual.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Lisensi
+
+Sumber kode repositori ini disediakan sebagai aplikasi sumber-terbuka di bawah
+lisensi MIT (lihat bagian license framework Laravel di bawah).
+
+---
+
+<details>
+<summary>Laravel boilerplate</summary>
+
+Laravel is a web application framework with expressive, elegant syntax. We
+believe development must be an enjoyable and creative experience.
+
+- [Documentation](https://laravel.com/docs)
+- [Laracasts](https://laracasts.com)
+
+Laravel is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+</details>
