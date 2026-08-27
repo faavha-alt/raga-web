@@ -3,7 +3,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 
-const BASE_URL = (process.env.RAGA_API_BASE || 'https://raga.mipa.uns.ac.id/api').replace(/\/$/, '');
+const BASE_URL = (process.env.RAGA_API_BASE || 'https://raga.favha.cloud/api').replace(/\/$/, '');
 const TOKEN = process.env.RAGA_API_TOKEN;
 
 if (!TOKEN) {

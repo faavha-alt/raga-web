@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Local MCP server exposing RAGA training/health/recovery data to Claude, via the raga.mipa.uns.ac.id API.",
+  "description": "Local MCP server exposing RAGA training/health/recovery data to Claude, via the raga.favha.cloud API.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"

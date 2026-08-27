@@ -136,7 +136,7 @@ running performance, dll.) dan feature test untuk halaman serta alur auth.
 
 - **`ci.yml`** — test workflow: PHP 8.4 + Node 24, `composer install` →
   `npm run build` → `php artisan test`, jalan di setiap push ke `main` dan PR.
-- **`deploy.yml`** — deploy otomatis ke `raga.mipa.uns.ac.id` via SSH
+- **`deploy.yml`** — deploy otomatis ke `raga.favha.cloud` via SSH
   (`git reset --hard` + build di server). Di-gate sebagai `workflow_run` yang hanya
   jalan kalau CI hijau; `workflow_dispatch` tetap bisa deploy manual.
 
