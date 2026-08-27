@@ -6,6 +6,7 @@ use App\Models\GarminConnection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Process;
 use Illuminate\View\View;
 
@@ -91,6 +92,10 @@ class GarminConnectionController extends Controller
         try {
             Artisan::call('garmin:import', ['path' => $tmpFile, '--user' => $user->id]);
             Artisan::call('recovery:calculate', ['--days' => 2, '--user' => $user->id]);
+
+            // Fresh data just landed — drop any cached AI coach context so the
+            // next message reflects the new data immediately.
+            Cache::forget('ai-context:user:'.$user->id);
         } finally {
             @unlink($tmpFile);
         }

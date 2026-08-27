@@ -15,6 +15,7 @@ use App\Services\Training\TrainingConsistencyService;
 use App\Services\Training\TrainingStatusEngine;
 use App\Services\Training\TrainingVolumeSeriesService;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Assembles a compact, structured summary of a user's stored data for the AI
@@ -28,6 +29,15 @@ class AiContextBuilder
     private const HEALTH_METRICS = ['resting_hr', 'hrv', 'stress', 'sleep', 'body_battery_net', 'spo2'];
 
     private const RECOVERY_HISTORY_DAYS = 14;
+
+    /**
+     * How long a built context is reused before it is recomputed. Building the
+     * context runs a number of expensive calculations (recovery/readiness and
+     * training-status) that also persist scores to the DB — repeating them for
+     * every message in a conversation is wasteful. A short TTL keeps the data
+     * near-real-time while collapsing back-to-back messages onto one build.
+     */
+    private const CONTEXT_TTL_SECONDS = 300;
 
     public function __construct(
         private TodaySnapshotService $todaySnapshot,
@@ -45,6 +55,16 @@ class AiContextBuilder
 
     /** @return array<string, mixed> */
     public function buildFor(User $user): array
+    {
+        return Cache::remember(
+            'ai-context:user:'.$user->id,
+            self::CONTEXT_TTL_SECONDS,
+            fn () => $this->build($user),
+        );
+    }
+
+    /** @return array<string, mixed> */
+    private function build(User $user): array
     {
         $today = Carbon::today();
         $recoverySince = $today->copy()->subDays(self::RECOVERY_HISTORY_DAYS - 1);
