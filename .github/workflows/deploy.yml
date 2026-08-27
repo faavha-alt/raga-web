@@ -1,13 +1,17 @@
 name: Deploy to raga.mipa.uns.ac.id
 
 on:
-  push:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
     branches: [main]
   workflow_dispatch: {}
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Push-triggered deploys only run when CI passed; manual dispatch always runs.
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
