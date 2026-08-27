@@ -35,6 +35,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/training/load', [TrainingController::class, 'load'])->name('training.load');
     Route::get('/training/calendar', [TrainingController::class, 'calendar'])->name('training.calendar');
     Route::get('/training/distribution', [TrainingController::class, 'distribution'])->name('training.distribution');
+    Route::get('/training/plans/{plan}', [TrainingController::class, 'plan'])->name('training.plan');
+    Route::delete('/training/plans/{plan}', [TrainingController::class, 'destroyPlan'])->name('training.plan.destroy');
     Route::get('/running', [RunningController::class, 'index'])->name('running');
     Route::get('/running/distance', [RunningController::class, 'distance'])->name('running.distance');
     Route::get('/running/pace', [RunningController::class, 'pace'])->name('running.pace');

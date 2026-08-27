@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TrainingPlan;
 use App\Services\Health\PersonalBaselineService;
 use App\Services\Training\ActivityDistributionService;
 use App\Services\Training\HeartRateZoneService;
@@ -125,6 +126,29 @@ class TrainingController extends Controller
         $hrZoneDistribution = $this->hrZones->distributionForPeriod($user, $from, $today);
 
         return view('training.distribution', compact('types', 'hrZoneDistribution', 'days'));
+    }
+
+    public function plan(Request $request, TrainingPlan $plan): View
+    {
+        $this->ensureOwnsPlan($request, $plan);
+
+        $plan->load(['weeks.days.plannedWorkouts']);
+
+        return view('training.plan', compact('plan'));
+    }
+
+    public function destroyPlan(Request $request, TrainingPlan $plan): \Illuminate\Http\RedirectResponse
+    {
+        $this->ensureOwnsPlan($request, $plan);
+
+        $plan->delete();
+
+        return redirect()->route('training')->with('status', 'Training plan dihapus.');
+    }
+
+    private function ensureOwnsPlan(Request $request, TrainingPlan $plan): void
+    {
+        abort_if($plan->user_id !== $request->user()->id, 403);
     }
 
     private function parseMonth(?string $month): Carbon

@@ -111,7 +111,7 @@
                 @else
                     <div class="space-y-4">
                         @foreach ($plans as $plan)
-                            <a href="{{ route('training.calendar') }}">
+                            <a href="{{ route('training.plan', $plan) }}">
                                 <x-card class="hover:border-raga-primary/30 transition">
                                     <div class="flex items-center justify-between">
                                         <div>
