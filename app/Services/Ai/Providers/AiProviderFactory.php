@@ -6,7 +6,7 @@ use InvalidArgumentException;
 
 class AiProviderFactory
 {
-    public static function make(string $provider, string $apiKey, ?string $model): AiProvider
+    public static function make(string $provider, string $apiKey, ?string $model, int $maxTokens = 4096): AiProvider
     {
         $resolvedModel = $model ?: config("ai.providers.{$provider}.default_model");
 
@@ -15,8 +15,8 @@ class AiProviderFactory
         }
 
         return match ($provider) {
-            'anthropic' => new AnthropicProvider($apiKey, $resolvedModel),
-            'gemini' => new GeminiProvider($apiKey, $resolvedModel),
+            'anthropic' => new AnthropicProvider($apiKey, $resolvedModel, $maxTokens),
+            'gemini' => new GeminiProvider($apiKey, $resolvedModel, $maxTokens),
             default => throw new InvalidArgumentException("Unsupported AI provider: {$provider}"),
         };
     }

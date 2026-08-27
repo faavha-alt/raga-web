@@ -37,6 +37,35 @@
                     </div>
 
                     <div>
+                        <x-input-label for="mode" value="Mode Analisis" />
+                        <div class="mt-2 grid grid-cols-2 gap-3" x-data="{ mode: '{{ old('mode', $setting?->mode ?? 'standard') }}' }">
+                            @foreach ($modes as $key => $meta)
+                                <label
+                                    class="relative cursor-pointer rounded-2xl border p-4 transition-colors select-none
+                                    {{ $key === 'pro' ? 'border-raga-primary/40 bg-raga-primary/5' : '' }}"
+                                    :class="mode === '{{ $key }}' ? 'border-raga-primary ring-1 ring-raga-primary' : 'border-gray-200 dark:border-gray-700'">
+                                    <input type="radio" name="mode" value="{{ $key }}" x-model="mode" class="sr-only" />
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-bold text-gray-900 dark:text-gray-100">{{ $meta['label'] }}</span>
+                                        @if ($key === 'pro')
+                                            <span class="rounded-full bg-raga-primary/15 px-2 py-0.5 text-xs font-bold text-raga-primary">Lebih dalam</span>
+                                        @endif
+                                    </div>
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                        @if ($key === 'pro')
+                                            Model lebih mumpuni, analisis lintas-metrik & tren yang lebih dalam, jawaban lebih panjang.
+                                            Lebih lambat & lebih boros kuota.
+                                        @else
+                                            Cepat & hemat kuota, cocok untuk obrolan ringan sehari-hari.
+                                        @endif
+                                    </p>
+                                </label>
+                            @endforeach
+                        </div>
+                        <x-input-error :messages="$errors->get('mode')" class="mt-2" />
+                    </div>
+
+                    <div>
                         <x-input-label for="api_key" :value="$setting ? 'API Key (biarkan kosong jika tidak diganti)' : 'API Key'" />
                         <x-text-input id="api_key" type="password" name="api_key" autocomplete="off"
                             :placeholder="$setting ? '•••••••••••• (sudah diatur)' : 'sk-ant-... atau AIza...'"
@@ -49,9 +78,9 @@
                         <x-text-input id="model" type="text" name="model" :value="old('model', $setting?->model)"
                             placeholder="Kosongkan untuk pakai default provider" />
                         <p class="mt-1.5 text-xs text-gray-400">
-                            Default: Claude → <code>claude-opus-5</code>, Gemini → <code>gemini-2.5-flash</code>.
-                            Untuk jawaban yang lebih dalam pada Gemini, isi <code>gemini-2.5-pro</code>
-                            (lebih pintar, tapi lebih lambat &amp; lebih boros kuota).
+                            Kosongkan untuk pakai default per mode. Default Standard: Claude → <code>claude-opus-5</code>,
+                            Gemini → <code>gemini-2.5-flash</code>. Default Pro: Claude → <code>claude-opus-5</code>,
+                            Gemini → <code>gemini-2.5-pro</code>.
                         </p>
                         <x-input-error :messages="$errors->get('model')" class="mt-2" />
                     </div>

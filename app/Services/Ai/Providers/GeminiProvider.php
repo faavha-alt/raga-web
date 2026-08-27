@@ -14,7 +14,11 @@ class GeminiProvider implements AiProvider
 {
     private const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent';
 
-    public function __construct(private string $apiKey, private string $model) {}
+    public function __construct(
+        private string $apiKey,
+        private string $model,
+        private int $maxTokens = 4096,
+    ) {}
 
     public function sendMessage(string $systemPrompt, array $messages): string
     {
@@ -23,11 +27,12 @@ class GeminiProvider implements AiProvider
             'parts' => [['text' => $m['content']]],
         ], $messages);
 
-        $response = Http::timeout(60)->post(
+        $response = Http::timeout(120)->post(
             sprintf(self::ENDPOINT, $this->model).'?key='.urlencode($this->apiKey),
             [
                 'system_instruction' => ['parts' => ['text' => $systemPrompt]],
                 'contents' => $contents,
+                'generationConfig' => ['maxOutputTokens' => $this->maxTokens],
             ],
         );
 

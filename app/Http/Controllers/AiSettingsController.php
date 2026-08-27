@@ -13,6 +13,7 @@ class AiSettingsController extends Controller
         return view('settings.ai', [
             'setting' => $request->user()->aiSetting,
             'providers' => config('ai.providers'),
+            'modes' => config('ai.modes'),
         ]);
     }
 
@@ -25,11 +26,13 @@ class AiSettingsController extends Controller
             'provider' => ['required', 'string', 'in:'.implode(',', array_keys(config('ai.providers')))],
             'api_key' => [$existing ? 'nullable' : 'required', 'string'],
             'model' => ['nullable', 'string', 'max:255'],
+            'mode' => ['required', 'string', 'in:'.implode(',', array_keys(config('ai.modes')))],
         ]);
 
         $attributes = [
             'provider' => $data['provider'],
             'model' => $data['model'] ?: null,
+            'mode' => $data['mode'],
         ];
 
         if (filled($data['api_key'] ?? null)) {

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['user_id', 'provider', 'api_key', 'model'])]
+#[Fillable(['user_id', 'provider', 'api_key', 'model', 'mode'])]
 #[Hidden(['api_key'])]
 class AiSetting extends Model
 {
