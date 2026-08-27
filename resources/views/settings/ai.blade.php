@@ -50,6 +50,8 @@
                             placeholder="Kosongkan untuk pakai default provider" />
                         <p class="mt-1.5 text-xs text-gray-400">
                             Default: Claude → <code>claude-opus-5</code>, Gemini → <code>gemini-2.5-flash</code>.
+                            Untuk jawaban yang lebih dalam pada Gemini, isi <code>gemini-2.5-pro</code>
+                            (lebih pintar, tapi lebih lambat &amp; lebih boros kuota).
                         </p>
                         <x-input-error :messages="$errors->get('model')" class="mt-2" />
                     </div>

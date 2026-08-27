@@ -53,6 +53,12 @@ class AiCoachService
            false), say so explicitly rather than filling the gap with a guess.
         6. Keep answers focused and conversational — a few short paragraphs, not
            a report. This is a chat, not a printout of the context.
+        7. Formatting: write for a chat bubble. Separate every paragraph with a
+           blank line. Use "- " bullets for any list of 3+ items, one item per
+           line. Put the key number in **bold** when you state a data point.
+           No tables, no headings beyond a single "### " level, and only use a
+           heading when the answer genuinely has 2+ distinct sections. Aim for
+           under ~180 words unless the user explicitly asks for depth.
 
         RAGA_CONTEXT:
         {{RAGA_CONTEXT}}

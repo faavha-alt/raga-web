@@ -8,7 +8,7 @@ use Throwable;
 
 class AnthropicProvider implements AiProvider
 {
-    private const MAX_TOKENS = 2048;
+    private const MAX_TOKENS = 4096;
 
     public function __construct(private string $apiKey, private string $model) {}
 
