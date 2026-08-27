@@ -6,6 +6,7 @@ use App\Http\Controllers\AiSettingsController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GarminConnectionController;
+use App\Http\Controllers\GoalController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\Mcp\McpTransportController;
 use App\Http\Controllers\Oauth\ClientRegistrationController;
@@ -37,6 +38,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/training/distribution', [TrainingController::class, 'distribution'])->name('training.distribution');
     Route::get('/training/plans/{plan}', [TrainingController::class, 'plan'])->name('training.plan');
     Route::delete('/training/plans/{plan}', [TrainingController::class, 'destroyPlan'])->name('training.plan.destroy');
+
+    Route::get('/goals', [GoalController::class, 'index'])->name('goals.index');
+    Route::post('/goals', [GoalController::class, 'store'])->name('goals.store');
+    Route::delete('/goals/{goal}', [GoalController::class, 'destroy'])->name('goals.destroy');
     Route::get('/running', [RunningController::class, 'index'])->name('running');
     Route::get('/running/distance', [RunningController::class, 'distance'])->name('running.distance');
     Route::get('/running/pace', [RunningController::class, 'pace'])->name('running.pace');

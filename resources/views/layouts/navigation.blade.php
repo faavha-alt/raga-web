@@ -2,6 +2,7 @@
     $navItems = [
         ['route' => 'dashboard', 'active' => 'dashboard', 'icon' => '🏠', 'label' => 'Dashboard'],
         ['route' => 'training', 'active' => 'training*', 'icon' => '🏋️', 'label' => 'Training'],
+        ['route' => 'goals.index', 'active' => 'goals*', 'icon' => '🎯', 'label' => 'Goals'],
         ['route' => 'running', 'active' => 'running*', 'icon' => '🏃', 'label' => 'Running'],
         ['route' => 'trail', 'active' => 'trail*', 'icon' => '⛰️', 'label' => 'Trail'],
         ['route' => 'health', 'active' => 'health*', 'icon' => '❤️', 'label' => 'Health'],

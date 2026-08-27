@@ -143,7 +143,44 @@
                 </x-card>
             </section>
 
-            {{-- 4. HEALTH TREND --}}
+            {{-- 4. GOALS --}}
+            @if (count($goals) > 0)
+                <section>
+                    <div class="mb-3 flex items-center justify-between">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400">🎯 Goals</h3>
+                        <a href="{{ route('goals.index') }}" class="text-xs font-bold text-raga-primary hover:text-raga-accent transition">Kelola →</a>
+                    </div>
+                    <div class="grid sm:grid-cols-3 gap-3">
+                        @foreach ($goals as $g)
+                            @php
+                                $p = $g['progress'];
+                                $reached = $p['percent'] !== null && $p['percent'] >= 100;
+                                $barColor = $reached ? 'bg-raga-excellent' : ($p['percent'] !== null && $p['percent'] >= 50 ? 'bg-raga-primary' : 'bg-raga-accent');
+                            @endphp
+                            <x-card class="!p-4">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400">{{ $p['label'] }}</p>
+                                    <p class="text-sm font-black text-gray-900">{{ $p['percent'] !== null ? $p['percent'].'%' : '--' }}</p>
+                                </div>
+                                <p class="mt-1 text-sm text-gray-600">
+                                    @if ($p['current'] !== null)
+                                        <span class="font-bold text-gray-900">{{ $p['current_text'] }}</span> / {{ $p['target_text'] }}
+                                    @else
+                                        {{ $p['target_text'] }}
+                                    @endif
+                                </p>
+                                @if ($p['percent'] !== null)
+                                    <div class="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+                                        <div class="h-full rounded-full transition-all {{ $barColor }}" style="width: {{ $p['percent'] }}%"></div>
+                                    </div>
+                                @endif
+                            </x-card>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
+
+            {{-- 5. HEALTH TREND --}}
             <section>
                 <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">Health Trend</h3>
                 <x-card>
@@ -151,7 +188,7 @@
                 </x-card>
             </section>
 
-            {{-- 5. AI RECOMMENDATIONS --}}
+            {{-- 6. AI RECOMMENDATIONS --}}
             @if (count($recommendations) > 0)
                 <section>
                     <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">🤖 Rekomendasi AI</h3>
