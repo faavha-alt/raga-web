@@ -25,7 +25,7 @@ Route::get('/', function () {
 
 Route::get('/.well-known/oauth-authorization-server', [ResourceMetadataController::class, 'authorizationServer']);
 Route::get('/.well-known/oauth-protected-resource', [ResourceMetadataController::class, 'protectedResource']);
-Route::post('/oauth/register', [ClientRegistrationController::class, 'store']);
+Route::post('/oauth/register', [ClientRegistrationController::class, 'store'])->middleware('throttle:10,1');
 Route::post('/mcp', [McpTransportController::class, 'handle'])->middleware('mcp.auth');
 
 Route::middleware(['auth', 'verified'])->group(function () {
