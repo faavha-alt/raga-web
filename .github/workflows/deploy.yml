@@ -1,4 +1,4 @@
-name: Deploy to raga.mipa.uns.ac.id
+name: Deploy to raga.favha.cloud
 
 on:
   workflow_run:
@@ -22,7 +22,7 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
             set -e
-            cd ~/htdocs/raga.mipa.uns.ac.id
+            cd ~/htdocs/raga.favha.cloud
             export NVM_DIR="$HOME/.nvm"
             . "$NVM_DIR/nvm.sh"
             git fetch origin main
