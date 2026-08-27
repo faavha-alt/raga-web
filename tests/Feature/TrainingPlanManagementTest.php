@@ -86,4 +86,34 @@ class TrainingPlanManagementTest extends TestCase
 
         $this->assertDatabaseHas('training_plans', ['id' => $plan->id]);
     }
+
+    public function test_owner_can_mark_planned_workout_complete_and_undo(): void
+    {
+        $user = User::factory()->create();
+        $plan = $this->makePlan($user);
+        $pw = $plan->weeks->first()->days->first()->plannedWorkouts->first();
+
+        $this->actingAs($user)->post(route('training.planned-workout.toggle', $pw))
+            ->assertRedirect(route('training.plan', $plan));
+
+        $this->assertDatabaseHas('completed_workouts', ['planned_workout_id' => $pw->id]);
+        $fresh = $plan->fresh(['weeks.days.plannedWorkouts.completedWorkout']);
+        $this->assertSame(1, $fresh->completedPlannedWorkouts());
+
+        $this->actingAs($user)->post(route('training.planned-workout.toggle', $pw));
+        $this->assertDatabaseMissing('completed_workouts', ['planned_workout_id' => $pw->id]);
+        $this->assertSame(0, $plan->fresh(['weeks.days.plannedWorkouts.completedWorkout'])->completedPlannedWorkouts());
+    }
+
+    public function test_non_owner_cannot_toggle_planned_workout(): void
+    {
+        $owner = User::factory()->create();
+        $plan = $this->makePlan($owner);
+        $pw = $plan->weeks->first()->days->first()->plannedWorkouts->first();
+
+        $other = User::factory()->create();
+        $this->actingAs($other)->post(route('training.planned-workout.toggle', $pw))->assertForbidden();
+
+        $this->assertDatabaseMissing('completed_workouts', ['planned_workout_id' => $pw->id]);
+    }
 }

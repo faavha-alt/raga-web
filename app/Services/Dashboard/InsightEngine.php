@@ -31,7 +31,7 @@ class InsightEngine
 
         $insights = [];
 
-        foreach (['sleep', 'hrv', 'training_load', 'resting_hr'] as $metric) {
+        foreach (['training_load', 'resting_hr', 'body_battery', 'stress'] as $metric) {
             $points = $series[$metric]['points'] ?? [];
 
             $recent = $this->averageInRange($points, $recentStart, $today);
@@ -86,10 +86,10 @@ class InsightEngine
         $direction = $percentChange > 0 ? 'naik' : 'turun';
 
         return match ($metric) {
-            'sleep' => sprintf('Durasi tidur %s %.0f%% dibanding 7 hari sebelumnya (%.1fh → %.1fh).', $direction, abs($percentChange), $previousAvg, $recentAvg),
-            'hrv' => sprintf('HRV trennya sedang %s (%.0f%% dari 7 hari sebelumnya).', $direction, abs($percentChange)),
             'training_load' => sprintf('Training load %s signifikan minggu ini (%s%.0f%%).', $direction, $percentChange > 0 ? '+' : '', $percentChange),
             'resting_hr' => sprintf('Resting heart rate %s dibanding baseline 7 hari sebelumnya (%.0f → %.0f bpm).', $direction === 'naik' ? 'di atas' : 'di bawah', $previousAvg, $recentAvg),
+            'body_battery' => sprintf('Body battery bersih %s %.0f%% dibanding 7 hari sebelumnya (%s%.0f pts).', $direction === 'naik' ? 'meningkat' : 'menurun', abs($percentChange), $percentChange > 0 ? '+' : '', $percentChange),
+            'stress' => sprintf('Tingkat stress %s minggu ini (%s%.0f%% dibanding 7 hari sebelumnya).', $direction === 'naik' ? 'naik' : 'turun', $percentChange > 0 ? '+' : '', $percentChange),
             default => sprintf('%s %s %.0f%% dibanding periode sebelumnya.', $label, $direction, abs($percentChange)),
         };
     }

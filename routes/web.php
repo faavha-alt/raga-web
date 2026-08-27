@@ -38,6 +38,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/training/distribution', [TrainingController::class, 'distribution'])->name('training.distribution');
     Route::get('/training/plans/{plan}', [TrainingController::class, 'plan'])->name('training.plan');
     Route::delete('/training/plans/{plan}', [TrainingController::class, 'destroyPlan'])->name('training.plan.destroy');
+    Route::post('/training/planned-workouts/{plannedWorkout}/toggle-complete', [TrainingController::class, 'toggleCompletedWorkout'])->name('training.planned-workout.toggle');
 
     Route::get('/goals', [GoalController::class, 'index'])->name('goals.index');
     Route::post('/goals', [GoalController::class, 'store'])->name('goals.store');

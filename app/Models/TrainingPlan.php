@@ -32,4 +32,18 @@ class TrainingPlan extends Model
     {
         return $this->hasMany(TrainingWeek::class);
     }
+
+    /** Total planned workouts across all weeks/days (requires relations loaded). */
+    public function totalPlannedWorkouts(): int
+    {
+        return $this->weeks->flatMap->days->sum(fn ($day) => $day->plannedWorkouts->count());
+    }
+
+    /** Number of planned workouts marked as completed (requires completedWorkout loaded). */
+    public function completedPlannedWorkouts(): int
+    {
+        return $this->weeks->flatMap->days->flatMap->plannedWorkouts
+            ->filter(fn ($pw) => $pw->completedWorkout !== null)
+            ->count();
+    }
 }

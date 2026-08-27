@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PlannedWorkout;
 use App\Models\TrainingPlan;
 use App\Services\Health\PersonalBaselineService;
 use App\Services\Training\ActivityDistributionService;
@@ -132,9 +133,23 @@ class TrainingController extends Controller
     {
         $this->ensureOwnsPlan($request, $plan);
 
-        $plan->load(['weeks.days.plannedWorkouts']);
+        $plan->load(['weeks.days.plannedWorkouts.completedWorkout']);
 
         return view('training.plan', compact('plan'));
+    }
+
+    public function toggleCompletedWorkout(Request $request, PlannedWorkout $plannedWorkout): \Illuminate\Http\RedirectResponse
+    {
+        $plan = $plannedWorkout->day->week->plan;
+        $this->ensureOwnsPlan($request, $plan);
+
+        if ($plannedWorkout->completedWorkout) {
+            $plannedWorkout->completedWorkout->delete();
+        } else {
+            $plannedWorkout->completedWorkout()->create(['workout_id' => null, 'compliance_score' => null]);
+        }
+
+        return redirect()->route('training.plan', $plan);
     }
 
     public function destroyPlan(Request $request, TrainingPlan $plan): \Illuminate\Http\RedirectResponse

@@ -48,6 +48,21 @@
                         </p>
                     </div>
                 </div>
+
+                @php
+                    $totalWo = $plan->totalPlannedWorkouts();
+                    $doneWo = $plan->completedPlannedWorkouts();
+                    $woPercent = $totalWo > 0 ? (int) round(($doneWo / $totalWo) * 100) : 0;
+                @endphp
+                <div class="mt-4">
+                    <div class="flex items-center justify-between text-xs font-bold">
+                        <span class="text-gray-500 dark:text-gray-400">Progress Plan</span>
+                        <span class="text-gray-900 dark:text-gray-100">{{ $doneWo }} / {{ $totalWo }} selesai ({{ $woPercent }}%)</span>
+                    </div>
+                    <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+                        <div class="h-full rounded-full bg-raga-primary transition-all" style="width: {{ $woPercent }}%"></div>
+                    </div>
+                </div>
             </x-card>
 
             @forelse ($plan->weeks as $week)
@@ -71,12 +86,15 @@
                                         $label = \App\Support\ActivityTypeIcon::label($wo->type);
                                         $pace = $wo->target_pace_seconds_per_km ? (int) round($wo->target_pace_seconds_per_km) : null;
                                     @endphp
-                                    <div class="mt-2 flex flex-wrap items-start justify-between gap-2 rounded-lg bg-gray-50 dark:bg-gray-800/60 p-2.5">
+                                    <div class="mt-2 flex flex-wrap items-start justify-between gap-2 rounded-lg bg-gray-50 dark:bg-gray-800/60 p-2.5 {{ $wo->completedWorkout ? 'opacity-70' : '' }}">
                                         <div class="flex items-center gap-2">
                                             <span class="text-lg">{{ $icon }}</span>
                                             <div>
                                                 <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
                                                     {{ $label }}
+                                                    @if ($wo->completedWorkout)
+                                                        <span class="ml-1 text-xs font-bold text-raga-excellent">✓ Selesai</span>
+                                                    @endif
                                                     @if ($wo->intensity)
                                                         <span class="ml-1 text-xs font-medium text-raga-primary">({{ $wo->intensity }})</span>
                                                     @endif
@@ -97,14 +115,23 @@
                                                 </p>
                                             </div>
                                         </div>
-                                        @if ($wo->warm_up || $wo->main_set || $wo->cool_down || $wo->notes)
-                                            <p class="max-w-md text-xs text-gray-500 dark:text-gray-400 text-right">
-                                                @if ($wo->warm_up)<span>Warm-up: {{ $wo->warm_up }}</span><br>@endif
-                                                @if ($wo->main_set)<span>Main: {{ $wo->main_set }}</span><br>@endif
-                                                @if ($wo->cool_down)<span>Cool-down: {{ $wo->cool_down }}</span><br>@endif
-                                                @if ($wo->notes)<span>{{ $wo->notes }}</span>@endif
-                                            </p>
-                                        @endif
+                                        <div class="flex flex-col items-end gap-1.5">
+                                            @if ($wo->warm_up || $wo->main_set || $wo->cool_down || $wo->notes)
+                                                <p class="max-w-md text-xs text-gray-500 dark:text-gray-400 text-right">
+                                                    @if ($wo->warm_up)<span>Warm-up: {{ $wo->warm_up }}</span><br>@endif
+                                                    @if ($wo->main_set)<span>Main: {{ $wo->main_set }}</span><br>@endif
+                                                    @if ($wo->cool_down)<span>Cool-down: {{ $wo->cool_down }}</span><br>@endif
+                                                    @if ($wo->notes)<span>{{ $wo->notes }}</span>@endif
+                                                </p>
+                                            @endif
+                                            <form method="POST" action="{{ route('training.planned-workout.toggle', $wo) }}">
+                                                @csrf
+                                                <label class="inline-flex items-center gap-1.5 cursor-pointer select-none text-xs font-semibold text-gray-500 dark:text-gray-400">
+                                                    <input type="checkbox" {{ $wo->completedWorkout ? 'checked' : '' }} onchange="this.form.submit()" class="rounded border-gray-300 text-raga-primary focus:ring-raga-primary" />
+                                                    Selesai
+                                                </label>
+                                            </form>
+                                        </div>
                                     </div>
                                 @empty
                                     <p class="mt-1 text-xs text-gray-400">Rest day</p>
