@@ -190,3 +190,58 @@ konsistensi visual.
   halaman coach menampilkan ringkasan atlet yang terhubung dan 403/redirect untuk yang tidak.
 - Setelah implementasi: `php artisan test` hijau, `php artisan view:cache`, push → CI →
   auto-deploy (sudah berfungsi).
+
+---
+
+# Lampiran — Analisa Pasar Indonesia (Coach CRM)
+
+> Disusun 2026-08-27. Ringkasan untuk keputusan strategis; validasi lapangan tetap wajib.
+
+## 13. Lanskap kompetitor di Indonesia
+
+### Aplikasi yang POPULER (tracking/fitness, bukan coach-CRM)
+| Aplikasi | Jenis | Catatan |
+|---|---|---|
+| **Strava** | Tracker lari/sepeda + komunitas | Sangat populer di komunitas lari Indonesia; individual, bukan CRM pelatih |
+| **MUFIT** | Fitness lokal | "Indonesia Lebih Fit"; umum, bukan khusus coach |
+| **FIT HUB** | Aplikasi gym (jaringan) | Terikat ke gym-nya sendiri |
+| **STRONGBEE** | Workout/training | Fokus latihan individual |
+| Halodoc / Alodokter | Telemedicine | Beda kategori (kesehatan medis, bukan training) |
+
+### Coach-CRM
+- **Belum ada pemain lokal yang dominan** di niche "CRM + AI untuk coach lari/trail".
+- Personal trainer di Indonesia kebanyakan masih pakai **WhatsApp, Google Sheets**, atau
+  **SaaS internasional** (Trainerize, TrueCoach, TrainHeroic, Everfit) yang berbahasa Inggris.
+
+> Catatan: "gap" bisa berarti peluang ATAU pasar yang belum terbentuk (demand belum
+> terbukti). Jangan menafsirkan kosongnya kompetitor = pasti laku.
+
+## 14. Posisi & pembeda RAGA vs kompetitor
+
+| Kemampuan | RAGA (target) | Kompetitor umum |
+|---|---|---|
+| Data Garmin native | ✅ otomatis | Banyak yang input manual/wearable lain |
+| AI Coach per-atlet | ✅ terintegrasi | Umumnya belum sekuat ini |
+| Fokus trail/running + analytics dalam | ✅ | Umum |
+| Bahasa Indonesia | ✅ | Umumnya Inggris |
+| Harga | Gratis/terjangkau | Langganan $15–50+/bln per coach |
+
+## 15. Strategi masuk (freemium) — saran
+
+1. **Niche dulu**: "CRM + AI untuk coach lari/trail berbasis Garmin" — bukan CRM pelatih umum.
+2. **Freemium sebagai corong akuisisi**:
+   - Gratis: 1 coach, hingga ~3–5 atlet, fitur inti (lihat atlet, assign plan).
+   - Berbayar (untuk skalabilitas): atlet tak terbatas, AI pro per-atlet, dukungan.
+3. **Monetisasi realistis** (freemium bukan selamanya): bayar per coach/bln dengan tier atlet.
+4. **Biaya yang wajib dihitung**: hosting multi-tenant, bandwith, **token AI** (per pemakaian),
+   dukungan teknis, masa trial Garmin API.
+5. **Validasi sebelum bangun besar**: wawancara 5–10 coach trail/running (kesediaan pakai &
+   bayar), prototype/Fase 1 dulu, bukan langsung semua fitur.
+
+## 16. Keputusan strategis yang perlu diambil
+
+- [ ] Freemium: batas atlet di tier gratis? (saran: 3–5)
+- [ ] Harga tier berbayar (saran awal: Rp 50rb–150rb/bln per coach tergantung fitur)
+- [ ] Target awal: komunitas lari/trail (Strava communities, event lokal) untuk validasi
+- [ ] Produk **terpisah** dari RAGA personal (jangan tercampur data/codebase dev)
+
