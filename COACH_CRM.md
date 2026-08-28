@@ -150,6 +150,18 @@ konsistensi visual.
 
 ## 10. Rencana Implementasi Bertahap
 
+### Fase 0 — Validasi (sebelum kode besar)
+1. Wawancara **10–15 orang yang benar-benar melatih pelari berbayar di Indonesia**
+   (cari via Ruang Lari, coach TrainingPeaks Indonesia, komunitas trail). Tanya:
+   berapa atlet berbayar, pakai alat apa sekarang, apa yang paling menyita waktu,
+   mau bayar berapa/bln untuk alat yang menghematnya.
+2. Cek jalur **Garmin API resmi** (Health API / Developer Program): syarat approval,
+   ToS untuk layanan komersial multi-user, biaya. Ini penentu apakah CRM berbayar
+   layak (lihat §Risiko di Lampiran).
+3. Kriteria lanjut: mayoritas narasumber punya ≥5 atlet berbayar DAN menyatakan mau
+   bayar. Jika mayoritas <5 atlet & pakai alat gratis → arahkan ke marketplace/B2C
+   atau fokus pasar coach berbahasa Inggris (trail global), bukan SaaS coach lokal.
+
 ### Fase 1 — Fondasi (role + relasi + dashboard coach)
 1. Migrasi: `role` di `users` + tabel `coach_athlete`.
 2. Model `User`: fillable role, helper `isCoach()`, relasi `coachedAthletes()`/`coaches()`.
@@ -193,55 +205,126 @@ konsistensi visual.
 
 ---
 
-# Lampiran — Analisa Pasar Indonesia (Coach CRM)
+# Lampiran — Riset Pasar Indonesia (Coach CRM)
 
-> Disusun 2026-08-27. Ringkasan untuk keputusan strategis; validasi lapangan tetap wajib.
+> Draft riset — v2 diperbarui 2026-08-28. **Dokumen hidup**: angka & kesimpulan
+> masih dilengkapi (riset lanjutan direncanakan). Untuk keputusan strategis;
+> validasi lapangan (Fase 0) tetap wajib.
 
-## 13. Lanskap kompetitor di Indonesia
+## 13. Apakah sudah ada "coach-CRM" lari di Indonesia?
 
-### Aplikasi yang POPULER (tracking/fitness, bukan coach-CRM)
-| Aplikasi | Jenis | Catatan |
-|---|---|---|
-| **Strava** | Tracker lari/sepeda + komunitas | Sangat populer di komunitas lari Indonesia; individual, bukan CRM pelatih |
-| **MUFIT** | Fitness lokal | "Indonesia Lebih Fit"; umum, bukan khusus coach |
-| **FIT HUB** | Aplikasi gym (jaringan) | Terikat ke gym-nya sendiri |
-| **STRONGBEE** | Workout/training | Fokus latihan individual |
-| Halodoc / Alodokter | Telemedicine | Beda kategori (kesehatan medis, bukan training) |
+**Tidak ada yang khusus.** Terdekat, dari paling relevan:
 
-### Coach-CRM
-- **Belum ada pemain lokal yang dominan** di niche "CRM + AI untuk coach lari/trail".
-- Personal trainer di Indonesia kebanyakan masih pakai **WhatsApp, Google Sheets**, atau
-  **SaaS internasional** (Trainerize, TrueCoach, TrainHeroic, Everfit) yang berbahasa Inggris.
+| Pemain | Apa itu | Overlap | Kenapa bukan coach-CRM |
+|---|---|---|---|
+| **Ruang Lari** (ruanglari.com) | Positioning: *"marketplace training plan + online coaching pertama & terbaik di Indonesia"*. AI plan generator (VDOT), chat coach + evaluasi berkala di program premium, komunitas, event, pacer finder. | **Tinggi** — sudah punya relasi coach–atlet, chat, evaluasi, plan delivery, **plus distribusi** (komunitas lari terbesar). | B2C-first (atlet beli program); coach = sisi supply, bukan pengguna alat bisnisnya. Tak ada dashboard roster/kepatuhan untuk coach mengelola bisnisnya. Tak berbasis Garmin. |
+| **perlarian.id** | "One platform for every running step": cari event + **AI coaching** + komunitas. | Sedang — bersaing di angle "AI coaching" & mindshare. | Direct-to-consumer AI, bukan alat untuk human coach. |
+| **FitCenter.id** | Aplikasi Indonesia untuk **personal trainer** kelola klien: penjadwalan, catat progres, data klien terpusat. | Konsep CRM-nya paling mirip. | Konteks gym/strength, bukan endurance/lari/trail, bukan Garmin-native, tanpa analitik recovery/training-load. |
+| RunPlan, Fitness Indonesia, Edumisi, Edupoint, Superprof (74 coach lari terdaftar) | Jasa/program coaching (manusia). | — | Bukan produk software. |
+| **Arduua** (Swedia, ada halaman ID) | Jasa coaching trail/ultra manusia + bundling TrainingPeaks Premium + komunitas global. | Bersaing untuk trail runner yang mau coaching. | Bukan produk Indonesia, bukan CRM. |
+| Strava, MUFIT, FIT HUB, STRONGBEE, Halodoc/Alodokter | Tracker / gym / telemedicine. | Rendah. | Kategori berbeda. |
 
-> Catatan: "gap" bisa berarti peluang ATAU pasar yang belum terbentuk (demand belum
-> terbukti). Jangan menafsirkan kosongnya kompetitor = pasti laku.
+**Alat yang benar-benar dipakai coach lari Indonesia sekarang:** WhatsApp + Google Sheets,
+dan **TrainingPeaks** (mis. coach "Andy Nurman/abay"). Sebagian di TrueCoach/Trainerize —
+semuanya USD, Inggris, wajib kartu.
 
-## 14. Posisi & pembeda RAGA vs kompetitor
+> Niche spesifik *"CRM + AI untuk coach lari/trail berbasis Garmin, Bahasa Indonesia,
+> pembayaran lokal"* = **kosong**. Tapi ruang lebih luas ("bantu pelari latihan
+> terstruktur / AI / dengan coach") **sudah ramai**, dan Ruang Lari sudah memegang
+> posisi platform komunitas + distribusi. "Gap" ≠ pasti laku.
+
+## 14. Sinyal permintaan — KUAT di sisi pelari
+
+- **Ledakan lari**: pelari aktif **56 rb (Jan 2024) → 242 rb (Mei 2025)**, ~+330%.
+  Klub di Strava **6× lipat** pada 2025. **600+ event** lari (road+trail) setahun.
+  Jakarta Running Festival: 1.600 → **27.000** peserta. Jakarta International Marathon
+  2025 **31 rb+**, Maybank Marathon Bali **13.200**.
+- **Trail matang**: **Indonesia Trail Run Series** dibentuk 2025 (5 event nasional
+  bersatu, dorongan sport tourism); BTS 100, Mantra 116, Dieng Trail Run (edisi ke-4);
+  komunitas daerah (Trail Runners Yogyakarta, Malang Trail Runners).
+- **Permintaan coaching naik** ("jasa pelatih kian diminati"). Klien inti: profesional
+  mapan, waktu terbatas, mau latihan terstruktur & science-based.
+- **Garmin cocok dengan segmen ini**: vendor smartwatch **#2** di Indonesia; Garmin+Huawei
+  **>80%** di segmen Rp2–3 jt; brand dominan untuk pengguna olahraga serius — yaitu orang
+  yang paling mungkin menyewa coach.
+- Pasar fitness & wellness digital Indonesia diproyeksikan **~USD 2,23 miliar pada 2027**.
+- **Friksi alat internasional**: TrainingPeaks Coach Edition **$21,99–54,99/bln, USD,
+  wajib kartu** — tak ada QRIS/e-wallet, forex, Inggris; Sheets/WA tak punya analitik
+  Garmin dalam. Celah nyata.
+
+## 15. Sinyal HATI-HATI — lemah di sisi coach (pembeli CRM)
+
+- **Pembeli coach-CRM = coach, bukan pelari.** Jumlah coach lari/endurance Indonesia yang
+  (a) punya cukup atlet berbayar sampai *butuh* software dan (b) mau bayar SaaS bulanan =
+  **kecil** — kemungkinan ratusan s/d rendah-ribuan. Mayoritas "coach" = pacer hobi /
+  leader run-club, bukan bisnis.
+- **WTP B2B SaaS di usaha mikro Indonesia rendah** — banyak tetap pakai WhatsApp+Sheets gratis.
+- **Startup health/fitness Indonesia sulit menggalang dana** (regulasi, kebiasaan pasar).
+- **Ruang Lari sudah menguasai** posisi platform komunitas + relasi coach + distribusi.
+- **Risiko Garmin API tidak resmi** (`garminconnect` scraping) — makin parah di skala komersial.
+- **Friksi dua sisi**: butuh coach *dan* atletnya di RAGA (atlet sambungkan Garmin sendiri).
+
+## 16. Ekonomi / sanity check WTP
+
+Coach online menagih atlet **~Rp600 rb–1,5 jt/bln** (Fitness Indonesia: Rp1,2 jt/2 bln;
+paket bulanan "jutaan"). Coach dengan 5–10 atlet = Rp3–15 jt/bln omzet. Bayar software
+**Rp100–200 rb/bln** masuk akal *kalau* jelas menghemat waktu / memenangkan klien.
+TrainingPeaks (~Rp360 rb–900 rb/bln) sudah jadi acuan yang dibayar coach paling
+profesional → ada "payung harga", tapi hanya untuk lapisan tipis itu.
+
+## 17. Pembacaan realistis & rekomendasi
+
+- **Pasar "jual software ke coach lari Indonesia" tipis hari ini.** Lebih kuat jangka pendek:
+  (a) lapisan coach-assist di atas produk **runner-first**, atau (b) model **marketplace**
+  (seperti Ruang Lari) di mana CRM jadi produk sampingan.
+- **Alternatif target**: coach berbahasa Inggris melayani atlet trail global — kedalaman
+  Garmin+AI RAGA bersaing langsung dengan TrainingPeaks/Arduua, WTP dalam USD lebih tinggi.
+  Indonesia jadi pasar validasi, bukan pasar utama.
+- **Trail niche nyata & underserved** tapi **kecil secara absolut** — bagus sebagai wedge
+  fokus, bukan pasar besar berdiri sendiri.
+- **Bangun & test di codebase ini boleh (Fase 1–3)**, tapi sebelum onboard coach eksternal
+  pertama, berdirikan **instance terpisah** (DB + domain sendiri, kode sama). Jangan campur
+  data pelanggan dengan instance personal.
+
+## 18. Posisi & pembeda RAGA vs kompetitor
 
 | Kemampuan | RAGA (target) | Kompetitor umum |
 |---|---|---|
-| Data Garmin native | ✅ otomatis | Banyak yang input manual/wearable lain |
+| Data Garmin native | ✅ otomatis | Banyak input manual / wearable lain |
 | AI Coach per-atlet | ✅ terintegrasi | Umumnya belum sekuat ini |
 | Fokus trail/running + analytics dalam | ✅ | Umum |
-| Bahasa Indonesia | ✅ | Umumnya Inggris |
-| Harga | Gratis/terjangkau | Langganan $15–50+/bln per coach |
+| Bahasa Indonesia + pembayaran lokal | ✅ | Umumnya Inggris + USD/kartu |
+| Harga | Terjangkau (Rp) | $15–55/bln per coach |
+| Distribusi / komunitas | ❌ belum ada | Ruang Lari & Strava sudah kuat |
 
-## 15. Strategi masuk (freemium) — saran
+## 19. Keputusan strategis yang perlu diambil
 
-1. **Niche dulu**: "CRM + AI untuk coach lari/trail berbasis Garmin" — bukan CRM pelatih umum.
-2. **Freemium sebagai corong akuisisi**:
-   - Gratis: 1 coach, hingga ~3–5 atlet, fitur inti (lihat atlet, assign plan).
-   - Berbayar (untuk skalabilitas): atlet tak terbatas, AI pro per-atlet, dukungan.
-3. **Monetisasi realistis** (freemium bukan selamanya): bayar per coach/bln dengan tier atlet.
-4. **Biaya yang wajib dihitung**: hosting multi-tenant, bandwith, **token AI** (per pemakaian),
-   dukungan teknis, masa trial Garmin API.
-5. **Validasi sebelum bangun besar**: wawancara 5–10 coach trail/running (kesediaan pakai &
-   bayar), prototype/Fase 1 dulu, bukan langsung semua fitur.
-
-## 16. Keputusan strategis yang perlu diambil
-
+- [ ] **Model**: SaaS untuk coach lokal vs coach-assist di produk runner-first vs marketplace
+      vs target coach global berbahasa Inggris.
+- [ ] **Garmin**: tetap pakai `garminconnect` (personal-scale) atau ajukan Garmin Health API
+      resmi (syarat untuk komersial multi-user). Penentu kelayakan CRM berbayar.
 - [ ] Freemium: batas atlet di tier gratis? (saran: 3–5)
 - [ ] Harga tier berbayar (saran awal: Rp 50rb–150rb/bln per coach tergantung fitur)
-- [ ] Target awal: komunitas lari/trail (Strava communities, event lokal) untuk validasi
-- [ ] Produk **terpisah** dari RAGA personal (jangan tercampur data/codebase dev)
+- [ ] Target awal untuk validasi: komunitas trail (Yogya/Malang), coach TrainingPeaks ID
+- [ ] Produk **terpisah** dari RAGA personal (data/codebase/instance) sebelum ada pelanggan nyata
+
+## 20. Sumber
+
+- Hypeabis — Ekosistem Lari Makin Matang, Jasa Pelatih Kian Diminati
+- GoodStats — Peningkatan Tren Lari di Indonesia (56rb→242rb pelari)
+- Indonesia Marathon — Kalender Lomba Lari 2025 (600+ event)
+- IDN Times — Jakarta Running Festival 2025: rekor peserta
+- Kompas Tekno — Strava jelang JRF 2025 (klub 6× lipat)
+- Harian Merapi — Indonesia Trail Run Series resmi dibentuk
+- IDN Times — 7 Event Trail Run Terbesar di Indonesia
+- ANTARA — smartwatch Indonesia (pangsa Garmin #2, Garmin+Huawei >80% segmen Rp2–3jt)
+- ruanglari.com (/ dan /programs); perlarian.id/coaching; fitcenter.id/aplikasi/untuk-personal-trainer; arduua.com/id
+- TrainingPeaks — Coach Account Pricing & Billing ($21,99–54,99/bln USD)
+- Superprof, Edumisi, Fitness Indonesia — tarif coaching lari Indonesia
+- Liputan6 — FitHappy raih pra-seed (East Ventures)
+
+> **TODO riset lanjutan**: sizing TAM coach bersertifikat (data.go.id punya dataset
+> "jumlah pelatih olahraga bersertifikat"); apakah Ruang Lari / perlarian integrasi Garmin;
+> syarat & biaya Garmin Health API resmi; benchmark Coachbox/FinalSurge/Today's Plan;
+> wawancara Fase 0.
 
