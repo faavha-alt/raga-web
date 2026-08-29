@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\GarminConnection;
+use App\Services\HealthData\GarminSyncService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Process;
 use Illuminate\View\View;
 
@@ -63,48 +62,19 @@ class GarminConnectionController extends Controller
         return redirect()->route('settings.garmin.show')->with('status', 'Berhasil terhubung ke Garmin Connect.');
     }
 
-    public function sync(Request $request): RedirectResponse
+    public function sync(Request $request, GarminSyncService $sync): RedirectResponse
     {
         $user = $request->user();
-        $connection = $user->garminConnection;
 
-        if (! $connection) {
+        if (! $user->garminConnection) {
             return redirect()->route('settings.garmin.show')->withErrors(['sync' => 'Belum terhubung ke Garmin.']);
         }
 
-        $result = Process::path(base_path())
-            ->timeout(120)
-            ->run([self::PYTHON, 'scripts/garmin_sync.py', '--days', '2']);
+        $result = $sync->syncForUser($user);
 
-        if ($result->failed()) {
-            $connection->update([
-                'last_synced_at' => now(),
-                'last_sync_status' => 'error',
-                'last_sync_message' => trim($result->errorOutput()) ?: 'Gagal menjalankan sinkronisasi.',
-            ]);
-
+        if ($result['status'] === 'error') {
             return redirect()->route('settings.garmin.show')->withErrors(['sync' => 'Sinkronisasi gagal, cek pesan error di bawah.']);
         }
-
-        $tmpFile = tempnam(sys_get_temp_dir(), 'garmin_sync_');
-        file_put_contents($tmpFile, $result->output());
-
-        try {
-            Artisan::call('garmin:import', ['path' => $tmpFile, '--user' => $user->id]);
-            Artisan::call('recovery:calculate', ['--days' => 2, '--user' => $user->id]);
-
-            // Fresh data just landed — drop any cached AI coach context so the
-            // next message reflects the new data immediately.
-            Cache::forget('ai-context:user:'.$user->id);
-        } finally {
-            @unlink($tmpFile);
-        }
-
-        $connection->update([
-            'last_synced_at' => now(),
-            'last_sync_status' => 'success',
-            'last_sync_message' => null,
-        ]);
 
         return redirect()->route('settings.garmin.show')->with('status', 'Sinkronisasi selesai.');
     }

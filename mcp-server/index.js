@@ -142,5 +142,19 @@ server.registerTool(
   async (args) => jsonContent(await postJson('/mcp/recommendation', args))
 );
 
+server.registerTool(
+  'raga_sync_garmin',
+  {
+    description:
+      "Pull the latest data from the user's connected Garmin account into RAGA and recompute recovery. " +
+      'Runs synchronously and may take 20-60s. Use when the user asks to sync/refresh their data, or when ' +
+      'the numbers look stale before an analysis. Requires Garmin to already be connected in RAGA Settings.',
+    inputSchema: {
+      days: z.number().int().min(1).max(7).optional().describe('How many days back to pull. Defaults to 2.'),
+    },
+  },
+  async (args) => jsonContent(await postJson('/mcp/sync-garmin', args))
+);
+
 const transport = new StdioServerTransport();
 await server.connect(transport);

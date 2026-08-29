@@ -63,7 +63,8 @@ Repo ini adalah backend dari tool MCP `raga`. Ada dua jalur akses:
 
 Tool yang tersedia: `raga_overview`, `raga_training`, `raga_recovery`,
 `raga_health`, `raga_running`, `raga_trail`, `raga_full_context`,
-`raga_save_training_plan`, `raga_save_recommendation`.
+`raga_save_training_plan`, `raga_save_recommendation`, `raga_sync_garmin`
+(tarik data terbaru dari Garmin lalu hitung ulang recovery — sinkron, ~20–60 dtk).
 
 ## Arsitektur
 

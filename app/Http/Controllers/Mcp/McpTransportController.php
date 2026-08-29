@@ -123,6 +123,17 @@ class McpTransportController extends Controller
                 'required' => ['date', 'category', 'title', 'message'],
             ],
         ],
+        'raga_sync_garmin' => [
+            'method' => 'syncGarmin',
+            'readable' => false,
+            'description' => "Pull the latest data from the user's connected Garmin account into RAGA and recompute recovery. Runs synchronously and may take 20-60s. Use when the user asks to sync/refresh their data, or when the numbers look stale before an analysis. Requires Garmin to already be connected in RAGA Settings; if it isn't, this returns an error telling the user to connect it.",
+            'inputSchema' => [
+                'type' => 'object',
+                'properties' => [
+                    'days' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 7, 'description' => 'How many days back to pull. Optional, defaults to 2.'],
+                ],
+            ],
+        ],
     ];
 
     public function handle(Request $request, McpController $mcp)

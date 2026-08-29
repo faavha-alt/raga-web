@@ -19,5 +19,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/trail', [McpController::class, 'trail'])->name('trail');
         Route::post('/training-plan', [McpController::class, 'saveTrainingPlan'])->name('training-plan.store');
         Route::post('/recommendation', [McpController::class, 'saveRecommendation'])->name('recommendation.store');
+        Route::post('/sync-garmin', [McpController::class, 'syncGarmin'])->name('sync-garmin.store');
     });
 });

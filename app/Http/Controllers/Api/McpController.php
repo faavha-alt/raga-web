@@ -7,6 +7,7 @@ use App\Services\Dashboard\InsightEngine;
 use App\Services\Dashboard\TodaySnapshotService;
 use App\Services\Health\MetricSeriesService;
 use App\Services\Health\PersonalBaselineService;
+use App\Services\HealthData\GarminSyncService;
 use App\Services\Recovery\RecoveryEngine;
 use App\Services\Running\RunningPerformanceCalculator;
 use App\Services\Running\RunningPerformanceGateway;
@@ -243,6 +244,33 @@ class McpController extends Controller
             'training_plan_id' => $plan->id,
             'weeks_created' => count($data['weeks']),
             'view_url' => url('/training/calendar'),
+        ];
+    }
+
+    public function syncGarmin(Request $request, GarminSyncService $sync): array
+    {
+        $data = $request->validate([
+            'days' => ['sometimes', 'integer', 'min:1', 'max:7'],
+        ]);
+
+        $user = $request->user();
+
+        if (! $user->garminConnection()->exists()) {
+            return [
+                'status' => 'error',
+                'message' => 'This RAGA account is not connected to Garmin. Connect it in Settings → Garmin in the RAGA web app first.',
+            ];
+        }
+
+        $result = $sync->syncForUser($user, $data['days'] ?? 2);
+
+        return [
+            'status' => $result['status'],
+            'synced_days' => $result['days'],
+            'message' => $result['message']
+                ?? ($result['status'] === 'success' ? 'Garmin sync complete; recovery recomputed.' : null),
+            'import_output' => $result['import_output'],
+            'last_synced_at' => $user->garminConnection()->first()?->last_synced_at,
         ];
     }
 
