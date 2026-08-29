@@ -23,10 +23,37 @@ class GarminSyncService
 
     private const TIMEOUT_SECONDS = 120;
 
+    /** Lock TTL — safely longer than the sync+import+recovery so a concurrent
+     *  call can't start while another sync for the same user is still running. */
+    private const LOCK_SECONDS = 300;
+
     /**
      * @return array{status: 'success'|'error', days: int, message: ?string, import_output: ?string}
      */
     public function syncForUser(User $user, int $days = 2): array
+    {
+        $lock = Cache::lock('garmin-sync:user:'.$user->id, self::LOCK_SECONDS);
+
+        if (! $lock->get()) {
+            return [
+                'status' => 'error',
+                'days' => $days,
+                'message' => 'Sinkronisasi Garmin sedang berjalan untuk akun ini. Coba lagi beberapa saat.',
+                'import_output' => null,
+            ];
+        }
+
+        try {
+            return $this->doSync($user, $days);
+        } finally {
+            $lock->release();
+        }
+    }
+
+    /**
+     * @return array{status: 'success'|'error', days: int, message: ?string, import_output: ?string}
+     */
+    private function doSync(User $user, int $days): array
     {
         $connection = $user->garminConnection;
 
