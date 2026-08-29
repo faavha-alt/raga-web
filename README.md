@@ -55,11 +55,13 @@ GPS route, dan lap.
 ### Server MCP (Model Context Protocol)
 Repo ini adalah backend dari tool MCP `raga`. Ada dua jalur akses:
 
-1. **Endpoint remote** — `POST /mcp` (JSON-RPC 2.0, transport Streamable HTTP)
-   dengan OAuth penuh (Passport, dynamic client registration). Klien MCP mana pun
-   bisa connect langsung by URL.
+1. **Endpoint remote** — `POST /mcp` (JSON-RPC 2.0, transport Streamable HTTP).
+   Autentikasi: OAuth penuh (Passport, dynamic client registration) **atau**
+   token statis — `Authorization: Bearer <token>` dengan personal access token
+   (Sanctum) yang dibuat di **Settings > API Tokens**, untuk klien yang tak bisa
+   menjalankan alur login browser.
 2. **Bridge lokal stdio** — `mcp-server/index.js` yang meneruskan setiap tool ke
-   REST API hosted (`/api/*`).
+   REST API hosted (`/api/*`), pakai token yang sama di `RAGA_API_TOKEN`.
 
 Tool yang tersedia: `raga_overview`, `raga_training`, `raga_recovery`,
 `raga_health`, `raga_running`, `raga_trail`, `raga_full_context`,

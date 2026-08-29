@@ -27,6 +27,10 @@
                         <span class="text-xs font-bold uppercase tracking-wide text-gray-400">Not configured</span>
                     @endif
                 </a>
+                <a href="{{ route('settings.api-tokens.show') }}" class="flex items-center justify-between px-6 py-4 font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    <span>🔑 API Tokens</span>
+                    <span class="text-xs font-bold uppercase tracking-wide text-gray-400">{{ auth()->user()->tokens()->count() }} aktif</span>
+                </a>
                 @foreach ($rows as $row)
                     <div class="px-6 py-4 text-gray-400 dark:text-gray-500">{{ $row }}</div>
                 @endforeach

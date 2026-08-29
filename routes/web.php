@@ -4,6 +4,7 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AiController;
 use App\Http\Controllers\AiSettingsController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\ApiTokenController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GarminConnectionController;
 use App\Http\Controllers\GoalController;
@@ -79,6 +80,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [AiSettingsController::class, 'show'])->name('show');
         Route::post('/', [AiSettingsController::class, 'update'])->name('update');
         Route::delete('/', [AiSettingsController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('settings/api-tokens')->name('settings.api-tokens.')->group(function () {
+        Route::get('/', [ApiTokenController::class, 'show'])->name('show');
+        Route::post('/', [ApiTokenController::class, 'store'])->name('store');
+        Route::delete('/{token}', [ApiTokenController::class, 'destroy'])->name('destroy');
     });
 });
 
