@@ -138,8 +138,8 @@ class ImportGarminData extends Command
 
         SleepSession::create([
             'user_id' => $user->id,
-            'bedtime' => Carbon::parse($dto['sleepStartTimestampGMT']),
-            'wake_time' => Carbon::parse($dto['sleepEndTimestampGMT']),
+            'bedtime' => Carbon::parse($dto['sleepStartTimestampGMT'], 'UTC')->setTimezone(config('app.timezone')),
+            'wake_time' => Carbon::parse($dto['sleepEndTimestampGMT'], 'UTC')->setTimezone(config('app.timezone')),
             'rem_minutes' => ($dto['remSleepSeconds'] ?? 0) / 60,
             'deep_minutes' => ($dto['deepSleepSeconds'] ?? 0) / 60,
             'core_minutes' => ($dto['lightSleepSeconds'] ?? 0) / 60,
@@ -178,7 +178,7 @@ class ImportGarminData extends Command
             }
             $rows[] = [
                 'user_id' => $user->id,
-                'timestamp' => Carbon::parse($reading['readingTimeGMT']),
+                'timestamp' => Carbon::parse($reading['readingTimeGMT'], 'UTC')->setTimezone(config('app.timezone')),
                 'sdnn_milliseconds' => $reading['hrvValue'],
                 'source' => self::SOURCE,
                 'created_at' => $now,
@@ -337,7 +337,7 @@ class ImportGarminData extends Command
             $type = self::PR_TYPE_LABELS[$record['typeId']] ?? 'garmin_pr_type_'.$record['typeId'];
 
             $achievedDate = isset($record['prStartTimeGmt'])
-                ? Carbon::createFromTimestampMs($record['prStartTimeGmt'])->toDateString()
+                ? Carbon::createFromTimestampMs($record['prStartTimeGmt'], 'UTC')->setTimezone(config('app.timezone'))->toDateString()
                 : now()->toDateString();
 
             PersonalRecord::updateOrCreate(
@@ -503,7 +503,7 @@ class ImportGarminData extends Command
             $rows[] = [
                 'workout_id' => $workout->id,
                 'lap_index' => $lap['lapIndex'] ?? ($index + 1),
-                'start_time' => Carbon::parse($lap['startTimeGMT']),
+                'start_time' => Carbon::parse($lap['startTimeGMT'], 'UTC')->setTimezone(config('app.timezone')),
                 'distance_meters' => $lap['distance'] ?? null,
                 'duration_seconds' => $lap['duration'] ?? null,
                 'elevation_gain_meters' => $lap['elevationGain'] ?? null,
