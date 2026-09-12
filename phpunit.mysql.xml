@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Konfigurasi PHPUnit untuk menjalankan suite terhadap MySQL (dipakai job
+    `test-mysql` di CI). Suite utama tetap memakai SQLite in-memory karena
+    cepat, tetapi SQLite menerima banyak hal yang ditolak MySQL — mis. alias
+    reserved word (`SUM(x) as load` → syntax error 1064) atau pelanggaran
+    ONLY_FULL_GROUP_BY. Job MySQL inilah yang menangkap kelas bug tersebut
+    sebelum sampai ke produksi.
+
+    Nilai DB di sini memakai force="true" supaya tidak bergantung pada aturan
+    "environment variable yang sudah ada tidak ditimpa" milik PHPUnit.
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+>
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>app</directory>
+        </include>
+    </source>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="APP_MAINTENANCE_DRIVER" value="file"/>
+        <env name="BCRYPT_ROUNDS" value="4"/>
+        <env name="BROADCAST_CONNECTION" value="null"/>
+        <env name="CACHE_STORE" value="array"/>
+        <env name="DB_CONNECTION" value="mysql" force="true"/>
+        <env name="DB_HOST" value="127.0.0.1" force="true"/>
+        <env name="DB_PORT" value="3306" force="true"/>
+        <env name="DB_DATABASE" value="raga_test" force="true"/>
+        <env name="DB_USERNAME" value="root" force="true"/>
+        <env name="DB_PASSWORD" value="password" force="true"/>
+        <env name="DB_URL" value="" force="true"/>
+        <env name="MAIL_MAILER" value="array"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="PULSE_ENABLED" value="false"/>
+        <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="NIGHTWATCH_ENABLED" value="false"/>
+    </php>
+</phpunit>

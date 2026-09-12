@@ -54,3 +54,78 @@ jobs:
 
       - name: Run tests
         run: php artisan test
+
+  # Suite yang sama, tetapi terhadap MySQL — mesin database produksi.
+  # SQLite (job `test`) menerima banyak hal yang ditolak MySQL: alias reserved
+  # word, ONLY_FULL_GROUP_BY, perbedaan tipe kolom. Job ini mencegah kelas bug
+  # itu sampai ke produksi (pernah terjadi: alias `SUM(training_load) as load`
+  # → 500 di /athlete-dna).
+  test-mysql:
+    name: Tests (MySQL)
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: raga_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: raga_test
+      DB_USERNAME: root
+      DB_PASSWORD: password
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, pdo_mysql, bcmath, intl
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Build assets
+        run: npm run build
+
+      - name: Run migrations against MySQL
+        run: php artisan migrate --force --database=mysql
+
+      - name: Run tests against MySQL
+        run: vendor/bin/phpunit -c phpunit.mysql.xml
