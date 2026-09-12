@@ -120,6 +120,17 @@ class GoogleAuthTest extends TestCase
         $this->get('/register')->assertOk()->assertDontSee('/auth/google/redirect');
     }
 
+    public function test_google_routes_are_not_found_while_credentials_are_missing(): void
+    {
+        config()->set('services.google.client_id', null);
+
+        // Tombolnya sudah disembunyikan, tetapi rutenya masih bisa diketik manual.
+        // Tanpa penjagaan ini pengunjung akan mendarat di halaman error Google
+        // karena `client_id` kosong.
+        $this->get(route('auth.google.redirect'))->assertNotFound();
+        $this->get(route('auth.google.callback'))->assertNotFound();
+    }
+
     public function test_redirect_route_builds_a_google_authorization_url(): void
     {
         // Tanpa Socialite::fake(): rute ini harus benar-benar membentuk URL dari

@@ -22,6 +22,8 @@ class GoogleAuthController extends Controller
      */
     public function redirect(): RedirectResponse
     {
+        $this->ensureConfigured();
+
         return Socialite::driver('google')->redirect();
     }
 
@@ -30,6 +32,8 @@ class GoogleAuthController extends Controller
      */
     public function callback(Request $request, GoogleAccountService $accounts): RedirectResponse
     {
+        $this->ensureConfigured();
+
         // Pengguna menekan "batal" di halaman Google: bukan kesalahan, jadi
         // ditangani sebelum Socialite mencoba menukar kode yang tidak ada.
         if ($request->filled('error')) {
@@ -58,6 +62,20 @@ class GoogleAuthController extends Controller
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard', absolute: false));
+    }
+
+    /**
+     * Tolak alur ini sebagai 404 selama kredensial Google belum ada.
+     *
+     * Tombol di halaman login sudah disembunyikan, tapi rutenya tetap bisa
+     * diketik manual. Tanpa penjagaan ini Socialite akan mengirim pengunjung ke
+     * Google dengan `client_id` kosong, dan yang muncul adalah halaman error
+     * Google yang membingungkan. Sejalan dengan permukaan sosial lain di
+     * aplikasi ini: yang tidak boleh diakses dijawab 404, bukan halaman gagal.
+     */
+    private function ensureConfigured(): void
+    {
+        abort_unless(config('services.google.client_id'), 404);
     }
 
     /**
