@@ -58,7 +58,11 @@ jobs:
                 mkdir -p "$HOME/.local/bin" /tmp/suuntool-dl
                 curl -fsSL -o /tmp/suuntool-dl/suuntool.tar.gz "$BASE/suuntool_${VERSION}_linux_${ARCH}.tar.gz" || return 0
                 curl -fsSL -o /tmp/suuntool-dl/checksums.txt "$BASE/checksums.txt" || return 0
-                (cd /tmp/suuntool-dl && grep "suuntool_${VERSION}_linux_${ARCH}.tar.gz" checksums.txt | sha256sum -c - >/dev/null 2>&1) \
+                # Bandingkan hash manual: berkas diunduh sebagai suuntool.tar.gz,
+                # sedangkan `sha256sum -c` mencari nama asli dari daftar checksum.
+                EXPECTED="$(grep "suuntool_${VERSION}_linux_${ARCH}.tar.gz" /tmp/suuntool-dl/checksums.txt | awk '{print $1}')"
+                ACTUAL="$(sha256sum /tmp/suuntool-dl/suuntool.tar.gz | awk '{print $1}')"
+                [ -n "$EXPECTED" ] && [ "$EXPECTED" = "$ACTUAL" ] \
                   || { echo "suuntool: checksum tidak cocok, dilewati"; return 0; }
                 tar -xzf /tmp/suuntool-dl/suuntool.tar.gz -C "$HOME/.local/bin" suuntool
                 chmod 0755 "$HOME/.local/bin/suuntool"
