@@ -54,9 +54,14 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
+        // Pengguna yang mendaftar lewat Google tidak punya password untuk
+        // dikonfirmasi; tanpa pengecualian ini mereka tidak akan pernah bisa
+        // menghapus akunnya sendiri.
+        if ($request->user()->hasPassword()) {
+            $request->validateWithBag('userDeletion', [
+                'password' => ['required', 'current_password'],
+            ]);
+        }
 
         $user = $request->user();
 

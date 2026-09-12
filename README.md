@@ -51,6 +51,8 @@ RAGA kini juga bisa dipakai **tanpa Garmin** dan punya sisi sosial seperti Strav
   Default aplikasi adalah **hanya saya**.
 - **PWA** — bisa dipasang ke layar utama HP dan punya halaman offline.
 - **Notifikasi** — pemberitahuan follow, kudos, dan komentar.
+- **Masuk/daftar dengan Google** — pendaftaran tanpa formulir; username dan foto
+  profil dibuat otomatis. Tombolnya tersembunyi sampai kredensial Google diisi.
 
 > **Data kesehatan tidak pernah masuk permukaan sosial.** Lihat bagian
 > [Privasi data kesehatan](#privasi-data-kesehatan) di bawah.
@@ -136,6 +138,56 @@ npm run dev          # development (hot reload)
 php artisan serve
 ```
 
+### Masuk dan daftar dengan Google
+
+Tombol Google muncul otomatis begitu kredensialnya diisi, dan **tersembunyi
+selama kosong** supaya tidak ada tombol yang menabrak halaman error Google di
+lingkungan yang belum dikonfigurasi.
+
+1. Buka [Google Cloud Console](https://console.cloud.google.com/) → **APIs &
+   Services** → **OAuth consent screen** (sekarang bernama *Google Auth
+   Platform*). Pilih **External**, isi nama aplikasi, email dukungan, dan email
+   developer.
+2. Untuk dibuka ke publik, klik **Publish app**. Ini **tidak butuh review
+   Google**: scope yang dipakai RAGA (`openid`, `email`, `profile`) termasuk
+   non-sensitif, jadi verifikasi hanya diperlukan kalau kelak Anda meminta akses
+   ke data Google lain.
+3. **Credentials** → **Create credentials** → **OAuth client ID** → tipe
+   **Web application**. Di **Authorized redirect URIs** tambahkan tepat:
+
+   ```
+   https://raga.favha.cloud/auth/google/callback
+   http://localhost:8000/auth/google/callback   # opsional, untuk dev lokal
+   ```
+
+   Alamat harus sama persis, termasuk skema dan tanpa garis miring di akhir;
+   kalau tidak, Google membalas `redirect_uri_mismatch`.
+4. Isi `.env`:
+
+   ```bash
+   GOOGLE_CLIENT_ID=xxxxxxxx.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=xxxxxxxx
+   GOOGLE_REDIRECT_URI="${APP_URL}/auth/google/callback"
+   ```
+
+   Lalu segarkan cache konfigurasi: `php artisan config:cache`.
+
+Perilaku akun yang dijaga oleh test (lihat `tests/Feature/GoogleAuthTest.php`):
+
+- Akun baru mendapat **username otomatis** dari nama (diunifikasi agar unik), dan
+  **tidak punya password** (`users.password` NULL).
+- Masuk dengan Google memakai email yang **sudah terdaftar** akan **menautkan**
+  ke akun lama — tetapi hanya bila Google menyatakan emailnya terverifikasi.
+  Kalau tidak, permintaan ditolak dan pengguna diarahkan masuk dengan password.
+- Nama tampilan yang sudah diubah pengguna di RAGA **tidak** ditimpa oleh nama
+  dari Google, dan email lokal tidak diubah.
+- Foto profil Google **diunduh ke `public/uploads/avatars`**, tidak di-hotlink,
+  supaya browser pengunjung tidak memanggil server Google saat membuka profil.
+  Kegagalan unduhan tidak menggagalkan pendaftaran — pengguna tampil dengan
+  inisial.
+- Pengguna Google bisa **membuat password sendiri** dan **menghapus akunnya**
+  tanpa mengisi password lama (kolomnya memang NULL) — lihat `User::hasPassword()`.
+
 ### Sinkronisasi data Garmin (manual)
 
 ```bash
@@ -180,6 +232,17 @@ chmod -R 775 public/uploads
 #    Kolom `username` sengaja nullable agar migrasi aman pada tabel terisi.
 php artisan users:backfill-usernames --dry-run   # tinjau dulu
 php artisan users:backfill-usernames
+```
+
+**Kredensial Google tidak ikut ter-deploy.** `deploy.yml` tidak menyentuh `.env`,
+jadi isi `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, dan `GOOGLE_REDIRECT_URI` di
+`.env` server (lihat bagian *Masuk dan daftar dengan Google*). Karena setiap
+deploy menjalankan `php artisan config:cache`, nilai baru terbaca pada deploy
+berikutnya; kalau tidak ingin menunggu, jalankan langsung di server:
+
+```bash
+cd ~/htdocs/raga.favha.cloud
+php artisan config:cache
 ```
 
 **nginx (template vhost CloudPanel)** — tambahkan blok agar service worker PWA

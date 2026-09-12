@@ -4,6 +4,11 @@
         <p class="mt-1 text-sm text-gray-500">Gratis, cepat, dan datamu tetap punya kamu sendiri.</p>
     </div>
 
+    <div class="mb-6">
+        <x-google-button label="Daftar dengan Google" />
+        <p class="mt-3 text-center text-xs text-gray-500">Tanpa isi formulir — username dan profilmu dibuat otomatis, bisa diubah kapan saja.</p>
+    </div>
+
     <form method="POST" action="{{ route('register') }}" class="space-y-5">
         @csrf
 

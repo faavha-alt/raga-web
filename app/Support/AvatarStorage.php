@@ -40,6 +40,30 @@ class AvatarStorage
     }
 
     /**
+     * Simpan avatar dari isi berkas yang sudah ada di memori (mis. hasil unduhan
+     * foto profil Google), bukan dari unggahan HTTP.
+     *
+     * Ekstensi di sini ditentukan pemanggil setelah memeriksa isi berkasnya,
+     * jadi nilainya sudah tepercaya; tetap disaring agar hanya berisi huruf dan
+     * angka sebelum dipakai sebagai nama file.
+     */
+    public function storeBinary(string $contents, string $extension): string
+    {
+        $extension = preg_replace('/[^a-z0-9]/', '', strtolower($extension)) ?: 'jpg';
+        $filename = Str::random(40).'.'.$extension;
+
+        $directory = public_path(self::DIRECTORY);
+
+        if (! is_dir($directory)) {
+            mkdir($directory, 0o755, true);
+        }
+
+        file_put_contents($directory.'/'.$filename, $contents);
+
+        return self::DIRECTORY.'/'.$filename;
+    }
+
+    /**
      * Hapus avatar lama bila ada. Aman dipanggil dengan null.
      */
     public function delete(?string $path): void

@@ -206,6 +206,20 @@ class User extends Authenticatable
     }
 
     /**
+     * Apakah akun ini punya password sendiri.
+     *
+     * Akun yang lahir dari Google tidak punya password (kolomnya NULL), sehingga
+     * tidak ada hash yang bisa dibandingkan oleh aturan validasi `current_password`.
+     * Halaman ganti password dan hapus akun memakai ini untuk melewati verifikasi
+     * tersebut — tanpa itu, pengguna Google tidak akan pernah bisa memasang
+     * password atau menghapus akunnya sendiri.
+     */
+    public function hasPassword(): bool
+    {
+        return $this->password !== null && $this->password !== '';
+    }
+
+    /**
      * Passport's TokenGuard calls this unconditionally on every OAuth-authenticated
      * request. We deliberately don't pull in Passport's HasApiTokens trait here — its
      * methods (tokens(), createToken(), etc.) collide by name with Sanctum's, which
