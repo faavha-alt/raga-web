@@ -114,7 +114,28 @@ Batasan yang perlu diketahui (dari FAQ resmi Suunto):
   `sleep`/`activity`/`recovery`/`sleepstages` — jadi **lebih lengkap** dari Cloud API
   resmi (yang tidak punya data tidur). Risiko: API privat, bisa berubah sewaktu-waktu,
   **berpotensi melanggar ToS Suunto**, kuota ketat, dan akun bisa di-flag/ban; hanya
-  untuk data sendiri. Belum diimplementasikan — keputusan ada di user.
+  untuk data sendiri.
+
+#### Memasang jalur suuntool (tidak resmi, read-only)
+
+```bash
+# Di server produksi (Linux amd64) — sesuaikan versinya bila sudah lebih baru.
+curl -fsSL -o /tmp/suuntool.tar.gz \
+  https://github.com/tajchert/suuntool/releases/download/v0.10.0/suuntool_0.10.0_linux_amd64.tar.gz
+tar -xzf /tmp/suuntool.tar.gz -C /tmp suuntool
+sudo install -m 0755 /tmp/suuntool /usr/local/bin/suuntool
+
+# Pastikan dikenali aplikasi (cron PHP mungkin tidak punya /usr/local/bin di PATH):
+php artisan tinker --execute="var_dump(\App\Services\Suunto\SuuntoToolClient::isAvailable());"
+```
+
+Lalu di **Settings → Suunto**, isi email & password Suunto App (password tidak
+disimpan — hanya dipakai sekali untuk membuat sesi di
+`storage/app/suunto_sessions/<user>/session.json`), dan tekan **Sync Now**.
+Cron opsional: `php artisan suunto:sync --days=7`.
+
+Kalau binary tidak ada di PATH cron, set `SUUNTO_TOOL_BINARY=/usr/local/bin/suuntool`
+di `.env` lalu `php artisan config:cache`.
 
 ### AI Health & Performance Coach
 - **BYOK** (Bring Your Own Key) per user — pilih provider **Anthropic** atau **Gemini**

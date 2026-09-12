@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h1 class="telemetry-value text-4xl sm:text-5xl">{{ __('Suunto') }}</h1>
-        <p class="mt-2 text-sm font-medium text-telemetry-slate">Sumber data aktivitas dari Suunto App (read-only, via Suunto Cloud API).</p>
+        <p class="mt-2 text-sm font-medium text-telemetry-slate">Sumber data aktivitas dari Suunto App (read-only).</p>
     </x-slot>
 
     <div class="py-6 pb-16">
@@ -19,56 +19,43 @@
                 </div>
             @endif
 
-            @unless ($configured)
-                <x-card>
-                    <div class="flex items-center gap-3">
-                        <span class="flex h-11 w-11 items-center justify-center border border-telemetry-line bg-telemetry-well text-xl">🔑</span>
-                        <div>
-                            <p class="font-display font-semibold text-telemetry-ink">Kredensial Suunto belum diisi</p>
-                            <p class="text-sm text-telemetry-slate">Isi <span class="telemetry-value text-xs">SUUNTO_CLIENT_ID</span>, <span class="telemetry-value text-xs">SUUNTO_CLIENT_SECRET</span>, dan <span class="telemetry-value text-xs">SUUNTO_SUBSCRIPTION_KEY</span> di <span class="telemetry-value text-xs">.env</span>, lalu jalankan <span class="telemetry-value text-xs">php artisan config:clear</span>.</p>
-                        </div>
-                    </div>
-                    <p class="mt-4 border-t border-telemetry-line pt-4 text-xs text-telemetry-slate">
-                        Akses Suunto <span class="font-semibold">tidak diberikan untuk pemakaian pribadi</span> — ajukan
-                        <span class="font-semibold">Suunto Partner Program</span> lebih dulu (formulir di
-                        <a href="https://www.suunto.com/en-gg/partners/welcome-partners/" target="_blank" rel="noopener" class="font-semibold text-telemetry-chrono-deep hover:underline">suunto.com/partners</a>;
-                        centang Suunto Cloud API, tanda tangani agreement, sebutkan email developer). Setelah diterima,
-                        langganan <span class="font-semibold">Developer API</span> di
-                        <a href="https://apizone.suunto.com/how-to-start" target="_blank" rel="noopener" class="font-semibold text-telemetry-chrono-deep hover:underline">apizone.suunto.com</a>,
-                        salin <em>subscription key</em>, lalu isi OAuth settings (app name, client secret, redirect URI
-                        <span class="telemetry-value text-xs">{{ \App\Services\Suunto\SuuntoApiClient::redirectUri() }}</span>).
-                        Jawaban partner program biasanya ≤ 2 minggu; kontak <span class="telemetry-value text-xs">partners@suunto.com</span>.
-                    </p>
-                </x-card>
-            @endunless
-
             @if ($connection)
                 <x-card>
                     <div class="flex items-center gap-3">
                         <span class="flex h-11 w-11 items-center justify-center border border-telemetry-line bg-telemetry-well text-xl">⌚</span>
-                        <div>
+                        <div class="min-w-0">
                             <p class="font-display font-semibold text-telemetry-ink">Terhubung ke Suunto</p>
-                            <p class="text-sm text-telemetry-slate">
-                                {{ $connection->suunto_username ? '@'.$connection->suunto_username : 'Akun Suunto' }}
+                            <p class="truncate text-sm text-telemetry-slate">
+                                {{ $connection->suunto_username ?? $connection->email ?? 'Akun Suunto' }}
                                 · sejak {{ $connection->connected_at?->translatedFormat('d M Y, H:i') ?? '—' }}
                             </p>
                         </div>
                     </div>
 
-                    <div class="mt-5 space-y-1 border-t border-telemetry-line pt-5 text-sm">
+                    <div class="mt-4 flex flex-wrap items-center gap-2 border-t border-telemetry-line pt-4">
+                        @if ($connection->auth_mode === 'password')
+                            <x-chip variant="pace">mode: suuntool</x-chip>
+                            <span class="text-xs text-telemetry-slate">Sesi disimpan lokal di server; password tidak disimpan.</span>
+                        @else
+                            <x-chip variant="recovery">mode: Cloud API resmi</x-chip>
+                        @endif
+                    </div>
+
+                    <div class="mt-4 space-y-1 text-sm">
                         <p class="text-telemetry-slate">
                             Sync terakhir:
                             <span class="font-semibold text-telemetry-ink">
                                 {{ $connection->last_synced_at?->diffForHumans() ?? 'Belum pernah' }}
                             </span>
                         </p>
-                        <p class="text-telemetry-slate">
-                            Token berlaku sampai:
-                            <span class="font-semibold text-telemetry-ink">
-                                {{ $connection->expires_at?->translatedFormat('d M Y, H:i') ?? '—' }}
-                            </span>
-                            <span class="text-xs">(diperbarui otomatis saat sync)</span>
-                        </p>
+                        @if ($connection->auth_mode !== 'password')
+                            <p class="text-telemetry-slate">
+                                Token berlaku sampai:
+                                <span class="font-semibold text-telemetry-ink">
+                                    {{ $connection->expires_at?->translatedFormat('d M Y, H:i') ?? '—' }}
+                                </span>
+                            </p>
+                        @endif
                         @if ($connection->last_sync_status === 'error')
                             <p class="font-medium text-telemetry-ember-deep">Sync terakhir gagal: {{ $connection->last_sync_message }}</p>
                         @elseif ($connection->last_sync_message)
@@ -85,34 +72,83 @@
                             </x-primary-button>
                         </form>
 
-                        <form method="POST" action="{{ route('settings.suunto.disconnect') }}" onsubmit="return confirm('Putuskan koneksi Suunto? Kamu perlu otorisasi ulang untuk sync lagi.');">
+                        <form method="POST" action="{{ route('settings.suunto.disconnect') }}" onsubmit="return confirm('Putuskan koneksi Suunto? Kamu perlu login ulang untuk sync lagi.');">
                             @csrf
                             <x-secondary-button type="submit">Putuskan Koneksi</x-secondary-button>
                         </form>
                     </div>
                 </x-card>
-            @elseif ($hasCredentials)
+            @else
                 <x-card>
-                    <div class="mb-5 flex items-center gap-3">
+                    <div class="flex items-center gap-3">
                         <span class="flex h-11 w-11 items-center justify-center border border-telemetry-line bg-telemetry-well text-xl">🔗</span>
                         <div>
                             <p class="font-display font-semibold text-telemetry-ink">Hubungkan akun Suunto</p>
-                            <p class="text-sm text-telemetry-slate">Kamu akan diarahkan ke Suunto untuk memberi izin baca data workout. RAGA tidak menyimpan password Suunto-mu.</p>
+                            <p class="text-sm text-telemetry-slate">Login dengan akun Suunto App. Password dipakai sekali untuk membuat sesi — tidak disimpan di database.</p>
                         </div>
                     </div>
 
-                    <a href="{{ route('settings.suunto.connect') }}"
-                       class="inline-flex w-full items-center justify-center gap-2 rounded bg-telemetry-ember px-5 py-2.5 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-telemetry-ember-dark">
-                        Hubungkan Suunto
-                    </a>
+                    @if ($toolAvailable)
+                        <form method="POST" action="{{ route('settings.suunto.login') }}" class="mt-5 space-y-4">
+                            @csrf
+
+                            <div>
+                                <x-input-label for="email" value="Email Suunto" />
+                                <x-text-input id="email" type="email" name="email" :value="old('email')" required autofocus />
+                            </div>
+
+                            <div>
+                                <x-input-label for="password" value="Password Suunto" />
+                                <x-text-input id="password" type="password" name="password" required autocomplete="off" />
+                            </div>
+
+                            <x-primary-button class="w-full">Hubungkan</x-primary-button>
+                        </form>
+
+                        <p class="mt-4 border-t border-telemetry-line pt-4 text-xs text-telemetry-slate">
+                            Memakai CLI <span class="telemetry-value text-xs">{{ $toolBinary }}</span> (backend aplikasi Suunto).
+                            Ini API privat: kontraknya bisa berubah sewaktu-waktu, kuotanya ketat, dan pemakaiannya
+                            <span class="font-semibold">berpotensi melanggar ToS Suunto</span> — pakai hanya untuk data akunmu sendiri.
+                        </p>
+                    @else
+                        <div class="mt-5 border-t border-telemetry-line pt-5">
+                            <p class="text-sm font-semibold text-telemetry-ember-deep">Binary <span class="telemetry-value text-xs">{{ $toolBinary }}</span> belum terpasang di server.</p>
+                            <p class="mt-2 text-xs text-telemetry-slate">
+                                Pasang rilis Linux dari
+                                <a href="https://github.com/tajchert/suuntool/releases" target="_blank" rel="noopener" class="font-semibold text-telemetry-chrono-deep hover:underline">github.com/tajchert/suuntool/releases</a>
+                                ke <span class="telemetry-value text-xs">/usr/local/bin/suuntool</span>, atau set
+                                <span class="telemetry-value text-xs">SUUNTO_TOOL_BINARY</span> ke path absolutnya, lalu
+                                <span class="telemetry-value text-xs">php artisan config:cache</span>.
+                            </p>
+                        </div>
+                    @endif
+                </x-card>
+
+                <x-card>
+                    <x-section-heading title="Jalur Resmi // Opsional" hint="Butuh Partner Program" />
+
+                    @if ($hasCredentials)
+                        <p class="text-sm text-telemetry-slate">Kredensial Suunto Cloud API sudah diisi — kamu bisa memakai jalur resmi ini.</p>
+                        <a href="{{ route('settings.suunto.connect') }}"
+                           class="mt-4 inline-flex items-center justify-center gap-2 rounded border border-telemetry-line-strong bg-telemetry-surface px-5 py-2.5 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ink transition-colors hover:border-telemetry-ink hover:bg-telemetry-well">
+                            Hubungkan lewat Cloud API
+                        </a>
+                    @else
+                        <p class="text-sm text-telemetry-slate">
+                            Suunto Cloud API tidak diberikan untuk pemakaian pribadi — harus lewat
+                            <span class="font-semibold">Suunto Partner Program</span>
+                            (<a href="https://www.suunto.com/en-gg/partners/welcome-partners/" target="_blank" rel="noopener" class="font-semibold text-telemetry-chrono-deep hover:underline">formulir</a>,
+                            agreement, daftar email developer; jawaban ≤ 2 minggu). Jalur resmi juga tidak menyediakan data tidur.
+                            Selama belum ada kredensial, pakai mode <span class="font-semibold">suuntool</span> di atas.
+                        </p>
+                    @endif
                 </x-card>
             @endif
 
             <p class="px-1 text-xs text-telemetry-slate">
-                Yang ditarik: workout (jarak, durasi, HR, elevasi, kalori) beserta sampel per detik bila tersedia, lalu
-                dipetakan ke tabel aktivitas yang sama dengan Garmin sehingga Recovery, Training, Analytics, dan AI Coach
-                otomatis ikut. Suunto Cloud API tidak menyediakan tidur, Body Battery, atau Training Readiness — faktor itu
-                dibiarkan kosong, bukan ditebak.
+                Yang ditarik: workout (jarak, durasi, HR, elevasi, kalori, sampel per detik) dan tidur, lalu dipetakan ke
+                tabel yang sama dengan Garmin sehingga Recovery, Training, Analytics, dan AI Coach otomatis ikut.
+                Faktor yang tidak tersedia (Body Battery, Training Readiness, stress) dibiarkan kosong — bukan ditebak.
             </p>
 
         </div>

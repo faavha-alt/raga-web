@@ -60,6 +60,10 @@ return [
         'oauth_base' => env('SUUNTO_OAUTH_BASE', 'https://cloudapi-oauth.suunto.com'),
         'api_base' => env('SUUNTO_API_BASE', 'https://cloudapi.suunto.com'),
         'api_path' => env('SUUNTO_API_PATH', '/v3/workouts'),
+        // Jalur tidak resmi: CLI `suuntool` (backend aplikasi Suunto). Kosongkan
+        // untuk mematikan; isi path absolut bila binary tidak ada di PATH cron.
+        'binary' => env('SUUNTO_TOOL_BINARY', 'suuntool'),
+        'sync_limit' => (int) env('SUUNTO_SYNC_LIMIT', 20),
         'timeout' => (int) env('SUUNTO_TIMEOUT', 30),
     ],
 

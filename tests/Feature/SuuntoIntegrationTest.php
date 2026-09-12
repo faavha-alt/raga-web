@@ -6,6 +6,7 @@ use App\Models\SuuntoConnection;
 use App\Models\User;
 use App\Models\Workout;
 use App\Services\Suunto\SuuntoSyncService;
+use App\Services\Suunto\SuuntoToolClient;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -32,6 +33,12 @@ class SuuntoIntegrationTest extends TestCase
             'services.suunto.api_path' => '/v3/workouts',
             'services.suunto.redirect' => '/settings/suunto/callback',
         ]);
+
+        // Cache statis `SuuntoToolClient::isAvailable()` bisa terbawa dari test
+        // lain di proses yang sama — bersihkan agar halaman dirender konsisten.
+        $property = (new \ReflectionClass(SuuntoToolClient::class))->getProperty('availability');
+        $property->setAccessible(true);
+        $property->setValue(null, []);
     }
 
     public function test_settings_page_shows_the_connect_card_when_configured(): void
@@ -41,8 +48,8 @@ class SuuntoIntegrationTest extends TestCase
         $this->actingAs($user)
             ->get(route('settings.suunto.show'))
             ->assertOk()
-            ->assertSee('Hubungkan Suunto')
-            ->assertDontSee('Kredensial Suunto belum diisi');
+            ->assertSee('Hubungkan lewat Cloud API')
+            ->assertDontSee('Suunto Partner Program');
     }
 
     public function test_settings_page_warns_when_credentials_are_missing(): void
@@ -52,9 +59,8 @@ class SuuntoIntegrationTest extends TestCase
         $this->actingAs(User::factory()->create())
             ->get(route('settings.suunto.show'))
             ->assertOk()
-            ->assertSee('Kredensial Suunto belum diisi')
-            ->assertSee('apizone.suunto.com', false)
-            ->assertDontSee('Hubungkan Suunto');
+            ->assertSee('Suunto Partner Program')
+            ->assertDontSee('Hubungkan lewat Cloud API');
     }
 
     public function test_connect_redirects_to_suunto_with_a_state(): void

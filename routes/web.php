@@ -102,6 +102,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/connect', [SuuntoConnectionController::class, 'redirect'])->name('connect');
         Route::get('/callback', [SuuntoConnectionController::class, 'callback'])->name('callback');
         Route::post('/sync', [SuuntoConnectionController::class, 'sync'])->name('sync');
+        Route::post('/login', [SuuntoConnectionController::class, 'loginWithTool'])->name('login');
         Route::post('/disconnect', [SuuntoConnectionController::class, 'disconnect'])->name('disconnect');
     });
 

@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 #[Fillable([
     'user_id',
+    'auth_mode',
+    'email',
     'suunto_username',
     'access_token',
     'refresh_token',

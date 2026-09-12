@@ -6,8 +6,10 @@ use App\Models\SuuntoConnection;
 use App\Services\Suunto\SuuntoApiClient;
 use App\Services\Suunto\SuuntoApiException;
 use App\Services\Suunto\SuuntoSyncService;
+use App\Services\Suunto\SuuntoToolClient;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -28,7 +30,53 @@ class SuuntoConnectionController extends Controller
             'connection' => $connection,
             'configured' => SuuntoApiClient::isConfigured(),
             'hasCredentials' => SuuntoApiClient::hasOAuthCredentials(),
+            'toolAvailable' => SuuntoToolClient::isAvailable(),
+            'toolBinary' => SuuntoToolClient::binary(),
         ]);
+    }
+
+    /**
+     * Jalur tidak resmi: login email/password Suunto lewat CLI `suuntool`.
+     * Password tidak disimpan — hanya diteruskan ke proses login sekali.
+     */
+    public function loginWithTool(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string'],
+        ]);
+
+        if (! SuuntoToolClient::isAvailable()) {
+            return redirect()->route('settings.suunto.show')->withErrors([
+                'suunto' => 'Binary `'.SuuntoToolClient::binary().'` tidak ditemukan di server. Pasang suuntool dulu (lihat README).',
+            ]);
+        }
+
+        $result = (new SuuntoToolClient($request->user()))->login($data['email'], $data['password']);
+
+        if ($result['status'] === 'error') {
+            return redirect()->route('settings.suunto.show')->withErrors([
+                'suunto' => 'Login Suunto gagal: '.($result['message'] ?? 'tidak diketahui'),
+            ]);
+        }
+
+        SuuntoConnection::updateOrCreate(
+            ['user_id' => $request->user()->id],
+            [
+                'auth_mode' => SuuntoToolClient::authMode(),
+                'email' => $data['email'],
+                'suunto_username' => $result['username'],
+                'access_token' => null,
+                'refresh_token' => null,
+                'expires_at' => null,
+                'scope' => null,
+                'connected_at' => now(),
+                'last_sync_status' => null,
+                'last_sync_message' => null,
+            ]
+        );
+
+        return redirect()->route('settings.suunto.show')->with('status', 'Terhubung ke Suunto (mode suuntool). Jalankan Sync Now untuk menarik data.');
     }
 
     /** Mulai alur OAuth: simpan state di session lalu lempar ke Suunto. */
@@ -117,7 +165,16 @@ class SuuntoConnectionController extends Controller
 
     public function disconnect(Request $request): RedirectResponse
     {
-        $request->user()->suuntoConnection?->delete();
+        $user = $request->user();
+
+        $user->suuntoConnection?->delete();
+
+        // Sesi suuntool hidup di berkas terpisah — hapus juga supaya benar-benar putus.
+        $sessionDirectory = dirname(SuuntoToolClient::sessionPathForUser($user));
+
+        if (is_dir($sessionDirectory)) {
+            File::deleteDirectory($sessionDirectory);
+        }
 
         return redirect()->route('settings.suunto.show')->with('status', 'Koneksi Suunto diputus.');
     }

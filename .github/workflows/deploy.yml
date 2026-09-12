@@ -38,6 +38,29 @@ jobs:
             # dan halaman sosial berfungsi. Idempoten: pengguna yang sudah punya
             # username dilewati.
             php artisan users:backfill-usernames
+            # CLI suuntool untuk jalur Suunto tidak resmi (read-only). Idempoten:
+            # hanya diunduh bila belum ada, dan kegagalannya TIDAK menggagalkan
+            # deploy (fitur tinggal menunjukkan pesan "binary belum terpasang").
+            install_suuntool() {
+              command -v suuntool >/dev/null 2>&1 && return 0
+              [ -x "$HOME/.local/bin/suuntool" ] && return 0
+              case "$(uname -m)" in
+                x86_64|amd64) ARCH=amd64 ;;
+                aarch64|arm64) ARCH=arm64 ;;
+                *) echo "suuntool: arch $(uname -m) belum didukung, dilewati"; return 0 ;;
+              esac
+              VERSION=0.10.0
+              BASE="https://github.com/tajchert/suuntool/releases/download/v${VERSION}"
+              mkdir -p "$HOME/.local/bin" /tmp/suuntool-dl
+              curl -fsSL -o /tmp/suuntool-dl/suuntool.tar.gz "$BASE/suuntool_${VERSION}_linux_${ARCH}.tar.gz" || return 0
+              curl -fsSL -o /tmp/suuntool-dl/checksums.txt "$BASE/checksums.txt" || return 0
+              (cd /tmp/suuntool-dl && grep "suuntool_${VERSION}_linux_${ARCH}.tar.gz" checksums.txt | sha256sum -c - >/dev/null 2>&1) \
+                || { echo "suuntool: checksum tidak cocok, dilewati"; return 0; }
+              tar -xzf /tmp/suuntool-dl/suuntool.tar.gz -C "$HOME/.local/bin" suuntool
+              chmod 0755 "$HOME/.local/bin/suuntool"
+              rm -rf /tmp/suuntool-dl
+            }
+            install_suuntool
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache

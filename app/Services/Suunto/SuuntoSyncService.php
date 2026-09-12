@@ -2,7 +2,10 @@
 
 namespace App\Services\Suunto;
 
+use App\Models\SleepSession;
+use App\Models\SuuntoConnection;
 use App\Models\User;
+use App\Models\Workout;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -38,7 +41,10 @@ class SuuntoSyncService
         'LocationStreamExtension',
     ];
 
-    public function __construct(private SuuntoWorkoutMapper $mapper) {}
+    public function __construct(
+        private SuuntoWorkoutMapper $mapper,
+        private SuuntoToolMapper $toolMapper,
+    ) {}
 
     public static function streamExtensions(): string
     {
@@ -76,6 +82,167 @@ class SuuntoSyncService
             return $this->result('error', $days, 0, 0, 'Belum terhubung ke Suunto.');
         }
 
+        // Dua jalur: `password` (CLI suuntool, backend aplikasi Suunto) atau
+        // `oauth` (Suunto Cloud API resmi, butuh Partner Program).
+        return $connection->auth_mode === SuuntoToolClient::authMode()
+            ? $this->syncViaTool($user, $connection, $days)
+            : $this->syncViaApi($user, $connection, $days);
+    }
+
+    /**
+     * Jalur tidak resmi: CLI `suuntool` (backend aplikasi Suunto).
+     *
+     * @return array{status: 'success'|'error', days: int, imported: int, skipped: int, message: ?string, import_output: ?string}
+     */
+    private function syncViaTool(User $user, SuuntoConnection $connection, int $days): array
+    {
+        if (! SuuntoToolClient::isAvailable()) {
+            $message = 'Binary `'.SuuntoToolClient::binary().'` tidak ditemukan di server. Pasang suuntool (lihat README).';
+            $connection->update(['last_synced_at' => now(), 'last_sync_status' => 'error', 'last_sync_message' => $message]);
+
+            return $this->result('error', $days, 0, 0, $message);
+        }
+
+        $client = new SuuntoToolClient($user);
+
+        if (! $client->hasSession()) {
+            $message = 'Sesi Suunto belum ada atau sudah kedaluwarsa. Masukkan ulang email & password Suunto.';
+            $connection->update(['last_synced_at' => now(), 'last_sync_status' => 'error', 'last_sync_message' => $message]);
+
+            return $this->result('error', $days, 0, 0, $message);
+        }
+
+        try {
+            $since = now()->subDays($days)->toDateString();
+            $workouts = $client->workoutsSince($since);
+
+            $activities = [];
+            $skipped = 0;
+
+            foreach ($workouts as $workout) {
+                if (! is_array($workout)) {
+                    $skipped++;
+
+                    continue;
+                }
+
+                // Peta dulu tanpa SML: cukup untuk tahu waktu mulai, sehingga
+                // workout yang sudah ada tidak perlu mengunduh sampel ~5 MB.
+                $summary = $this->toolMapper->toGarminActivity($workout);
+
+                if (empty($summary['startTimeLocal']) || empty($summary['duration'])) {
+                    $skipped++;
+
+                    continue;
+                }
+
+                $alreadyImported = Workout::where('user_id', $user->id)
+                    ->where('source', 'suunto')
+                    ->where('start_date', $summary['startTimeLocal'])
+                    ->exists();
+
+                if ($alreadyImported) {
+                    $skipped++;
+
+                    continue;
+                }
+
+                $samples = $this->fetchSamples($client, $workout);
+
+                $activities[] = $this->toolMapper->toGarminActivity($workout, $samples);
+            }
+
+            $importOutput = $activities === [] ? null : $this->import($user, $activities);
+            $sleepCount = $this->importSleep($user, $client, $days);
+
+            Artisan::call('recovery:calculate', ['--days' => $days, '--user' => $user->id]);
+            Cache::forget('ai-context:user:'.$user->id);
+
+            $connection->update([
+                'last_synced_at' => now(),
+                'last_sync_status' => 'success',
+                'last_sync_message' => $activities === [] && $sleepCount === 0
+                    ? 'Tidak ada data baru pada rentang ini.'
+                    : null,
+            ]);
+
+            return $this->result('success', $days, count($activities), $skipped, null, $importOutput);
+        } catch (SuuntoApiException $e) {
+            $connection->update(['last_synced_at' => now(), 'last_sync_status' => 'error', 'last_sync_message' => $e->getMessage()]);
+
+            return $this->result('error', $days, 0, 0, $e->getMessage());
+        } catch (Throwable $e) {
+            Log::error('Suunto (suuntool) sync gagal.', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+            $connection->update(['last_synced_at' => now(), 'last_sync_status' => 'error', 'last_sync_message' => 'Sinkronisasi gagal: '.$e->getMessage()]);
+
+            return $this->result('error', $days, 0, 0, 'Sinkronisasi gagal: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Ambil sampel per-detik bila key workout tersedia; kegagalan satu workout
+     * tidak menggagalkan sync (workout tetap masuk sebagai ringkasan).
+     *
+     * @param  array<string, mixed>  $workout
+     * @return array<string, mixed>|null
+     */
+    private function fetchSamples(SuuntoToolClient $client, array $workout): ?array
+    {
+        $key = null;
+
+        foreach (['key', 'workoutKey', 'id'] as $candidate) {
+            if (isset($workout[$candidate]) && is_scalar($workout[$candidate])) {
+                $key = (string) $workout[$candidate];
+                break;
+            }
+        }
+
+        if ($key === null) {
+            return null;
+        }
+
+        try {
+            return $client->workoutSamples($key);
+        } catch (Throwable $e) {
+            Log::warning('Sampel Suunto dilewati.', ['key' => $key, 'error' => $e->getMessage()]);
+
+            return null;
+        }
+    }
+
+    /** Impor tidur dari `wellness sleep`; jumlah baris yang ditulis. */
+    private function importSleep(User $user, SuuntoToolClient $client, int $days): int
+    {
+        try {
+            $entries = $client->sleepSince(now()->subDays($days)->toDateString());
+        } catch (Throwable $e) {
+            Log::warning('Wellness sleep Suunto dilewati.', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+
+            return 0;
+        }
+
+        $sessions = $this->toolMapper->sleepSessions($entries, (int) $user->id, 'suunto');
+        $written = 0;
+
+        foreach ($sessions as $attributes) {
+            SleepSession::updateOrCreate(
+                [
+                    'user_id' => $attributes['user_id'],
+                    'source' => $attributes['source'],
+                    'bedtime' => $attributes['bedtime'],
+                ],
+                $attributes,
+            );
+
+            $written++;
+        }
+
+        return $written;
+    }
+
+    /** Jalur resmi: Suunto Cloud API (OAuth2 + subscription key). */
+    private function syncViaApi(User $user, SuuntoConnection $connection, int $days): array
+    {
         if (! SuuntoApiClient::isConfigured()) {
             $message = 'Kredensial Suunto belum lengkap (SUUNTO_CLIENT_ID / SUUNTO_CLIENT_SECRET / SUUNTO_SUBSCRIPTION_KEY).';
             $connection->update(['last_synced_at' => now(), 'last_sync_status' => 'error', 'last_sync_message' => $message]);
