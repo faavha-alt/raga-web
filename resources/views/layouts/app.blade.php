@@ -31,11 +31,11 @@
         @stack('head')
     </head>
     <body class="font-sans antialiased">
-        <div x-data="{ sidebarOpen: false }" class="min-h-screen bg-telemetry-canvas lg:flex">
+        <div class="min-h-screen bg-telemetry-canvas">
             @include('layouts.navigation')
 
             <!-- Main column -->
-            <div class="min-w-0 flex-1">
+            <div class="min-w-0">
                 <!-- Page Heading -->
                 @isset($header)
                     <header>

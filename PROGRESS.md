@@ -57,7 +57,8 @@ Dibuat: 2026-08-26
 - [x] `x-card` & `x-metric-tile` di-restyle; komponen baru `x-chip` (recovery/pace/strain) dan `x-section-heading`
 - [x] `acuan_tampilan/` masuk `.gitignore`
 - [ ] Penerapan per halaman: dashboard (Command Center), detail aktivitas (split bertag + band gradien), halaman Athlete DNA (heatmap 52 minggu + radar 5 pilar + PR suite)
-- [ ] Keputusan user yang belum diambil: ganti sidebar jadi top-nav horizontal seperti mockup, atau pertahankan sidebar
+- [x] Top nav horizontal menggantikan sidebar (keputusan user): header sticky (brand + 6 modul utama + tombol Rekam + lonceng + menu profil) dengan strip sekunder untuk Explore/Segment/Goals/Running/Trail/Recovery/Settings, plus panel mobile 2 kolom. Komponen baru `x-topnav-link`; `x-sidebar-link` dihapus (tidak ada pemakai lain)
+- [x] 3 test navigasi baru (`tests/Feature/NavigationTest.php`) yang memastikan sidebar benar-benar hilang, semua modul tetap tertaut, menu profil & logout ada, dan seluruh nama rute navigasi masih terdaftar; full suite **371 passed / 1195 assertions**
 
 ## Log sesi
 
@@ -148,5 +149,8 @@ Dibuat: 2026-08-26
   - **Komponen**: `x-card` di-restyle (radius 8px, border `#E2E8F0`, **tanpa shadow**, hover hanya menguatkan border), `x-metric-tile` jadi metric cell telemetry (label mikro uppercase + angka tabular 28px + unit kecil), komponen baru `x-chip` (varian recovery/pace/strain/neutral sesuai DESIGN.md) dan `x-section-heading` (label seksi uppercase + hint opsional).
   - **Verifikasi**: `npm run build` sukses; token terbukti masuk CSS hasil build (`bg-telemetry-canvas` → `rgb(248 249 250)`, `border-telemetry-line`, `font-family:Space Grotesk` pada `.telemetry-label`, ember & chrono ter-compile dari `x-chip`); `php artisan test` **368 passed / 1157 assertions** (seluruh halaman yang diuji tetap render 200).
   - **Belum dikerjakan (tahap berikutnya, per halaman)**: layout top-nav vs sidebar, header sapaan + baris skor di dashboard, tabel split bertag + band gradien di detail aktivitas, halaman Athlete DNA (heatmap 52 minggu, radar 5 pilar, PR suite). Ini visual murni, belum menyentuh data.
+  - **Top nav menggantikan sidebar (keputusan user, sesi yang sama).** `layouts/navigation.blade.php` ditulis ulang: header **sticky** (bukan lagi `<aside>`), baris utama berisi brand + 6 modul paling sering dibuka (Dashboard, Feed, Training, Health, Analytics, AI) + tombol CTA **Rekam** berwarna ember + lonceng notifikasi + menu profil dropdown (nama, @username, Profil, Goals, Settings, Log Out). Modul analitik/penjelajahan (Explore, Segment, Goals, Running, Trail, Recovery, Settings) pindah ke **strip sekunder** di bawah header dengan label uppercase bertracking lebar — mengikuti pola dua baris mockup Stitch. Di layar < lg semuanya masuk **panel mobile 2 kolom**; strip sekunder disembunyikan.
+  - **Komponen**: `x-topnav-link` baru (varian `primary` dengan penanda titik ember pada item aktif, dan `sub` tanpa blok). `x-sidebar-link` **dihapus** — sudah dicek tidak ada pemakai lain. `layouts/app.blade.php` kehilangan wrapper `lg:flex` + `sidebarOpen`, konten kini full width di bawah header.
+  - **Verifikasi**: `npm run build` sukses; `php artisan test` **371 passed / 1195 assertions** (naik 3 dari 368) — termasuk `tests/Feature/NavigationTest.php` yang memastikan TIDAK ada lagi `</aside>`/`sidebarOpen` di HTML, seluruh 14 rute navigasi tetap tertaut, menu profil & logout tersedia, dan semua nama rute navigasi masih terdaftar. `pint` bersih.
 
 
