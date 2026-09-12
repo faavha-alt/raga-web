@@ -245,6 +245,17 @@ cd ~/htdocs/raga.favha.cloud
 php artisan config:cache
 ```
 
+**Jangan menyimpan cadangan `.env` di dalam direktori repo.** `.gitignore`
+mengabaikan seluruh pola `.env*` kecuali `.env.example`, tetapi berkas cadangan
+yang berada di root repo tetap satu `git add -A` dari ikut ter-commit beserta
+seluruh rahasia produksi. Simpan di luar repo, misalnya:
+
+```bash
+mkdir -p ~/.env-backups
+cp -a .env ~/.env-backups/.env.$(date +%Y%m%d%H%M%S)
+chmod 600 ~/.env-backups/.env.*
+```
+
 **nginx (template vhost CloudPanel)** — tambahkan blok agar service worker PWA
 tidak di-cache selamanya oleh Varnish/proxy (kode `sw.js` berubah saat aplikasi
 diperbarui; bila di-cache, pembaruan versi cache tidak akan pernah sampai):
