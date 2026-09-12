@@ -154,7 +154,9 @@ class AthleteDnaService
 
         $rows = $user->workouts()
             ->whereBetween('start_date', [$start->copy()->startOfDay(), $today->copy()->endOfDay()])
-            ->selectRaw('DATE(start_date) as workout_date, SUM(relative_effort) as effort, SUM(training_load) as load')
+            // Alias TIDAK boleh memakai reserved word MySQL (`load` bikin
+            // syntax error 1064 di MySQL, walau SQLite di test menerimanya).
+            ->selectRaw('DATE(start_date) as workout_date, SUM(relative_effort) as effort, SUM(training_load) as training_load_total')
             ->groupBy('workout_date')
             ->get();
 
@@ -164,7 +166,7 @@ class AthleteDnaService
 
         foreach ($rows as $row) {
             $effort = (float) ($row->effort ?? 0);
-            $load = (float) ($row->load ?? 0);
+            $load = (float) ($row->training_load_total ?? 0);
             $daily[$row->workout_date] = ['effort' => $effort, 'load' => $load];
             $effortTotal += $effort;
             $loadTotal += $load;
