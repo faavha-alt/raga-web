@@ -193,6 +193,13 @@ location = /sw.js {
 }
 ```
 
+**Manifest PWA tidak perlu konfigurasi nginx.** `/manifest.webmanifest` disajikan
+lewat rute aplikasi (`App\Support\WebManifest`), bukan sebagai berkas statis,
+karena nginx mengirim ekstensi `.webmanifest` sebagai `application/octet-stream`
+dan browser menolak manifest dengan tipe MIME itu — akibatnya aplikasi tidak bisa
+dipasang ke layar utama. Jangan membuat `public/manifest.webmanifest`: berkas
+statis akan menutupi rute tersebut. Ada test yang menjaga hal ini.
+
 Catatan operasional:
 
 - **Tidak butuh queue worker.** Notifikasi sosial (follow, kudos, komentar)

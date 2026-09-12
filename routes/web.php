@@ -19,6 +19,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TrailController;
 use App\Http\Controllers\TrainingController;
 use App\Services\Analytics\RelationshipCatalog;
+use App\Support\WebManifest;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -28,6 +29,19 @@ Route::get('/', function () {
 // Halaman offline untuk service worker PWA. Sengaja publik dan tanpa closure
 // agar aman terhadap `php artisan route:cache`.
 Route::view('/offline', 'offline')->name('offline');
+
+// Manifest PWA disajikan dari aplikasi, bukan sebagai berkas statis di public/.
+// nginx tidak mengenal ekstensi `.webmanifest` dan mengirimnya sebagai
+// `application/octet-stream`; browser menolak manifest dengan tipe itu sehingga
+// PWA tidak bisa dipasang. Rute ini memastikan tipe MIME benar di server mana pun
+// (termasuk `php artisan serve`) tanpa mengubah konfigurasi nginx. Berkas
+// public/manifest.webmanifest sengaja tidak ada — kalau ada, nginx akan
+// menyajikannya lebih dulu daripada rute ini.
+Route::get('/manifest.webmanifest', function () {
+    return response()->json(WebManifest::toArray(), 200, [
+        'Content-Type' => 'application/manifest+json',
+    ]);
+})->name('manifest');
 
 Route::get('/.well-known/oauth-authorization-server', [ResourceMetadataController::class, 'authorizationServer']);
 Route::get('/.well-known/oauth-protected-resource', [ResourceMetadataController::class, 'protectedResource']);

@@ -5,12 +5,14 @@ namespace Tests\Feature;
 use Tests\TestCase;
 
 /**
- * Aset PWA adalah berkas statis di public/.
+ * Aset PWA.
  *
- * Server produksi (nginx) dan `php artisan serve` menyajikan berkas public/
- * langsung, di luar framework. Permintaan HTTP di feature test masuk lewat
- * router Laravel, jadi berkas statis selalu 404 di sini — karena itu test ini
- * memeriksa keberadaan dan isi berkas asli yang benar-benar disajikan.
+ * Sebagian besar aset (sw.js, ikon) adalah berkas statis di public/ yang
+ * disajikan langsung oleh nginx, di luar framework — karena itu test ini
+ * memeriksa keberadaan dan isi berkas aslinya.
+ *
+ * Manifest adalah pengecualian: ia disajikan lewat rute aplikasi supaya tipe
+ * MIME-nya benar (lihat App\Support\WebManifest).
  */
 class PwaTest extends TestCase
 {
@@ -23,9 +25,21 @@ class PwaTest extends TestCase
         return (string) file_get_contents($path);
     }
 
-    public function test_manifest_is_valid_json_with_required_fields(): void
+    public function test_manifest_route_serves_json_content_type_and_required_fields(): void
     {
-        $manifest = json_decode($this->contents('public/manifest.webmanifest'), true);
+        $response = $this->get('/manifest.webmanifest');
+
+        $response->assertOk();
+
+        // Browser menolak manifest yang tidak ber-tipe MIME JSON. nginx mengirim
+        // `application/octet-stream` untuk ekstensi tak dikenal, jadi manifest
+        // harus datang dari rute aplikasi dan bukan berkas statis.
+        $this->assertStringContainsString(
+            'application/manifest+json',
+            (string) $response->headers->get('Content-Type'),
+        );
+
+        $manifest = $response->json();
 
         $this->assertIsArray($manifest);
         $this->assertSame('RAGA', $manifest['short_name']);
@@ -39,9 +53,16 @@ class PwaTest extends TestCase
         $this->assertNotEmpty($manifest['description']);
     }
 
+    public function test_no_static_manifest_file_shadows_the_route(): void
+    {
+        // Bila berkas ini ada, nginx menyajikannya lebih dulu daripada rute dan
+        // tipe MIME manifest kembali salah.
+        $this->assertFileDoesNotExist(public_path('manifest.webmanifest'));
+    }
+
     public function test_manifest_declares_installable_icon_set_that_exists_on_disk(): void
     {
-        $manifest = json_decode($this->contents('public/manifest.webmanifest'), true);
+        $manifest = $this->get('/manifest.webmanifest')->json();
 
         $sizes = [];
         $maskable = [];
