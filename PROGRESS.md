@@ -51,6 +51,14 @@ Dibuat: 2026-08-26
 - [x] Ditampilkan di detail aktivitas (khusus pemilik, karena turunan data HR) dan kartu total per periode di `training/distribution`
 - [x] 10 test baru (5 unit + 5 feature); full suite **368 passed / 1157 assertions**, `pint` bersih
 
+### Desain (Swiss Telemetry Sport, acuan Google Stitch) — sesi 2026-09-13
+- [x] Token `telemetry.*` + font Inter/Space Grotesk + `boxShadow.overlay` di `tailwind.config.js` (palet `raga.*` lama dipertahankan)
+- [x] Utilitas `.telemetry-label` / `.telemetry-value` / `.telemetry-divider` + shell `bg-telemetry-canvas`
+- [x] `x-card` & `x-metric-tile` di-restyle; komponen baru `x-chip` (recovery/pace/strain) dan `x-section-heading`
+- [x] `acuan_tampilan/` masuk `.gitignore`
+- [ ] Penerapan per halaman: dashboard (Command Center), detail aktivitas (split bertag + band gradien), halaman Athlete DNA (heatmap 52 minggu + radar 5 pilar + PR suite)
+- [ ] Keputusan user yang belum diambil: ganti sidebar jadi top-nav horizontal seperti mockup, atau pertahankan sidebar
+
 ## Log sesi
 
 ### 2026-08-26
@@ -133,5 +141,12 @@ Dibuat: 2026-08-26
   - **Deploy & backfill produksi (terverifikasi)**: push `fdc8744` → CI **hijau** → deploy otomatis **hijau**; migrasi `2026_09_13_050000` **Ran** (batch 13). `training:calculate-relative-effort` di server: **46/46 aktivitas** mendapat Relative Effort (min 11, max 696, rata-rata 186). Validasi manual aktivitas teratas cocok dengan hitungan tangan: 199,8 menit teratribusi → Z3 77,9 / Z4 96 / Z5 9,1 menit = **696 poin**. Live `/` dan `/up` → 200.
   - **Catatan model**: estimasi HR maksimum pengguna = **176 bpm** (dari data tercatat sendiri). Bila nilai itu lebih rendah dari HR maks sebenarnya, zona bergeser naik dan Relative Effort ikut membesar — karena itu angkanya selalu dilabeli "estimasi". Langkah lanjutan yang disarankan: kolom **HR maksimum manual di profil** agar estimasi bisa dikoreksi pengguna.
   - **Langkah berikutnya (rencana yang disepakati)**: best efforts + PR dihitung dari `workout_samples` → CTL/ATL/Form (Fitness & Freshness) → GAP + zona HR di detail aktivitas → race predictor (Riegel) → Spearman/p-value/lag pada `CorrelationService`.
+- **Design system "Swiss Telemetry Sport" — tahap dasar (token + komponen).** User menyerahkan acuan desain hasil generate Google Stitch di `acuan_tampilan/` (4 halaman: Athlete Command Center, Activity Intelligence, Athlete DNA, Explore & Community — masing-masing `code.html` + `screen.png`, plus `DESIGN.md` berisi token lengkap). Keputusan user: terapkan **token + komponen dasar dulu**, dan `acuan_tampilan/` masuk `.gitignore` (2 MB, tidak perlu ikut repo/deploy).
+  - **Token** (`tailwind.config.js`): palet `telemetry` (canvas `#F8F9FA`, surface, well, line, ink/steel/slate, ember `#FF3E1D`, chrono `#0070F3`, emerald `#00B865`, amber `#F59E0B`), `fontFamily.display` = Space Grotesk, `sans` = **Inter** (sebelumnya Plus Jakarta Sans, jadi body copy seluruh app ikut berubah), `boxShadow.overlay`. Palet `raga.*` lama **tetap dipertahankan** supaya kelas yang sudah dipakai halaman lain tidak rusak.
+  - **Font**: layout memuat Inter + Space Grotesk dari **bunny.net** (provider yang sudah dipakai; dikonfirmasi 200 dan menyediakan keduanya) — bukan Google Fonts, supaya tetap satu sumber dan tanpa preconnect tambahan.
+  - **Utilitas** (`resources/css/app.css`): `.telemetry-label`, `.telemetry-label-lg`, `.telemetry-value` (tabular-nums + Space Grotesk), `.telemetry-divider`. Shell app (`layouts/app.blade.php`) ganti `bg-gray-50 bg-mesh` → `bg-telemetry-canvas` (mesh gradien lama tidak dipakai lagi di shell; utilitas `.bg-mesh` dibiarkan ada karena masih dipakai `athletes/show`).
+  - **Komponen**: `x-card` di-restyle (radius 8px, border `#E2E8F0`, **tanpa shadow**, hover hanya menguatkan border), `x-metric-tile` jadi metric cell telemetry (label mikro uppercase + angka tabular 28px + unit kecil), komponen baru `x-chip` (varian recovery/pace/strain/neutral sesuai DESIGN.md) dan `x-section-heading` (label seksi uppercase + hint opsional).
+  - **Verifikasi**: `npm run build` sukses; token terbukti masuk CSS hasil build (`bg-telemetry-canvas` → `rgb(248 249 250)`, `border-telemetry-line`, `font-family:Space Grotesk` pada `.telemetry-label`, ember & chrono ter-compile dari `x-chip`); `php artisan test` **368 passed / 1157 assertions** (seluruh halaman yang diuji tetap render 200).
+  - **Belum dikerjakan (tahap berikutnya, per halaman)**: layout top-nav vs sidebar, header sapaan + baris skor di dashboard, tabel split bertag + band gradien di detail aktivitas, halaman Athlete DNA (heatmap 52 minggu, radar 5 pilar, PR suite). Ini visual murni, belum menyentuh data.
 
 

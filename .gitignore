@@ -26,6 +26,9 @@
 /storage/pail
 /vendor
 /vhost
+# Acuan desain (ekspor Google Stitch: HTML statis + PNG, ~2 MB). Disimpan lokal
+# sebagai referensi visual, tidak perlu ikut ke repo atau deploy.
+/acuan_tampilan/
 /database/*.sqlite
 _ide_helper.php
 Homestead.json

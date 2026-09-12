@@ -18,3 +18,26 @@
             radial-gradient(circle at 50% 90%, rgba(255, 107, 87, 0.10), transparent 40%);
     }
 }
+
+/*
+ * Swiss Telemetry Sport — utilitas dasar.
+ * Label mikro selalu uppercase dengan tracking lebar; angka selalu tabular
+ * supaya nilai yang berubah (pace, HR, skor) tidak menggeser layout.
+ */
+@layer components {
+    .telemetry-label {
+        @apply font-display text-[10px] font-bold uppercase tracking-[0.12em] text-telemetry-slate;
+    }
+
+    .telemetry-label-lg {
+        @apply font-display text-sm font-semibold uppercase tracking-[0.06em] text-telemetry-slate;
+    }
+
+    .telemetry-value {
+        @apply font-display tabular-nums font-semibold tracking-tight text-telemetry-ink;
+    }
+
+    .telemetry-divider {
+        @apply border-t border-telemetry-line;
+    }
+}

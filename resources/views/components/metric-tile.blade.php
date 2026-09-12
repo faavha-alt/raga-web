@@ -1,11 +1,15 @@
-@props(['icon', 'label', 'value' => null, 'unit' => null])
+@props(['icon' => null, 'label', 'value' => null, 'unit' => null])
 
-<div class="rounded-2xl bg-white border border-gray-100 p-4 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+{{-- Metric cell gaya telemetry: label mikro uppercase di atas, angka tabular
+     besar di bawah, unit kecil menempel di baseline. --}}
+<div {{ $attributes->merge(['class' => 'bg-telemetry-surface border border-telemetry-line p-4']) }}>
     <div class="flex items-center gap-2">
-        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-gray-50 text-sm">{{ $icon }}</span>
-        <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">{{ $label }}</p>
+        @if ($icon)
+            <span class="text-sm leading-none" aria-hidden="true">{{ $icon }}</span>
+        @endif
+        <p class="telemetry-label">{{ $label }}</p>
     </div>
-    <p class="mt-2.5 text-[26px] leading-none font-black text-gray-900">
-        {{ $value ?? '--' }}@if ($value !== null && $unit)<span class="text-sm font-semibold text-gray-400"> {{ $unit }}</span>@endif
+    <p class="mt-2.5 text-[28px] leading-none telemetry-value">
+        {{ $value ?? '--' }}@if ($value !== null && $unit)<span class="ml-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-telemetry-slate">{{ $unit }}</span>@endif
     </p>
 </div>

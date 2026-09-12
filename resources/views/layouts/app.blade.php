@@ -16,9 +16,9 @@
         <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
 
-        <!-- Fonts -->
+        <!-- Fonts: Inter (prosa) + Space Grotesk (angka & label telemetry). -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:500,600,700,800&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700|space-grotesk:400,500,600,700&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -31,7 +31,7 @@
         @stack('head')
     </head>
     <body class="font-sans antialiased">
-        <div x-data="{ sidebarOpen: false }" class="min-h-screen bg-gray-50 dark:bg-gray-950 bg-mesh lg:flex">
+        <div x-data="{ sidebarOpen: false }" class="min-h-screen bg-telemetry-canvas lg:flex">
             @include('layouts.navigation')
 
             <!-- Main column -->
