@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'active_calories', 'average_heart_rate', 'max_heart_rate',
     'average_pace_seconds_per_km', 'elevation_gain_meters', 'elevation_loss_meters',
     'training_effect_aerobic', 'training_effect_anaerobic', 'training_effect_label',
-    'training_load', 'source', 'visibility', 'location_name',
+    'training_load', 'relative_effort', 'source', 'visibility', 'location_name',
 ])]
 class Workout extends Model
 {
