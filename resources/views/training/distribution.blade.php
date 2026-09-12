@@ -30,6 +30,22 @@
             </x-card>
 
             <x-card>
+                <h3 class="mb-1 text-xs font-bold uppercase tracking-wider text-gray-400">⚡ Relative Effort</h3>
+
+                @if ($relativeEffortWorkouts > 0)
+                    <p class="mt-2 text-3xl font-black text-gray-900">{{ number_format($relativeEffortTotal) }}</p>
+                    <p class="mt-1 text-[11px] text-gray-400">
+                        Total estimasi beban latihan dari {{ $relativeEffortWorkouts }} aktivitas yang punya data HR per-detik
+                        (rata-rata {{ round($relativeEffortTotal / $relativeEffortWorkouts) }} per aktivitas).
+                        Dihitung RAGA sendiri dari zona HR kamu (model TRIMP zona Edwards: bobot Z1–Z5 = 1–5),
+                        bukan angka dari Garmin.
+                    </p>
+                @else
+                    <p class="mt-2 text-sm text-gray-400">Belum ada aktivitas dengan data HR per-detik pada periode ini.</p>
+                @endif
+            </x-card>
+
+            <x-card>
                 <h3 class="mb-1 text-xs font-bold uppercase tracking-wider text-gray-400">❤️ Distribusi HR Zone</h3>
 
                 @if ($hrZoneDistribution['available'])

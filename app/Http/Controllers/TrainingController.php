@@ -11,6 +11,7 @@ use App\Services\Training\TrainingCalendarService;
 use App\Services\Training\TrainingConsistencyService;
 use App\Services\Training\TrainingStatusEngine;
 use App\Services\Training\TrainingVolumeSeriesService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\View\View;
@@ -126,7 +127,25 @@ class TrainingController extends Controller
         $types = $this->distributionService->byType($user, $from, $today);
         $hrZoneDistribution = $this->hrZones->distributionForPeriod($user, $from, $today);
 
-        return view('training.distribution', compact('types', 'hrZoneDistribution', 'days'));
+        // Relative Effort dihitung app sendiri dari sampel HR, jadi hanya
+        // aktivitas dengan data HR per-detik yang punya nilai (sisanya null).
+        $relativeEffortWorkouts = $user->workouts()
+            ->whereBetween('start_date', [$from, $today->copy()->endOfDay()])
+            ->whereNotNull('relative_effort')
+            ->count();
+
+        $relativeEffortTotal = (int) $user->workouts()
+            ->whereBetween('start_date', [$from, $today->copy()->endOfDay()])
+            ->whereNotNull('relative_effort')
+            ->sum('relative_effort');
+
+        return view('training.distribution', compact(
+            'types',
+            'hrZoneDistribution',
+            'days',
+            'relativeEffortTotal',
+            'relativeEffortWorkouts',
+        ));
     }
 
     public function plan(Request $request, TrainingPlan $plan): View
@@ -138,7 +157,7 @@ class TrainingController extends Controller
         return view('training.plan', compact('plan'));
     }
 
-    public function toggleCompletedWorkout(Request $request, PlannedWorkout $plannedWorkout): \Illuminate\Http\RedirectResponse
+    public function toggleCompletedWorkout(Request $request, PlannedWorkout $plannedWorkout): RedirectResponse
     {
         $plan = $plannedWorkout->day->week->plan;
         $this->ensureOwnsPlan($request, $plan);
@@ -152,7 +171,7 @@ class TrainingController extends Controller
         return redirect()->route('training.plan', $plan);
     }
 
-    public function destroyPlan(Request $request, TrainingPlan $plan): \Illuminate\Http\RedirectResponse
+    public function destroyPlan(Request $request, TrainingPlan $plan): RedirectResponse
     {
         $this->ensureOwnsPlan($request, $plan);
 

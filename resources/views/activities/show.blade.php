@@ -128,6 +128,13 @@
                             <p class="mt-0.5 text-lg font-black text-gray-900">{{ round($workout->training_load) }}</p>
                         </div>
                     @endif
+                    @if ($isOwner && $workout->relative_effort)
+                        <div>
+                            <p class="text-[10px] font-bold uppercase text-gray-400">Relative Effort</p>
+                            <p class="mt-0.5 text-lg font-black text-gray-900">{{ $workout->relative_effort }}</p>
+                            <p class="mt-0.5 text-[10px] font-medium text-gray-400">estimasi dari HR per-detik</p>
+                        </div>
+                    @endif
                 </div>
             </x-card>
 

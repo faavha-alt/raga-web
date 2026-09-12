@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Workout;
 use App\Models\WorkoutLap;
 use App\Models\WorkoutSample;
+use App\Services\Training\RelativeEffortCalculator;
 use App\Support\ActivityVisibility;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -46,7 +47,10 @@ class RecordingService
     /** Batas durasi yang sama dalam detik, untuk `elapsed_seconds`. */
     public const MAX_TRACK_DURATION_SECONDS = 72 * 60 * 60;
 
-    public function __construct(private TrackMetricsCalculator $metrics) {}
+    public function __construct(
+        private TrackMetricsCalculator $metrics,
+        private RelativeEffortCalculator $relativeEffort,
+    ) {}
 
     /**
      * @param  array<string, mixed>  $data  payload yang sudah lolos validasi
@@ -105,6 +109,10 @@ class RecordingService
 
             $this->insertSamples($workout, $points, $analysis);
             $this->insertLaps($workout, $analysis['laps'] ?? []);
+
+            // Beban latihan dihitung dari sampel HR yang baru disimpan, sehingga
+            // aktivitas hasil rekaman browser tidak bergantung pada Garmin.
+            $this->relativeEffort->updateWorkout($workout);
 
             return $workout;
         });

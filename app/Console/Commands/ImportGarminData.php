@@ -13,6 +13,7 @@ use App\Models\VitalMeasurement;
 use App\Models\Workout;
 use App\Models\WorkoutLap;
 use App\Models\WorkoutSample;
+use App\Services\Training\RelativeEffortCalculator;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -40,7 +41,7 @@ class ImportGarminData extends Command
         7 => 'longest_run',
     ];
 
-    public function handle(): int
+    public function handle(RelativeEffortCalculator $relativeEffort): int
     {
         $raw = $this->argument('path') === '-'
             ? stream_get_contents(STDIN)
@@ -70,7 +71,7 @@ class ImportGarminData extends Command
 
         $this->importBodyComposition($user, $payload['body_composition'] ?? null);
         $this->importBodyBattery($user, $payload['body_battery'] ?? []);
-        $this->importActivities($user, $payload['activities'] ?? []);
+        $this->importActivities($user, $payload['activities'] ?? [], $relativeEffort);
         $this->importPersonalRecords($user, $payload['personal_records'] ?? null);
 
         $this->info('Garmin import complete for '.$user->email);
@@ -376,7 +377,7 @@ class ImportGarminData extends Command
         }
     }
 
-    private function importActivities(User $user, array $activities): void
+    private function importActivities(User $user, array $activities, RelativeEffortCalculator $relativeEffort): void
     {
         foreach ($activities as $activity) {
             if (empty($activity['startTimeLocal']) || empty($activity['duration'])) {
@@ -416,6 +417,11 @@ class ImportGarminData extends Command
 
             $this->importWorkoutSamples($workout, $activity['details'] ?? null);
             $this->importLaps($workout, $activity['laps'] ?? null);
+
+            // Relative Effort dihitung RAGA sendiri dari sampel HR yang baru saja
+            // disimpan (bukan dari Garmin), supaya aktivitas non-Garmin pun punya
+            // ukuran beban latihan yang sebanding.
+            $relativeEffort->updateWorkout($workout);
         }
     }
 

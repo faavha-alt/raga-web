@@ -44,6 +44,13 @@ Dibuat: 2026-08-26
 - [x] Perbaikan privasi hasil review independen: default perekaman privat, HR hanya untuk pemilik aktivitas, HR atlet lain dihapus dari leaderboard, `effort_count` mengikuti visibilitas, 404 (bukan 403) untuk resource privat, transaction pada pembuatan segment, throttle pada endpoint berat
 - [ ] Keputusan produk yang menunggu user: apakah metrik HR aktivitas boleh ditampilkan ke pengikut (perilaku Strava) atau tetap hanya pemilik (default sekarang), dan apakah profil publik boleh diakses tanpa login
 
+### Analitik personal — Relative Effort / TRIMP (sesi 2026-09-13)
+- [x] Kolom `relative_effort` di `workouts` (nullable; `null` = tidak bisa dihitung, bukan nol) — migrasi `2026_09_13_050000`
+- [x] `RelativeEffortCalculator` — TRIMP zona Edwards (Σ menit di zona × bobot Z1–Z5 = 1–5) dari sampel HR per-detik; zona + estimasi HR maksimum memakai `HeartRateZoneService` (data pengguna sendiri, bukan rumus umur)
+- [x] Command `training:calculate-relative-effort` (`--user`, `--days`) untuk backfill; otomatis juga diisi saat `garmin:import` dan saat rekaman browser disimpan (`RecordingService`)
+- [x] Ditampilkan di detail aktivitas (khusus pemilik, karena turunan data HR) dan kartu total per periode di `training/distribution`
+- [x] 10 test baru (5 unit + 5 feature); full suite **368 passed / 1157 assertions**, `pint` bersih
+
 ## Log sesi
 
 ### 2026-08-26
@@ -116,5 +123,14 @@ Dibuat: 2026-08-26
   - **Kredensial dipasang (2026-09-13).** OAuth client tipe *Web application* dibuat user, lalu `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` ditulis ke `.env` server (cadangan `.env` dibuat lebih dulu, lalu dipindahkan **keluar** dari direktori repo) dan `php artisan config:cache` dijalankan. Terverifikasi live: tombol "Lanjutkan dengan Google" muncul di `/login` dan "Daftar dengan Google" di `/register`; `/auth/google/redirect` → 302 ke `accounts.google.com` dengan `client_id` benar; dan **Google membalas 302 ke halaman sign-in normal, bukan 400 `redirect_uri_mismatch`** — jadi `redirect_uri` `https://raga.favha.cloud/auth/google/callback` sudah terdaftar dengan benar.
   - **Kebocoran yang ditemukan & ditutup:** `.gitignore` hanya mencakup `.env`, `.env.backup`, dan `.env.production`, sehingga cadangan manual bernama `.env.bak.tz` dan `.env.bak.google-<tanggal>` yang diletakkan di root repo **tidak terabaikan dan terlihat `git status`** — satu `git add -A` saja akan meng-commit seluruh rahasia produksi. Pola diganti menjadi `.env*` + `!.env.example` (mencakup semua varian, `.env.example` tetap terlacak), dan kedua berkas cadangan di server dipindahkan ke `~/.env-backups/` dengan izin `600`. `git status` di repo server sekarang bersih.
   - **Yang belum bisa saya verifikasi:** status *Publishing status* consent screen (harus **In production**, bukan *Testing*) dan penyelesaian alur izin Google yang sesungguhnya — keduanya butuh sesi browser user.
+- **Relative Effort / TRIMP — langkah pertama analitik personal (bukan fitur sosial).** Arah pengembangan dikoreksi user: yang diprioritaskan adalah analitik untuk atlet tunggal, bukan lapisan sosial. Setelah audit Strava personal-analytics vs kode RAGA, gap terbesar justru metrik beban/performa yang **dihitung sendiri** — selama ini `training_load` dan PR RAGA hanya diimpor dari Garmin, sehingga aktivitas rekaman browser tidak punya ukuran beban sama sekali.
+  - **Migrasi `2026_09_13_050000_add_relative_effort_to_workouts_table`**: kolom `relative_effort` (unsignedSmallInteger, nullable) di `workouts`. `null` berarti tidak bisa dihitung, bukan nol.
+  - **`App\Services\Training\RelativeEffortCalculator`**: TRIMP zona Edwards — `Σ (menit di zona i × bobot i)`, bobot Z1–Z5 = 1–5. Memakai `HeartRateZoneService` yang sudah ada (zona dari estimasi HR maksimum data pengguna sendiri, durasi dibobot waktu antar-sampel, gap >60 detik tidak dihitung). Rumus TRIMP Banister sengaja **tidak** dipakai karena butuh HR istirahat/HR reserve yang tidak ada di skema. Cache HR maksimum per user supaya impor puluhan aktivitas tidak mengulang agregasi.
+  - **Otomatis terisi di dua jalur**: `ImportGarminData` (setelah sampel HR disimpan) dan `RecordingService` (aktivitas rekaman browser) — bukan hanya command manual.
+  - **Command `training:calculate-relative-effort`** (`--user`, `--days`) untuk backfill; hanya memproses aktivitas yang punya HR per-detik (disaring di query).
+  - **UI**: kartu **Relative Effort** di detail aktivitas — hanya untuk pemilik, karena nilainya turunan data HR (mengikuti aturan privasi yang sudah berlaku); kartu **total per periode** di `training/distribution` lengkap dengan penjelasan bahwa angkanya dihitung RAGA, bukan Garmin.
+  - **Test**: `tests/Unit/RelativeEffortCalculatorTest.php` (5) + `tests/Feature/RelativeEffortTest.php` (5: hitung dari sampel, null tanpa HR, backfill command, tampil di detail aktivitas, tampil di halaman distribution). Full suite **368 passed / 1157 assertions**, `pint` bersih. Migrasi diuji dari nol di SQLite lokal (`DONE`).
+  - **Belum diverifikasi**: backfill di produksi (DB lokal kosong → 0/0 aktivitas). Produksi punya ~36 aktivitas Garmin + `workout_samples`, jadi command perlu dijalankan setelah deploy.
+  - **Langkah berikutnya (rencana yang disepakati)**: best efforts + PR dihitung dari `workout_samples` → CTL/ATL/Form (Fitness & Freshness) → GAP + zona HR di detail aktivitas → race predictor (Riegel) → Spearman/p-value/lag pada `CorrelationService`.
 
 

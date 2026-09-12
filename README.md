@@ -22,7 +22,8 @@ akun Garmin Connect Anda dan mengolahnya menjadi wawasan yang bisa ditindaklanju
 - **Recovery & Readiness** — skor 0–100 yang transparan, dengan breakdown faktor
   (sleep, HRV, resting HR, stress, training load, body battery).
 - **Training** — kalender, beban latihan (acute:chronic load), volume, distribusi,
-  konsistensi.
+  konsistensi, dan **Relative Effort** (estimasi TRIMP dari zona HR yang dihitung
+  RAGA sendiri, sehingga aktivitas non-Garmin pun punya ukuran beban).
 - **Running & Trail** — performance rating, personal records, profil elevasi,
   pengelompokan rute (peta Leaflet).
 - **Health** — heart & HRV, stress, body battery, metrik harian, tren jangka panjang.
