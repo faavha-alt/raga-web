@@ -59,13 +59,17 @@ class ActivityController extends Controller
         // Privasi kesehatan: seri detak jantung (data kesehatan per-sampel)
         // hanya boleh diterima pemilik aktivitas. Seri non-kesehatan
         // (pace/elevation) tetap dikirim seperti semula.
-        if ($viewer->id !== $workout->user_id) {
+        $isOwner = $viewer->id === $workout->user_id;
+
+        if (! $isOwner) {
             unset($charts['heart_rate']);
         }
 
         return view('activities.show', [
             'workout' => $workout,
             'charts' => $charts,
+            'elevationProfile' => $this->activityDetail->elevationProfileWithGrade($workout),
+            'splits' => $this->activityDetail->splitsFor($workout, $isOwner),
             'routePoints' => $this->activityDetail->routePoints($workout),
             'laps' => $workout->laps,
             'comments' => $workout->comments,

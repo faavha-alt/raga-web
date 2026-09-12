@@ -3,10 +3,10 @@
 <x-chart-math />
 
 <div x-data="sampleChart(@js($points), @js($decimals))">
-    <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">{{ $label }}@if($unit) ({{ $unit }})@endif</p>
+    <p class="telemetry-label mb-2">{{ $label }}@if($unit) ({{ $unit }})@endif</p>
 
     <template x-if="points.length === 0">
-        <p class="py-8 text-center text-sm text-gray-400">Belum ada data {{ strtolower($label) }} untuk aktivitas ini.</p>
+        <p class="py-8 text-center text-sm text-telemetry-slate">Belum ada data {{ strtolower($label) }} untuk aktivitas ini.</p>
     </template>
 
     <div class="relative" x-show="points.length > 0" x-cloak>
