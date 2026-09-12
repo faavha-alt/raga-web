@@ -101,6 +101,12 @@ Batasan yang perlu diketahui (dari FAQ resmi Suunto):
 - Detail per-detik paling lengkap ada di **FIT file**; JSON workout hanya ringkasan.
 - Ada kuota panggilan (Developer API di-rate-limit), jadi ambil daftar sekali per
   rentang tanggal, bukan per aktivitas.
+- **SuuntoPlus Editor bukan jalur data.** Editor (ekstensi VS Code,
+  <https://apizone.suunto.com/suuntoplusEditor>) memang bisa dipakai **tanpa**
+  Partner Program, tapi gunanya membuat aplikasi yang berjalan **di jam** (manifest
+  + JS + template HTML) saat aktivitas berlangsung — bukan menarik riwayat workout.
+  Untuk RAGA (menarik data ke server), tetap harus lewat Partner Program + Cloud API.
+  Menerbitkan SuuntoPlus app pun tetap butuh Partner Program.
 
 ### AI Health & Performance Coach
 - **BYOK** (Bring Your Own Key) per user — pilih provider **Anthropic** atau **Gemini**
