@@ -25,6 +25,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Halaman offline untuk service worker PWA. Sengaja publik dan tanpa closure
+// agar aman terhadap `php artisan route:cache`.
+Route::view('/offline', 'offline')->name('offline');
+
 Route::get('/.well-known/oauth-authorization-server', [ResourceMetadataController::class, 'authorizationServer']);
 Route::get('/.well-known/oauth-protected-resource', [ResourceMetadataController::class, 'protectedResource']);
 Route::post('/oauth/register', [ClientRegistrationController::class, 'store'])->middleware('throttle:10,1');
@@ -87,6 +91,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', [ApiTokenController::class, 'store'])->name('store');
         Route::delete('/{token}', [ApiTokenController::class, 'destroy'])->name('destroy');
     });
+
+    // Lapisan sosial (feed, follow, kudos, komentar, profil atlet).
+    require __DIR__.'/social.php';
+
+    // Perekaman aktivitas GPS dari browser.
+    require __DIR__.'/recording.php';
+
+    // Segment & leaderboard.
+    require __DIR__.'/segments.php';
+
+    // Notifikasi.
+    require __DIR__.'/notifications.php';
 });
 
 Route::middleware('auth')->group(function () {

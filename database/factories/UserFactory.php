@@ -26,11 +26,28 @@ class UserFactory extends Factory
     {
         return [
             'name' => fake()->name(),
+            'username' => $this->uniqueUsername(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'is_public' => true,
         ];
+    }
+
+    /**
+     * Username acak yang lolos aturan charset aplikasi (huruf kecil, angka,
+     * titik, garis bawah, tanda hubung) dan unik dalam satu proses test.
+     */
+    private function uniqueUsername(): string
+    {
+        $candidate = Str::lower((string) preg_replace('/[^a-z0-9._-]/', '', fake()->unique()->userName()));
+
+        if (strlen($candidate) < 3) {
+            $candidate = 'atlet'.fake()->unique()->numberBetween(100000, 9999999);
+        }
+
+        return $candidate;
     }
 
     /**

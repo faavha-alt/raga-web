@@ -1,6 +1,10 @@
 @php
     $navItems = [
         ['route' => 'dashboard', 'active' => 'dashboard', 'icon' => '🏠', 'label' => 'Dashboard'],
+        ['route' => 'feed', 'active' => 'feed', 'icon' => '📰', 'label' => 'Feed'],
+        ['route' => 'record.index', 'active' => 'record*', 'icon' => '⏺️', 'label' => 'Rekam'],
+        ['route' => 'explore', 'active' => 'explore', 'icon' => '🔍', 'label' => 'Explore'],
+        ['route' => 'segments.index', 'active' => 'segments*', 'icon' => '🏔️', 'label' => 'Segment'],
         ['route' => 'training', 'active' => 'training*', 'icon' => '🏋️', 'label' => 'Training'],
         ['route' => 'goals.index', 'active' => 'goals*', 'icon' => '🎯', 'label' => 'Goals'],
         ['route' => 'running', 'active' => 'running*', 'icon' => '🏃', 'label' => 'Running'],
@@ -11,6 +15,13 @@
         ['route' => 'ai', 'active' => 'ai', 'icon' => '🤖', 'label' => 'AI'],
         ['route' => 'settings', 'active' => 'settings', 'icon' => '⚙️', 'label' => 'Settings'],
     ];
+
+    // Item baru muncul hanya setelah rutenya terdaftar, supaya halaman lama
+    // tidak rusak bila salah satu modul dinonaktifkan.
+    $navItems = array_values(array_filter(
+        $navItems,
+        static fn (array $item): bool => \Illuminate\Support\Facades\Route::has($item['route']),
+    ));
 @endphp
 
 <!-- Mobile top bar -->
@@ -18,11 +29,14 @@
     <a href="{{ route('dashboard') }}" class="shrink-0">
         <x-application-logo />
     </a>
-    <button @click="sidebarOpen = true" class="rounded-full p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800">
-        <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-    </button>
+    <div class="flex items-center gap-1">
+        <x-notification-bell />
+        <button @click="sidebarOpen = true" class="rounded-full p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800">
+            <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+    </div>
 </div>
 
 <!-- Mobile backdrop -->
@@ -65,14 +79,20 @@
 
     <div class="flex shrink-0 items-center gap-2 border-t border-gray-100 p-3 dark:border-gray-800">
         <a href="{{ route('profile.edit') }}" class="flex min-w-0 flex-1 items-center gap-3 rounded-2xl px-2 py-2 transition hover:bg-gray-100 dark:hover:bg-gray-800">
-            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-raga-accent to-raga-primary text-sm font-bold text-white">
-                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-            </span>
+            @if (Auth::user()->avatar_path)
+                <img src="{{ asset(Auth::user()->avatar_path) }}" alt="Foto profil {{ Auth::user()->name }}" class="h-9 w-9 shrink-0 rounded-full object-cover" />
+            @else
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-raga-accent to-raga-primary text-sm font-bold text-white">
+                    {{ Auth::user()->initials() }}
+                </span>
+            @endif
             <span class="min-w-0 flex-1">
                 <span class="block truncate text-sm font-semibold text-gray-700 dark:text-gray-200">{{ Auth::user()->name }}</span>
-                <span class="block truncate text-xs text-gray-400">{{ Auth::user()->email }}</span>
+                <span class="block truncate text-xs text-gray-400">{{ Auth::user()->username ? '@'.Auth::user()->username : Auth::user()->email }}</span>
             </span>
         </a>
+
+        <x-notification-bell />
 
         <form method="POST" action="{{ route('logout') }}">
             @csrf

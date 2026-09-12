@@ -35,6 +35,26 @@ data sekaligus, bukan frontend untuk API terpisah.
 
 ## Fitur utama
 
+### Lapisan sosial & perekaman mandiri
+
+RAGA kini juga bisa dipakai **tanpa Garmin** dan punya sisi sosial seperti Strava:
+
+- **Rekam GPS dari browser** (`/record`) — jarak, pace, elevasi, peta langsung,
+  tombol jeda, dan mode darurat tanpa GPS (treadmill).
+- **Feed sosial** (`/feed`) — aktivitas orang yang Anda ikuti, dengan kudos dan
+  komentar.
+- **Profil atlet publik** (`/@username`) — statistik dari aktivitas yang boleh
+  Anda lihat, pengikut/mengikuti, dan tombol ikuti. Profil bisa dibuat privat.
+- **Segment & leaderboard** (`/segments`) — buat segment dari aktivitas sendiri,
+  RAGA mencari effort pada aktivitas lain, lalu menampilkan peringkat per atlet.
+- **Privasi per aktivitas** — `Semua orang`, `Pengikut saja`, atau `Hanya saya`.
+  Default aplikasi adalah **hanya saya**.
+- **PWA** — bisa dipasang ke layar utama HP dan punya halaman offline.
+- **Notifikasi** — pemberitahuan follow, kudos, dan komentar.
+
+> **Data kesehatan tidak pernah masuk permukaan sosial.** Lihat bagian
+> [Privasi data kesehatan](#privasi-data-kesehatan) di bawah.
+
 ### Sumber data: Garmin Connect
 Data diambil dari Garmin Connect melalui script Python (`scripts/garmin_sync.py`)
 yang login ke Garmin lalu mencetak JSON, kemudian diimpor ke database oleh
@@ -142,6 +162,61 @@ running performance, dll.) dan feature test untuk halaman serta alur auth.
 - **`deploy.yml`** — deploy otomatis ke `raga.favha.cloud` via SSH
   (`git reset --hard` + build di server). Di-gate sebagai `workflow_run` yang hanya
   jalan kalau CI hijau; `workflow_dispatch` tetap bisa deploy manual.
+
+## Deploy ke CloudPanel (server mandiri)
+
+Skrip `deploy.yml` sudah menjalankan `composer install`, `npm run build`,
+`php artisan migrate --force` dan cache. Beberapa hal khas server mandiri
+**tidak** tercakup otomatis dan perlu disiapkan sekali:
+
+```bash
+# 1. Foto profil: direktori unggahan harus bisa ditulis proses PHP-FPM.
+#    Aplikasi menulis ke public/uploads/avatars (tanpa symlink storage:link,
+#    karena deploy tidak menjalankannya).
+mkdir -p public/uploads/avatars
+chmod -R 775 public/uploads
+
+# 2. Isi username untuk pengguna lama (registrasi baru sudah otomatis).
+#    Kolom `username` sengaja nullable agar migrasi aman pada tabel terisi.
+php artisan users:backfill-usernames --dry-run   # tinjau dulu
+php artisan users:backfill-usernames
+```
+
+**nginx (template vhost CloudPanel)** — tambahkan blok agar service worker PWA
+tidak di-cache selamanya oleh Varnish/proxy (kode `sw.js` berubah saat aplikasi
+diperbarui; bila di-cache, pembaruan versi cache tidak akan pernah sampai):
+
+```nginx
+location = /sw.js {
+    add_header Cache-Control "no-cache, no-store, must-revalidate";
+    try_files $uri =404;
+}
+```
+
+Catatan operasional:
+
+- **Tidak butuh queue worker.** Notifikasi sosial (follow, kudos, komentar)
+  dikirim sinkron lewat kanal `database`, jadi `QUEUE_CONNECTION` boleh tetap
+  `database` tanpa menjalankan `queue:work`.
+- **Perekaman GPS berjalan di browser**, jadi tidak ada proses latar di server.
+  Sesi panjang hanya dibatasi oleh perangkat pengguna.
+- Setelah memperbarui kode, jalankan `php artisan queue:restart` hanya bila Anda
+  kelak mengaktifkan worker.
+
+## Privasi data kesehatan
+
+RAGA menyimpan data kesehatan yang sensitif (HRV, tidur, stress, body battery,
+skor recovery/readiness). Batas yang **dijaga oleh kode dan test**:
+
+- Permukaan sosial (feed, profil atlet, leaderboard, notifikasi) hanya pernah
+  menampilkan data aktivitas dari tabel `workouts`.
+- Visibilitas aktivitas default **`private`**. Aktivitas lama hasil impor Garmin
+  tidak pernah otomatis menjadi publik.
+- Semua daftar aktivitas melewati query scope `Workout::visibleTo()`, sehingga
+  aturan privasi diterapkan terpusat. Aktivitas yang tidak boleh dilihat
+  menghasilkan **404**, bukan 403, agar keberadaannya tidak terkonfirmasi.
+- `users.is_public = false` membuat profil & statistik hanya terlihat oleh
+  pengikut.
 
 ## Lisensi
 

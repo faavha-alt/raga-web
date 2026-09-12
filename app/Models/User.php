@@ -7,13 +7,14 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'username', 'email', 'password', 'avatar_path', 'bio', 'location', 'is_public'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -30,6 +31,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_public' => 'boolean',
         ];
     }
 
@@ -116,6 +118,91 @@ class User extends Authenticatable
     public function trainingLoads(): HasMany
     {
         return $this->hasMany(TrainingLoad::class);
+    }
+
+    /**
+     * Baris `follows` di mana pengguna ini adalah pengikutnya.
+     */
+    public function following(): HasMany
+    {
+        return $this->hasMany(Follow::class, 'follower_id');
+    }
+
+    /**
+     * Baris `follows` di mana pengguna ini diikuti.
+     */
+    public function followers(): HasMany
+    {
+        return $this->hasMany(Follow::class, 'following_id');
+    }
+
+    /**
+     * Pengguna yang diikuti (relasi many-to-many langsung).
+     */
+    public function followingUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'following_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Pengguna yang mengikuti pengguna ini.
+     */
+    public function followerUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'follows', 'following_id', 'follower_id')
+            ->withTimestamps();
+    }
+
+    public function kudos(): HasMany
+    {
+        return $this->hasMany(Kudos::class);
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function ownedSegments(): HasMany
+    {
+        return $this->hasMany(Segment::class);
+    }
+
+    public function segmentEfforts(): HasMany
+    {
+        return $this->hasMany(SegmentEffort::class);
+    }
+
+    /**
+     * Apakah pengguna ini mengikuti $other.
+     */
+    public function isFollowing(User $other): bool
+    {
+        return $this->following()->where('following_id', $other->id)->exists();
+    }
+
+    /**
+     * Inisial nama untuk avatar fallback.
+     */
+    public function initials(): string
+    {
+        $parts = preg_split('/\s+/', trim((string) $this->name)) ?: [];
+        $initials = '';
+
+        foreach (array_slice($parts, 0, 2) as $part) {
+            $initials .= mb_strtoupper(mb_substr($part, 0, 1));
+        }
+
+        return $initials !== '' ? $initials : '?';
+    }
+
+    /**
+     * URL avatar publik, null bila pengguna belum mengunggah foto.
+     */
+    public function avatarUrl(): ?string
+    {
+        return $this->avatar_path ? asset($this->avatar_path) : null;
     }
 
     /**

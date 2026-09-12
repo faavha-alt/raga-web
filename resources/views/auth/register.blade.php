@@ -14,6 +14,17 @@
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
+        <!-- Username: dipakai sebagai alamat profil publik (/@username) -->
+        <div>
+            <x-input-label for="username" value="Username" />
+            <div class="relative">
+                <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-sm font-semibold text-gray-400">@</span>
+                <x-text-input id="username" type="text" name="username" class="pl-8" :value="old('username')" required autocomplete="username" inputmode="latin" />
+            </div>
+            <p class="mt-1.5 text-xs text-gray-500">Ini alamat profil publikmu: <span class="font-semibold text-raga-primary">raga.favha.cloud/@username</span>. Huruf kecil, angka, titik, garis bawah, atau tanda hubung.</p>
+            <x-input-error :messages="$errors->get('username')" class="mt-2" />
+        </div>
+
         <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Email')" />

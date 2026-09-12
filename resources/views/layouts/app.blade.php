@@ -22,6 +22,13 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <!-- Registrasi service worker + tombol "Pasang aplikasi".
+             (Tag manifest/theme-color/ikon sudah ditulis di <head> di atas.) -->
+        @include('partials.pwa')
+
+        <!-- Meta tambahan per halaman (mis. manifest PWA & theme-color). -->
+        @stack('head')
     </head>
     <body class="font-sans antialiased">
         <div x-data="{ sidebarOpen: false }" class="min-h-screen bg-gray-50 dark:bg-gray-950 bg-mesh lg:flex">
@@ -44,12 +51,11 @@
                 </main>
             </div>
         </div>
-        <script>
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/sw.js').catch(() => {});
-                });
-            }
-        </script>
+
+        <!-- Registrasi service worker + tombol "Pasang aplikasi". -->
+        @include('partials.pwa')
+
+        <!-- Skrip khusus halaman (mis. Alpine component perekam GPS). -->
+        @stack('scripts')
     </body>
 </html>

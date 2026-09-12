@@ -32,6 +32,18 @@ Dibuat: 2026-08-26
 - [x] CI test workflow: `.github/workflows/ci.yml` (PHP 8.4 + Node 24, `composer install` → `npm run build` → `php artisan test`) jalan di tiap push ke `main` + PR. `deploy.yml` diubah jadi `workflow_run` yang hanya deploy kalau CI hijau (manual `workflow_dispatch` tetap bisa langsung deploy). (2026-08-27)
 - [ ] Klarifikasi relasi dengan repo `raga` (`/ai/projects/raga`): commit pertama repo ini berlabel "Phase 1 (web pivot)", mengindikasikan `raga-web` adalah hasil pivot dari versi non-web project RAGA sebelumnya — kemungkinan besar repo `raga` itu sendiri, tapi tidak ada bukti langsung (URL/referensi kode) di dalam repo ini (perlu konfirmasi user)
 
+### Lapisan sosial (arah Strava) — sesi 2026-09-13
+- [x] Skema profil atlet: `username` (unik, nullable→backfill), `avatar_path`, `bio`, `location`, `is_public` di `users`
+- [x] Visibilitas per aktivitas: kolom `visibility` di `workouts` (public/followers/private) **default `private`** + scope `Workout::visibleTo()` sebagai gerbang privasi terpusat
+- [x] Registrasi publik dengan username + halaman profil atlet (avatar, bio, lokasi, toggle profil publik); perintah `users:backfill-usernames`
+- [x] Perekaman GPS dari browser (`/record`) — RAGA bisa dipakai tanpa Garmin; tersimpan ke `workouts` + `workout_samples` + `workout_laps`
+- [x] Feed sosial `/feed`, follow/unfollow, kudos, komentar, halaman `/explore`, profil publik `/@username`
+- [x] Segment + leaderboard (`/segments`): buat segment dari aktivitas, deteksi effort, peringkat per atlet
+- [x] PWA: manifest, service worker (aset statis saja; HTML terautentikasi **tidak** di-cache), halaman `/offline`, tombol pasang
+- [x] Notifikasi database untuk follow/kudos/komentar + lonceng + halaman `/notifications` (sinkron, tanpa queue worker)
+- [x] Perbaikan privasi hasil review independen: default perekaman privat, HR hanya untuk pemilik aktivitas, HR atlet lain dihapus dari leaderboard, `effort_count` mengikuti visibilitas, 404 (bukan 403) untuk resource privat, transaction pada pembuatan segment, throttle pada endpoint berat
+- [ ] Keputusan produk yang menunggu user: apakah metrik HR aktivitas boleh ditampilkan ke pengikut (perilaku Strava) atau tetap hanya pemilik (default sekarang), dan apakah profil publik boleh diakses tanpa login
+
 ## Log sesi
 
 ### 2026-08-26
@@ -65,3 +77,19 @@ Dibuat: 2026-08-26
   - **Diterapkan di prod (2026-08-29 ~20:35 WIB):** `.env` prod +`APP_TIMEZONE=Asia/Jakarta` (`config:cache`), `now()` → WIB benar. Migrasi `2026_08_29_120000` jalan lewat auto-deploy → geser `workout_samples`/`heart_rate_samples`/`workout_laps` +7 jam; diverifikasi: workout start = first lap = first sample = `08:09:16` (sebelumnya lap/sample `01:09:16`). `recovery:calculate --days=14` + `training:analyze --days=14` di-recompute. Site sehat (`/`,`/login`,`/ai`,`/up` OK). Backup `.env.bak.tz` ditinggal di server (hapus setelah yakin).
 - **Hasil review + perbaikan (sesi ini):** (1) `GarminSyncService` diberi **lock per-user** (`Cache::lock('garmin-sync:user:{id}', 300)`) supaya `raga_sync_garmin`/tombol sync tidak bisa overlap/double-sync bila dipanggil bersamaan (balas "sedang berjalan" saat lock dipegang); (2) file `vhost` (template nginx CloudPanel) ditambahkan ke `.gitignore` agar tak ter-commit. Test baru `GarminSyncLockTest` (2: busy saat lock dipegang, lanjut saat lock kosong). Full suite **183 passed / 501 assertions**.
 - **Isolasi Token Garmin Multi-User & Pembersihan Disconnect**: (1) `scripts/garmin_login.py` & `garmin_sync.py` sekarang mendukung token store spesifik via argument `--token-store` / payload JSON `token_store` dengan fallback ke `~/.garmin_tokens`; (2) `GarminSyncService` dan `GarminConnectionController` mengisolasi token per user di `storage/app/garmin_tokens/{user_id}`; (3) Auto-migrasi legacy token `~/.garmin_tokens` saat sync pertama; (4) Disconnect menggunakan `File::deleteDirectory()` lintas-platform dan hanya menghapus token user yang bersangkutan; (5) `config/services.php` menambahkan konfigurasi `garmin.python_binary` (`env('PYTHON_BINARY')`). Test baru `GarminMultiUserTokenTest` (3 test). Full suite **186 passed / 516 assertions**.
+
+### 2026-09-13
+- **Arah baru: RAGA dikembangkan menjadi aplikasi sosial mirip Strava** (keputusan user). Semua fitur diminta sekaligus: rekam GPS browser, feed sosial, profil atlet publik + privasi, segment + leaderboard, PWA, notifikasi. Registrasi dibuka untuk publik.
+- **Fondasi (dikerjakan langsung):** 8 migrasi baru (profil atlet, visibilitas aktivitas, follows, kudos, comments, notifications, segments, segment_efforts), model `Follow`/`Kudos`/`Comment`/`Segment`/`SegmentEffort`, enum `App\Support\ActivityVisibility`, dan scope privasi terpusat `Workout::visibleTo()`.
+- **Keputusan privasi penting:** kolom `visibility` aktivitas default `private`, sehingga 36 aktivitas Garmin lama di produksi **tidak** otomatis menjadi publik. `username` ditambah nullable (aman untuk tabel terisi) + perintah `users:backfill-usernames`; `avatar` disimpan di `public/uploads/avatars` karena skrip deploy tidak menjalankan `storage:link`.
+- **Empat alur kerja paralel (subagent)** menghasilkan: perekaman GPS browser (16 test), feed sosial + profil + aksi sosial (45 test, memakai `Model::preventLazyLoading` yang sebelumnya belum ada), segment + leaderboard (23 test), PWA + notifikasi (14 test).
+- **Review kode independen menemukan 4 cacat KRITIS dan memperbaikinya** (semua terverifikasi dengan test regresi baru):
+  1. UI perekam selalu mengirim `visibility: 'public'` sehingga setiap rekaman GPS — termasuk koordinat rumah — otomatis publik meskipun server default-nya `private`. Kini default klien = `private`.
+  2. Halaman detail aktivitas merender Avg HR, Max HR, grafik HR per-sampel, dan HR per lap kepada **non-pemilik**. Kini metrik HR hanya untuk pemilik aktivitas.
+  3. Leaderboard segment menampilkan Avg HR atlet lain. Kolom HR kini hanya untuk effort milik viewer.
+  4. `effort_count` menghitung effort dari workout **private** milik orang lain (kebocoran agregat + serangan inferensi lewat `rescan` berulang). Semua angka yang dirender kini difilter `visibleTo`.
+  Ditambah: `destroy`/`rescan` segment dan update visibilitas aktivitas mengembalikan **404** (bukan 403) agar keberadaan resource privat tidak terkonfirmasi; pembuatan segment dibungkus transaksi; `throttle` pada endpoint rekam & rescan; batas atas `points.*.t`; escape wildcard LIKE pada pencarian segment.
+- **Integrasi shell:** navigasi sidebar + top bar mobile diberi item Feed/Rekam/Explore/Segment dan lonceng notifikasi (dengan penjaga `Route::has`), layout memuat `partials.pwa`, dan rute publik `/offline`.
+- **Dokumentasi:** README ditambah bagian "Deploy ke CloudPanel" (direktori unggahan, perintah backfill, header nginx `no-cache` untuk `sw.js`, catatan tanpa queue worker) dan bagian "Privasi data kesehatan".
+- **Verifikasi akhir:** `php artisan test` **330 passed / 983 assertions** (naik dari 183), `vendor/bin/pint` bersih, `npm run build` sukses (605 ms).
+- **Smoke test end-to-end di server berjalan** (`php artisan serve` + curl dengan sesi login sungguhan): `/`, `/login`, `/register`, `/offline`, `/manifest.webmanifest`, `/sw.js`, `/icon.svg` → 200; `/record`, `/feed`, `/segments`, `/notifications`, `/explore` → 302 (gate login) sebelum masuk, lalu 200 sesudah login, termasuk `/@demo`. `POST /recordings` → **HTTP 201** dan menghasilkan `workout_id=1`: `source=browser`, `visibility=private`, jarak **1112,0 m** untuk lintasan sintetis 1111,95 m (galat 0,005%), moving time 600 s, pace 540 s/km, 11 sampel GPS, 2 lap. Aktivitas muncul di detail dan feed pemiliknya.

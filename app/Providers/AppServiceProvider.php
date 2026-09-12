@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Http\Responses\OauthAuthorizationViewResponse;
 use App\Services\HealthData\HealthDataSource;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Contracts\AuthorizationViewResponse;
 use Laravel\Passport\Passport;
@@ -30,6 +31,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Menangkap N+1 di feed/detail saat pengembangan & test; produksi
+        // (isProduction) tidak diaktifkan supaya request tetap responsif.
+        Model::preventLazyLoading(! app()->isProduction());
+
         Passport::tokensExpireIn(now()->addDay());
         Passport::refreshTokensExpireIn(now()->addDays(30));
     }

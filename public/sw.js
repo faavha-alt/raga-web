@@ -1,50 +1,135 @@
-const CACHE_NAME = 'raga-cache-v1';
-const STATIC_ASSETS = [
-  '/',
+/*
+ * RAGA service worker.
+ *
+ * KEBIJAKAN CACHE — sengaja konservatif karena RAGA menyimpan data kesehatan
+ * privat (HRV, tidur, stress, body battery, recovery/readiness) dan rekaman GPS
+ * yang menunjukkan lokasi rumah pengguna:
+ *
+ *  - Hanya ASET STATIS yang di-cache: /icons/*, hasil build Vite (/build/*),
+ *    ikon, dan manifest. Semuanya identik untuk setiap pengguna.
+ *  - HTML TIDAK PERNAH di-cache. Halaman RAGA dirender per pengguna; bila HTML
+ *    tersimpan di cache, pengguna berikutnya di perangkat yang sama bisa melihat
+ *    halaman milik pengguna sebelumnya. Navigasi selalu network-only, dengan
+ *    fallback ke /offline.
+ *  - Permintaan /api/* dan seluruh metode non-GET tidak pernah disentuh.
+ *  - Halaman root "/" sengaja TIDAK di-precache agar tidak ada HTML yang
+ *    tersimpan di perangkat.
+ *
+ * Versi cache diberi nama dan versi lama dibersihkan saat activate.
+ */
+
+const VERSION = 'raga-static-v1';
+const STATIC_CACHE = `${VERSION}-static`;
+const OFFLINE_URL = '/offline';
+
+const PRECACHE_URLS = [
+  OFFLINE_URL,
   '/manifest.webmanifest',
+  '/icons/icon.svg',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
-  '/icons/icon.svg'
+  '/icons/icon-maskable-512x512.png',
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
-    })
+    (async () => {
+      const cache = await caches.open(STATIC_CACHE);
+      // Satu per satu supaya satu URL gagal tidak membatalkan seluruh instalasi.
+      await Promise.all(
+        PRECACHE_URLS.map((url) =>
+          cache.add(new Request(url, { cache: 'reload' })).catch(() => undefined),
+        ),
+      );
+      await self.skipWaiting();
+    })(),
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
+    (async () => {
+      const keys = await caches.keys();
+      await Promise.all(
+        keys.filter((key) => !key.startsWith(VERSION)).map((key) => caches.delete(key)),
       );
-    })
+      await self.clients.claim();
+    })(),
   );
-  self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-  const url = new URL(event.request.url);
+self.addEventListener('message', (event) => {
+  if (event.data === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
 
-  // For static assets, try cache first then network
-  if (url.pathname.startsWith('/icons/') || url.pathname.endsWith('.png') || url.pathname.endsWith('.svg') || url.pathname.endsWith('.webmanifest')) {
+/** Aset statis yang aman disimpan di cache: namanya ber-hash atau milik bersama. */
+function isStaticAsset(url) {
+  return (
+    url.pathname.startsWith('/icons/') ||
+    url.pathname.startsWith('/build/') ||
+    url.pathname === '/manifest.webmanifest'
+  );
+}
+
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+
+  // Metode selain GET (POST rekaman, kudos, komentar) tidak pernah ditangani.
+  if (request.method !== 'GET') {
+    return;
+  }
+
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+
+  // Jangan pernah menyentuh API: responsnya spesifik per pengguna.
+  if (url.pathname.startsWith('/api/')) {
+    return;
+  }
+
+  if (isStaticAsset(url)) {
     event.respondWith(
-      caches.match(event.request).then((cached) => cached || fetch(event.request))
+      (async () => {
+        const cache = await caches.open(STATIC_CACHE);
+        const hit = await cache.match(request);
+        if (hit) {
+          return hit;
+        }
+        try {
+          const response = await fetch(request);
+          if (response.ok) {
+            cache.put(request, response.clone());
+          }
+          return response;
+        } catch {
+          return hit ?? Response.error();
+        }
+      })(),
     );
     return;
   }
 
-  // Network first for HTML & API pages
-  event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
-  );
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      (async () => {
+        try {
+          return await fetch(request);
+        } catch {
+          const cache = await caches.open(STATIC_CACHE);
+          const offline = await cache.match(OFFLINE_URL);
+          return (
+            offline ??
+            new Response('<h1>Tidak ada koneksi</h1>', {
+              status: 503,
+              headers: { 'Content-Type': 'text/html; charset=utf-8' },
+            })
+          );
+        }
+      })(),
+    );
+  }
 });
