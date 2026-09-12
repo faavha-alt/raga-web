@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-extrabold text-gray-900 leading-tight">
+        <h1 class="telemetry-value text-4xl sm:text-5xl leading-tight">
             Rekam Aktivitas
-        </h2>
-        <p class="mt-1 text-sm font-medium text-gray-500">Rekam lari, sepeda, atau jalan langsung dari GPS ponsel — tanpa Garmin.</p>
+        </h1>
+        <p class="mt-2 text-sm font-medium text-telemetry-slate">Rekam lari, sepeda, atau jalan langsung dari GPS ponsel — tanpa Garmin.</p>
     </x-slot>
 
     @php
@@ -36,9 +36,9 @@
             x-init="init()"
         >
             {{-- Banner pemulihan rekaman dari localStorage --}}
-            <div x-show="hasRestorable" x-cloak class="rounded-2xl border border-raga-moderate/40 bg-raga-moderate/10 px-5 py-4">
-                <p class="text-sm font-bold text-gray-900">Ada rekaman yang belum tersimpan.</p>
-                <p class="mt-1 text-sm text-gray-600">
+            <div x-show="hasRestorable" x-cloak class="rounded border border-telemetry-amber/40 bg-telemetry-amber/10 px-5 py-4">
+                <p class="text-sm font-bold text-telemetry-ink">Ada rekaman yang belum tersimpan.</p>
+                <p class="mt-1 text-sm text-telemetry-slate">
                     Rekaman sebelumnya (<span x-text="restorableSummary"></span>) ditemukan di perangkat ini.
                 </p>
                 <div class="mt-3 flex gap-2">
@@ -48,9 +48,9 @@
             </div>
 
             {{-- Error izin lokasi --}}
-            <div x-show="gpsError" x-cloak class="rounded-2xl border border-raga-low/40 bg-raga-low/10 px-5 py-4">
-                <p class="text-sm font-bold text-gray-900">Lokasi tidak dapat diakses</p>
-                <p class="mt-1 text-sm text-gray-600" x-text="gpsError"></p>
+            <div x-show="gpsError" x-cloak class="rounded border border-telemetry-ember/40 bg-telemetry-ember/10 px-5 py-4">
+                <p class="text-sm font-bold text-telemetry-ink">Lokasi tidak dapat diakses</p>
+                <p class="mt-1 text-sm text-telemetry-slate" x-text="gpsError"></p>
                 <div class="mt-3 flex gap-2">
                     <x-primary-button type="button" x-on:click="retryLocation()">Coba lagi</x-primary-button>
                     <x-secondary-button type="button" x-on:click="$dispatch('open-modal', 'manual-entry')">Isi manual saja</x-secondary-button>
@@ -58,22 +58,22 @@
             </div>
 
             {{-- Banner sinyal GPS lemah --}}
-            <div x-show="isSignalWeak" x-cloak class="rounded-2xl border border-raga-moderate/40 bg-raga-moderate/10 px-5 py-3">
-                <p class="text-sm font-bold text-raga-moderate">
+            <div x-show="isSignalWeak" x-cloak class="rounded border border-telemetry-amber/40 bg-telemetry-amber/10 px-5 py-3">
+                <p class="text-sm font-bold text-telemetry-amber">
                     Sinyal GPS lemah (akurasi <span x-text="accuracyLabel"></span>).
                 </p>
-                <p class="mt-0.5 text-xs text-gray-600">Jarak dan elevasi bisa kurang akurat. Cari area terbuka bila memungkinkan.</p>
+                <p class="mt-0.5 text-xs text-telemetry-slate">Jarak dan elevasi bisa kurang akurat. Cari area terbuka bila memungkinkan.</p>
             </div>
 
             {{-- Kesalahan validasi server --}}
-            <div x-show="serverErrors.length > 0" x-cloak class="rounded-2xl border border-raga-low/40 bg-raga-low/10 px-5 py-4">
-                <p class="text-sm font-bold text-gray-900">Rekaman belum bisa disimpan</p>
-                <ul class="mt-1 list-disc list-inside text-sm text-gray-600">
+            <div x-show="serverErrors.length > 0" x-cloak class="rounded border border-telemetry-ember/40 bg-telemetry-ember/10 px-5 py-4">
+                <p class="text-sm font-bold text-telemetry-ink">Rekaman belum bisa disimpan</p>
+                <ul class="mt-1 list-disc list-inside text-sm text-telemetry-slate">
                     <template x-for="error in serverErrors" :key="error">
                         <li x-text="error"></li>
                     </template>
                 </ul>
-                <p class="mt-2 text-xs text-gray-500">Data rekaman tetap aman di perangkat ini — perbaiki lalu coba simpan lagi.</p>
+                <p class="mt-2 text-xs text-telemetry-slate">Data rekaman tetap aman di perangkat ini — perbaiki lalu coba simpan lagi.</p>
                 <div class="mt-3">
                     <x-primary-button type="button" x-on:click="retrySubmit()" x-bind:disabled="submitting">Simpan ulang</x-primary-button>
                 </div>
@@ -81,8 +81,8 @@
 
             {{-- Peta --}}
             <x-card class="!p-3">
-                <div x-ref="map" class="w-full h-80 rounded-2xl overflow-hidden bg-gray-100"></div>
-                <div class="mt-2 flex items-center justify-between px-2 text-xs text-gray-500">
+                <div x-ref="map" class="w-full h-80 rounded border border-telemetry-line overflow-hidden bg-telemetry-well"></div>
+                <div class="mt-2 flex items-center justify-between px-2 text-xs text-telemetry-slate">
                     <span x-text="statusLabel"></span>
                     <span>Akurasi GPS: <span x-text="accuracyLabel"></span></span>
                 </div>
@@ -101,13 +101,13 @@
             @endphp
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 @foreach ($tiles as $tile)
-                    <div class="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700/60 p-4 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+                    <div class="rounded border border-telemetry-line bg-telemetry-surface p-4">
                         <div class="flex items-center gap-2">
-                            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-gray-50 dark:bg-gray-900 text-sm">{{ $tile['icon'] }}</span>
-                            <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">{{ $tile['label'] }}</p>
+                            <span class="flex h-7 w-7 items-center justify-center rounded border border-telemetry-line bg-telemetry-well text-sm">{{ $tile['icon'] }}</span>
+                            <p class="telemetry-label">{{ $tile['label'] }}</p>
                         </div>
-                        <p class="mt-2.5 text-[26px] leading-none font-black text-gray-900 dark:text-gray-100">
-                            <span x-text="{{ $tile['expr'] }}"></span>@if ($tile['unit'])<span class="text-sm font-semibold text-gray-400"> {{ $tile['unit'] }}</span>@endif
+                        <p class="mt-2.5 telemetry-value text-[26px] leading-none">
+                            <span x-text="{{ $tile['expr'] }}"></span>@if ($tile['unit'])<span class="text-sm font-semibold text-telemetry-slate"> {{ $tile['unit'] }}</span>@endif
                         </p>
                     </div>
                 @endforeach
@@ -150,13 +150,13 @@
                         Input manual
                     </x-secondary-button>
 
-                    <span x-show="submitting" class="text-sm font-medium text-gray-500">Menyimpan…</span>
+                    <span x-show="submitting" class="text-sm font-medium text-telemetry-slate">Menyimpan…</span>
                 </div>
             </x-card>
 
             {{-- Detail aktivitas --}}
             <x-card>
-                <h3 class="text-lg font-bold text-gray-900">Detail aktivitas</h3>
+                <h3 class="telemetry-value text-lg">Detail aktivitas</h3>
 
                 <div class="mt-4 grid gap-4 sm:grid-cols-2">
                     <div>
@@ -165,7 +165,7 @@
                             id="sport"
                             x-model="sport"
                             x-on:change="refreshSuggestedTitle()"
-                            class="mt-1 w-full rounded-2xl border-2 border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-900 focus:border-raga-primary focus:bg-white focus:ring-raga-primary transition"
+                            class="mt-1 w-full rounded border border-telemetry-line bg-telemetry-surface px-4 py-3 text-sm font-medium text-telemetry-ink focus:border-telemetry-ember focus:bg-white focus:ring-telemetry-ember transition"
                         >
                             <template x-for="option in config.sports" :key="option.value">
                                 <option :value="option.value" x-text="option.label"></option>
@@ -185,7 +185,7 @@
                         id="record-description"
                         x-model="description"
                         rows="3"
-                        class="mt-1 w-full rounded-2xl border-2 border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-900 placeholder:text-gray-400 focus:border-raga-primary focus:bg-white focus:ring-raga-primary transition"
+                        class="mt-1 w-full rounded border border-telemetry-line bg-telemetry-surface px-4 py-3 text-sm font-medium text-telemetry-ink placeholder:text-telemetry-slate focus:border-telemetry-ember focus:bg-white focus:ring-telemetry-ember transition"
                         placeholder="Catatan tentang aktivitas ini…"
                     ></textarea>
                 </div>
@@ -194,24 +194,24 @@
                     <x-input-label value="Siapa yang bisa melihat?" />
                     <div class="mt-2 grid gap-3 sm:grid-cols-3">
                         @foreach ($visibilityOptions as $option)
-                            <label class="flex cursor-pointer items-start gap-3 rounded-2xl border-2 border-gray-200 bg-gray-50 p-4 transition hover:border-raga-primary has-[:checked]:border-raga-primary has-[:checked]:bg-raga-primary/5">
-                                <input type="radio" name="visibility" value="{{ $option->value }}" x-model="visibility" @checked($option->value === \App\Support\ActivityVisibility::Private->value) class="mt-1 text-raga-primary focus:ring-raga-primary">
+                            <label class="flex cursor-pointer items-start gap-3 rounded border border-telemetry-line bg-telemetry-surface p-4 transition-colors hover:border-telemetry-line-strong has-[:checked]:border-telemetry-ember has-[:checked]:bg-telemetry-ember/5">
+                                <input type="radio" name="visibility" value="{{ $option->value }}" x-model="visibility" @checked($option->value === \App\Support\ActivityVisibility::Private->value) class="mt-1 text-telemetry-ember focus:ring-telemetry-ember">
                                 <span>
-                                    <span class="block text-sm font-bold text-gray-900">{{ $option->icon() }} {{ $option->label() }}</span>
-                                    <span class="mt-0.5 block text-xs text-gray-500">{{ $option->description() }}</span>
+                                    <span class="block text-sm font-bold text-telemetry-ink">{{ $option->icon() }} {{ $option->label() }}</span>
+                                    <span class="mt-0.5 block text-xs text-telemetry-slate">{{ $option->description() }}</span>
                                 </span>
                             </label>
                         @endforeach
                     </div>
-                    <p class="mt-2 text-xs text-gray-500">Default aplikasi adalah <span class="font-bold">Hanya saya</span> — pilih "Semua orang" bila ingin tampil di feed seperti Strava.</p>
+                    <p class="mt-2 text-xs text-telemetry-slate">Default aplikasi adalah <span class="font-bold">Hanya saya</span> — pilih "Semua orang" bila ingin tampil di feed seperti Strava.</p>
                 </div>
             </x-card>
 
             {{-- Modal input manual (tanpa GPS / treadmill) --}}
             <x-modal name="manual-entry" maxWidth="md">
                 <div class="p-6">
-                    <h3 class="text-lg font-bold text-gray-900">Input manual</h3>
-                    <p class="mt-1 text-sm text-gray-500">Untuk treadmill atau latihan tanpa sinyal GPS.</p>
+                    <h3 class="telemetry-value text-lg">Input manual</h3>
+                    <p class="mt-1 text-sm text-telemetry-slate">Untuk treadmill atau latihan tanpa sinyal GPS.</p>
 
                     <div class="mt-4">
                         <x-input-label for="manual-distance" value="Jarak (km)" />

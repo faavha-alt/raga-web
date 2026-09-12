@@ -1,38 +1,37 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white leading-tight">
-            {{ __('Settings') }}
-        </h2>
+        <h1 class="telemetry-value text-4xl sm:text-5xl">{{ __('Settings') }}</h1>
+        <p class="mt-2 text-sm font-medium text-telemetry-slate">Koneksi data, kunci API, dan preferensi akunmu.</p>
     </x-slot>
 
     <div class="py-6 pb-16">
         <div class="px-4 sm:px-6 lg:px-8">
-            <x-card class="!p-0 divide-y divide-gray-100 dark:divide-gray-700 overflow-hidden">
-                <a href="{{ route('profile.edit') }}" class="block px-6 py-4 font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+            <x-card class="!p-0 divide-y divide-telemetry-line overflow-hidden">
+                <a href="{{ route('profile.edit') }}" class="block px-6 py-4 text-sm font-medium text-telemetry-ink transition-colors hover:bg-telemetry-well">
                     Account
                 </a>
-                <a href="{{ route('settings.garmin.show') }}" class="flex items-center justify-between px-6 py-4 font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                <a href="{{ route('settings.garmin.show') }}" class="flex items-center justify-between px-6 py-4 text-sm font-medium text-telemetry-ink transition-colors hover:bg-telemetry-well">
                     <span>⌚ Garmin Connect</span>
                     @if (auth()->user()->garminConnection?->connected_at)
-                        <span class="text-xs font-bold uppercase tracking-wide text-raga-excellent">Connected</span>
+                        <x-chip variant="recovery">Connected</x-chip>
                     @else
-                        <span class="text-xs font-bold uppercase tracking-wide text-gray-400">Not connected</span>
+                        <x-chip variant="neutral">Not connected</x-chip>
                     @endif
                 </a>
-                <a href="{{ route('settings.ai.show') }}" class="flex items-center justify-between px-6 py-4 font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                <a href="{{ route('settings.ai.show') }}" class="flex items-center justify-between px-6 py-4 text-sm font-medium text-telemetry-ink transition-colors hover:bg-telemetry-well">
                     <span>🤖 AI Coach</span>
                     @if (auth()->user()->aiSetting?->api_key)
-                        <span class="text-xs font-bold uppercase tracking-wide text-raga-excellent">Configured</span>
+                        <x-chip variant="recovery">Configured</x-chip>
                     @else
-                        <span class="text-xs font-bold uppercase tracking-wide text-gray-400">Not configured</span>
+                        <x-chip variant="neutral">Not configured</x-chip>
                     @endif
                 </a>
-                <a href="{{ route('settings.api-tokens.show') }}" class="flex items-center justify-between px-6 py-4 font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                <a href="{{ route('settings.api-tokens.show') }}" class="flex items-center justify-between px-6 py-4 text-sm font-medium text-telemetry-ink transition-colors hover:bg-telemetry-well">
                     <span>🔑 API Tokens</span>
-                    <span class="text-xs font-bold uppercase tracking-wide text-gray-400">{{ auth()->user()->tokens()->count() }} aktif</span>
+                    <span class="telemetry-label">{{ auth()->user()->tokens()->count() }} aktif</span>
                 </a>
                 @foreach ($rows as $row)
-                    <div class="px-6 py-4 text-gray-400 dark:text-gray-500">{{ $row }}</div>
+                    <div class="px-6 py-4 text-sm text-telemetry-slate">{{ $row }}</div>
                 @endforeach
             </x-card>
         </div>

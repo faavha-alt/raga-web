@@ -1,7 +1,7 @@
 <x-guest-layout>
-    <div class="mb-6">
-        <h1 class="text-2xl font-extrabold text-gray-900">Selamat datang balik 👋</h1>
-        <p class="mt-1 text-sm text-gray-500">Masuk untuk lanjut pantau progress kamu.</p>
+    <div class="mb-6 border-b border-telemetry-line pb-5">
+        <h1 class="telemetry-value text-2xl text-telemetry-ink">Selamat datang balik 👋</h1>
+        <p class="mt-1 text-sm text-telemetry-slate">Masuk untuk lanjut pantau progress kamu.</p>
     </div>
 
     <!-- Session Status -->
@@ -36,12 +36,12 @@
         <!-- Remember Me -->
         <div class="flex items-center justify-between">
             <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded-md border-gray-300 text-raga-primary focus:ring-raga-primary" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+                <input id="remember_me" type="checkbox" class="rounded border-telemetry-line text-telemetry-ink focus:ring-telemetry-ink" name="remember">
+                <span class="ms-2 text-sm text-telemetry-slate">{{ __('Remember me') }}</span>
             </label>
 
             @if (Route::has('password.request'))
-                <a class="text-sm font-semibold text-raga-primary hover:text-raga-accent" href="{{ route('password.request') }}">
+                <a class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ember-deep hover:underline" href="{{ route('password.request') }}">
                     {{ __('Forgot password?') }}
                 </a>
             @endif
@@ -52,9 +52,9 @@
         </x-primary-button>
 
         @if (Route::has('register'))
-            <p class="text-center text-sm text-gray-500">
+            <p class="text-center text-sm text-telemetry-slate">
                 Belum punya akun?
-                <a href="{{ route('register') }}" class="font-semibold text-raga-primary hover:text-raga-accent">Daftar sekarang</a>
+                <a href="{{ route('register') }}" class="font-semibold text-telemetry-ember-deep hover:underline">Daftar sekarang</a>
             </p>
         @endif
     </form>

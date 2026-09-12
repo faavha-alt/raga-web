@@ -1,10 +1,10 @@
 <section>
     <header>
-        <h2 class="text-lg font-bold text-gray-900 dark:text-white">
+        <h2 class="telemetry-value text-lg">
             {{ __('Update Password') }}
         </h2>
 
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p class="mt-1 text-sm text-telemetry-slate">
             {{ __('Ensure your account is using a long, random password to stay secure.') }}
         </p>
     </header>
@@ -21,7 +21,7 @@
             </div>
         @else
             {{-- Akun dari Google belum punya password, jadi tidak ada yang bisa dikonfirmasi. --}}
-            <p class="rounded-2xl border border-raga-primary/20 bg-raga-primary/5 px-4 py-3 text-sm text-gray-600">
+            <p class="rounded border border-telemetry-ember/20 bg-telemetry-ember/5 px-4 py-3 text-sm text-telemetry-slate">
                 Kamu masuk lewat Google dan belum punya password. Isi dua kolom di bawah untuk membuat password pertama, supaya kamu bisa masuk tanpa Google kalau suatu saat dibutuhkan.
             </p>
         @endif
@@ -47,7 +47,7 @@
                     x-show="show"
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
+                    class="text-sm text-telemetry-slate"
                 >{{ __('Saved.') }}</p>
             @endif
         </div>

@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-wrap items-start justify-between gap-3">
+        <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
-                <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white leading-tight">
+                <h1 class="telemetry-value text-4xl sm:text-5xl leading-tight">
                     {{ $segment->name }}
-                </h2>
-                <p class="mt-1 text-sm font-medium text-gray-500">
+                </h1>
+                <p class="mt-2 text-sm font-medium text-telemetry-slate">
                     {{ \App\Support\ActivityTypeIcon::icon($segment->activity_type) }}
                     {{ \App\Support\ActivityTypeIcon::label($segment->activity_type) }}
                     @if ($segment->start_label) · {{ $segment->start_label }} @endif
@@ -57,14 +57,14 @@
         <div class="px-4 sm:px-6 lg:px-8 space-y-6">
 
             @if (session('status'))
-                <div class="rounded-2xl bg-raga-excellent/10 border border-raga-excellent/20 px-4 py-3 text-sm font-semibold text-raga-excellent">
+                <div class="rounded border border-telemetry-emerald/20 bg-telemetry-emerald/10 px-4 py-3 text-sm font-semibold text-telemetry-emerald-deep">
                     {{ session('status') }}
                 </div>
             @endif
 
             @if ($segment->description)
                 <x-card class="!py-4">
-                    <p class="text-sm text-gray-600 dark:text-gray-300">{{ $segment->description }}</p>
+                    <p class="text-sm text-telemetry-slate">{{ $segment->description }}</p>
                 </x-card>
             @endif
 
@@ -77,18 +77,18 @@
 
             @if (count($routePoints) > 1)
                 <x-card>
-                    <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">Rute Segment</h3>
+                    <x-section-heading title="Rute Segment" />
                     <x-route-map :points="$routePoints" />
                 </x-card>
             @endif
 
             <x-card class="!p-0 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800">
+                <div class="px-6 py-4 border-b border-telemetry-line">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400">Leaderboard</h3>
-                        <p class="text-xs text-gray-400">1 baris = 1 atlet (usaha terbaiknya)</p>
+                        <h3 class="telemetry-label-lg text-telemetry-ink">Leaderboard</h3>
+                        <p class="telemetry-label">1 baris = 1 atlet (usaha terbaiknya)</p>
                     </div>
-                    <p class="mt-1 text-xs text-gray-400">Detak jantung hanya terlihat oleh pemilik aktivitas.</p>
+                    <p class="mt-1 text-xs text-telemetry-slate">Detak jantung hanya terlihat oleh pemilik aktivitas.</p>
                 </div>
 
                 @php
@@ -98,14 +98,14 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>
-                            <tr class="text-left text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                                <th class="px-4 py-3">#</th>
-                                <th class="px-4 py-3">Atlet</th>
-                                <th class="px-4 py-3">Waktu</th>
-                                <th class="px-4 py-3">Pace</th>
-                                <th class="px-4 py-3">Tanggal</th>
+                            <tr class="border-b border-telemetry-line text-left">
+                                <th class="px-4 py-3 telemetry-label">#</th>
+                                <th class="px-4 py-3 telemetry-label">Atlet</th>
+                                <th class="px-4 py-3 telemetry-label text-right">Waktu</th>
+                                <th class="px-4 py-3 telemetry-label text-right">Pace</th>
+                                <th class="px-4 py-3 telemetry-label">Tanggal</th>
                                 @if ($showHeartRateColumn)
-                                    <th class="px-4 py-3 text-right">Avg HR</th>
+                                    <th class="px-4 py-3 telemetry-label text-right">Avg HR</th>
                                 @endif
                             </tr>
                         </thead>
@@ -117,33 +117,33 @@
                                         ? route('athletes.show', $effort->user)
                                         : null;
                                 @endphp
-                                <tr class="border-t border-gray-100 dark:border-gray-800 {{ $isViewer ? 'bg-raga-primary/5' : '' }}">
-                                    <td class="px-4 py-3 font-black text-gray-900 dark:text-gray-100">{{ $ranking + $loop->iteration }}</td>
+                                <tr class="border-b border-telemetry-line/70 hover:bg-telemetry-well {{ $isViewer ? 'bg-telemetry-ember/5' : '' }}">
+                                    <td class="px-4 py-3 telemetry-value">{{ $ranking + $loop->iteration }}</td>
                                     <td class="px-4 py-3">
                                         <div class="flex items-center gap-2.5">
-                                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-raga-accent to-raga-primary text-[11px] font-black text-white">
+                                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-telemetry-line bg-telemetry-well text-[11px] font-bold text-telemetry-slate">
                                                 {{ $effort->user->initials() }}
                                             </span>
                                             @if ($athleteUrl)
-                                                <a href="{{ $athleteUrl }}" class="font-bold text-gray-900 dark:text-gray-100 hover:text-raga-primary transition">
-                                                    {{ $effort->user->name }}@if ($isViewer) <span class="text-xs font-semibold text-raga-primary">(kamu)</span>@endif
+                                                <a href="{{ $athleteUrl }}" class="font-bold text-telemetry-ink hover:text-telemetry-ember transition-colors">
+                                                    {{ $effort->user->name }}@if ($isViewer) <span class="text-xs font-semibold text-telemetry-ember">(kamu)</span>@endif
                                                 </a>
                                             @else
-                                                <span class="font-bold text-gray-900 dark:text-gray-100">
-                                                    {{ $effort->user->name }}@if ($isViewer) <span class="text-xs font-semibold text-raga-primary">(kamu)</span>@endif
+                                                <span class="font-bold text-telemetry-ink">
+                                                    {{ $effort->user->name }}@if ($isViewer) <span class="text-xs font-semibold text-telemetry-ember">(kamu)</span>@endif
                                                 </span>
                                             @endif
                                             @if ($effort->is_personal_best)
-                                                <span class="rounded-full bg-raga-excellent/15 px-2 py-0.5 text-[11px] font-bold text-raga-excellent">PB</span>
+                                                <x-chip variant="recovery">PB</x-chip>
                                             @endif
                                         </div>
                                     </td>
-                                    <td class="px-4 py-3 font-bold text-gray-900 dark:text-gray-100">{{ $formatDuration($effort->elapsed_seconds) }}</td>
-                                    <td class="px-4 py-3 text-gray-500 dark:text-gray-400">{{ $formatPace($effort->average_pace_seconds_per_km) }}</td>
-                                    <td class="px-4 py-3 text-gray-500 dark:text-gray-400">{{ $effort->started_at->translatedFormat('d M Y') }}</td>
+                                    <td class="px-4 py-3 text-right telemetry-value">{{ $formatDuration($effort->elapsed_seconds) }}</td>
+                                    <td class="px-4 py-3 text-right telemetry-value text-telemetry-chrono-deep">{{ $formatPace($effort->average_pace_seconds_per_km) }}</td>
+                                    <td class="px-4 py-3 text-telemetry-slate">{{ $effort->started_at->translatedFormat('d M Y') }}</td>
                                     @if ($showHeartRateColumn)
                                         {{-- Data kesehatan: hanya dirender untuk effort milik viewer sendiri. --}}
-                                        <td class="px-4 py-3 text-right text-gray-500 dark:text-gray-400">
+                                        <td class="px-4 py-3 text-right telemetry-value">
                                             @if ($isViewer && $effort->average_heart_rate !== null)
                                                 {{ round($effort->average_heart_rate).' bpm' }}
                                             @endif
@@ -151,8 +151,8 @@
                                     @endif
                                 </tr>
                             @empty
-                                <tr class="border-t border-gray-100 dark:border-gray-800">
-                                    <td colspan="{{ $showHeartRateColumn ? 6 : 5 }}" class="px-4 py-10 text-center text-gray-400">Belum ada atlet yang melewati segment ini.</td>
+                                <tr class="border-b border-telemetry-line/70">
+                                    <td colspan="{{ $showHeartRateColumn ? 6 : 5 }}" class="px-4 py-10 text-center text-sm text-telemetry-slate">Belum ada atlet yang melewati segment ini.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -165,31 +165,31 @@
             @endif
 
             <x-card>
-                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">Effort Saya</h3>
+                <x-section-heading title="Effort Saya" />
                 @forelse ($myEfforts as $effort)
-                    <div class="flex items-center justify-between gap-3 border-t border-gray-100 dark:border-gray-800 py-2.5 first:border-t-0">
+                    <div class="flex items-center justify-between gap-3 border-t border-telemetry-line/70 py-2.5 first:border-t-0">
                         <div class="min-w-0">
-                            <p class="text-sm font-bold text-gray-900 dark:text-gray-100">
+                            <p class="text-sm font-bold text-telemetry-ink">
                                 {{ $effort->started_at->translatedFormat('d M Y, H:i') }}
                                 @if ($effort->is_personal_best)
-                                    <span class="ml-1 rounded-full bg-raga-excellent/15 px-2 py-0.5 text-[11px] font-bold text-raga-excellent">PB</span>
+                                    <x-chip variant="recovery" class="ml-1">PB</x-chip>
                                 @endif
                             </p>
-                            <p class="text-xs text-gray-400">
+                            <p class="text-xs text-telemetry-slate">
                                 {{ $effort->workout->name ?? 'Aktivitas' }} · {{ $formatPace($effort->average_pace_seconds_per_km) }}
                                 @if ($effort->average_heart_rate !== null)
                                     · {{ round($effort->average_heart_rate) }} bpm
                                 @endif
                             </p>
                         </div>
-                        <p class="shrink-0 font-black text-gray-900 dark:text-gray-100">{{ $formatDuration($effort->elapsed_seconds) }}</p>
+                        <p class="shrink-0 telemetry-value">{{ $formatDuration($effort->elapsed_seconds) }}</p>
                     </div>
                 @empty
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Kamu belum punya effort di segment ini.</p>
+                    <p class="text-sm text-telemetry-slate">Kamu belum punya effort di segment ini.</p>
                 @endforelse
             </x-card>
 
-            <a href="{{ route('segments.index') }}" class="inline-block text-xs font-bold text-raga-primary hover:text-raga-accent transition">← Kembali ke daftar segment</a>
+            <a href="{{ route('segments.index') }}" class="inline-block text-xs font-bold text-telemetry-ember hover:text-telemetry-ember-deep transition-colors">← Kembali ke daftar segment</a>
         </div>
     </div>
 </x-app-layout>

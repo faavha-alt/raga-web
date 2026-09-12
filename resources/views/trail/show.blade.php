@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-extrabold text-gray-900 leading-tight">
-            {{ $workout->name ?? 'Trail Run' }}
-        </h2>
-        <p class="mt-1 text-sm font-medium text-gray-500">{{ $workout->start_date->translatedFormat('d M Y, H:i') }}</p>
+        <div>
+            <h1 class="telemetry-value text-4xl sm:text-5xl">{{ $workout->name ?? 'Trail Run' }}</h1>
+            <p class="mt-2 text-sm font-medium text-telemetry-slate">{{ $workout->start_date->translatedFormat('d M Y, H:i') }}</p>
+        </div>
     </x-slot>
 
     <div class="py-6 pb-16">
@@ -19,9 +19,9 @@
 
             @if ($profile['available'])
                 <x-card>
-                    <div class="flex items-center justify-between mb-1">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400">Elevation & Grade Profile</h3>
-                        <p class="text-xs text-gray-400">
+                    <div class="mb-1 flex items-end justify-between gap-4">
+                        <p class="telemetry-label-lg text-telemetry-ink">Elevation & Grade Profile</p>
+                        <p class="telemetry-label">
                             Avg grade {{ $profile['avg_grade_percent'] }}% · Max grade {{ $profile['max_grade_percent'] }}%
                         </p>
                     </div>
@@ -29,18 +29,18 @@
                 </x-card>
             @else
                 <x-card class="text-center py-8">
-                    <p class="text-gray-400">Belum cukup data GPS/elevasi untuk membuat profil trail ini.</p>
+                    <p class="text-sm text-telemetry-slate">Belum cukup data GPS/elevasi untuk membuat profil trail ini.</p>
                 </x-card>
             @endif
 
             @if (count($routePoints) > 1)
                 <x-card>
-                    <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">Rute</h3>
+                    <p class="mb-3 telemetry-label-lg text-telemetry-ink">Rute</p>
                     <x-route-map :points="$routePoints" />
                 </x-card>
             @endif
 
-            <a href="{{ route('activities.show', $workout) }}" class="inline-block text-xs font-bold text-raga-primary hover:text-raga-accent transition">Lihat detail aktivitas lengkap →</a>
+            <a href="{{ route('activities.show', $workout) }}" class="inline-block font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Lihat detail aktivitas lengkap →</a>
 
         </div>
     </div>

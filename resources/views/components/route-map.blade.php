@@ -24,6 +24,6 @@
         }"
         x-init="init()"
     >
-        <div x-ref="map" class="w-full h-72 rounded-2xl overflow-hidden"></div>
+        <div x-ref="map" class="h-72 w-full overflow-hidden rounded-lg border border-telemetry-line"></div>
     </div>
 @endif

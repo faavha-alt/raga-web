@@ -1,14 +1,14 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
-                <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white leading-tight">
+                <h1 class="telemetry-value text-4xl sm:text-5xl leading-tight">
                     {{ __('Segments') }}
-                </h2>
-                <p class="mt-1 text-sm font-medium text-gray-500">Potongan rute untuk diperlombakan — leaderboard per atlet.</p>
+                </h1>
+                <p class="mt-2 text-sm font-medium text-telemetry-slate">Potongan rute untuk diperlombakan — leaderboard per atlet.</p>
             </div>
             <a href="{{ route('segments.create') }}"
-               class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-raga-accent to-raga-primary px-5 py-2.5 text-sm font-bold text-white shadow-glow transition hover:brightness-110">
+               class="inline-flex items-center gap-2 rounded bg-telemetry-ember px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-telemetry-ember-dark">
                 ➕ Buat Segment
             </a>
         </div>
@@ -18,7 +18,7 @@
         <div class="px-4 sm:px-6 lg:px-8 space-y-6">
 
             @if (session('status'))
-                <div class="rounded-2xl bg-raga-excellent/10 border border-raga-excellent/20 px-4 py-3 text-sm font-semibold text-raga-excellent">
+                <div class="rounded border border-telemetry-emerald/20 bg-telemetry-emerald/10 px-4 py-3 text-sm font-semibold text-telemetry-emerald-deep">
                     {{ session('status') }}
                 </div>
             @endif
@@ -33,7 +33,7 @@
                     <div class="min-w-[150px]">
                         <x-input-label for="activity_type" value="Tipe Aktivitas" />
                         <select id="activity_type" name="activity_type"
-                            class="w-full rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100 focus:border-raga-primary focus:ring-raga-primary transition">
+                            class="w-full rounded border border-telemetry-line bg-telemetry-surface px-4 py-3 text-sm font-medium text-telemetry-ink focus:border-telemetry-ember focus:ring-telemetry-ember transition">
                             <option value="">Semua</option>
                             @foreach ($activityTypes as $type)
                                 <option value="{{ $type }}" @selected(($filters['activity_type'] ?? '') === $type)>{{ ucwords(str_replace('_', ' ', $type)) }}</option>
@@ -44,7 +44,7 @@
                     <div class="min-w-[140px]">
                         <x-input-label for="sort" value="Urutkan" />
                         <select id="sort" name="sort"
-                            class="w-full rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100 focus:border-raga-primary focus:ring-raga-primary transition">
+                            class="w-full rounded border border-telemetry-line bg-telemetry-surface px-4 py-3 text-sm font-medium text-telemetry-ink focus:border-telemetry-ember focus:ring-telemetry-ember transition">
                             @foreach (['created' => 'Terbaru', 'name' => 'Nama', 'distance' => 'Jarak', 'elevation' => 'Elevasi', 'efforts' => 'Jumlah Effort'] as $key => $optionLabel)
                                 <option value="{{ $key }}" @selected(($filters['sort'] ?? 'created') === $key)>{{ $optionLabel }}</option>
                             @endforeach
@@ -54,7 +54,7 @@
                     <div class="min-w-[120px]">
                         <x-input-label for="direction" value="Arah" />
                         <select id="direction" name="direction"
-                            class="w-full rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100 focus:border-raga-primary focus:ring-raga-primary transition">
+                            class="w-full rounded border border-telemetry-line bg-telemetry-surface px-4 py-3 text-sm font-medium text-telemetry-ink focus:border-telemetry-ember focus:ring-telemetry-ember transition">
                             <option value="desc" @selected(($filters['direction'] ?? 'desc') === 'desc')>Menurun</option>
                             <option value="asc" @selected(($filters['direction'] ?? 'desc') === 'asc')>Menaik</option>
                         </select>
@@ -63,7 +63,7 @@
                     <div class="flex gap-2">
                         <x-primary-button type="submit">Terapkan</x-primary-button>
                         @if (array_filter($filters))
-                            <a href="{{ route('segments.index') }}" class="inline-flex items-center px-4 py-2.5 text-sm font-bold text-gray-400 hover:text-gray-600 transition">Reset</a>
+                            <a href="{{ route('segments.index') }}" class="inline-flex items-center px-4 py-2.5 text-sm font-bold text-telemetry-slate hover:text-telemetry-ink transition-colors">Reset</a>
                         @endif
                     </div>
                 </form>
@@ -76,41 +76,41 @@
                             <div class="min-w-0">
                                 <div class="flex flex-wrap items-center gap-2">
                                     <span>{{ \App\Support\ActivityTypeIcon::icon($segment->activity_type) }}</span>
-                                    <a href="{{ route('segments.show', $segment) }}" class="font-bold text-gray-900 dark:text-gray-100 hover:text-raga-primary transition">
+                                    <a href="{{ route('segments.show', $segment) }}" class="font-bold text-telemetry-ink hover:text-telemetry-ember transition-colors">
                                         {{ $segment->name }}
                                     </a>
                                     @if (! $segment->is_public)
-                                        <span class="rounded-full bg-gray-100 dark:bg-gray-800 px-2 py-0.5 text-[11px] font-bold text-gray-500">🔒 Private</span>
+                                        <x-chip variant="neutral">🔒 Private</x-chip>
                                     @endif
                                 </div>
-                                <p class="mt-1 text-xs text-gray-500">
+                                <p class="mt-1 text-xs text-telemetry-slate">
                                     {{ \App\Support\ActivityTypeIcon::label($segment->activity_type) }}
                                     @if ($segment->start_label) · {{ $segment->start_label }} @endif
                                 </p>
                             </div>
-                            <a href="{{ route('segments.show', $segment) }}" class="shrink-0 text-xs font-bold text-raga-primary hover:text-raga-accent transition">Leaderboard →</a>
+                            <a href="{{ route('segments.show', $segment) }}" class="shrink-0 text-xs font-bold text-telemetry-ember hover:text-telemetry-ember-deep transition-colors">Leaderboard →</a>
                         </div>
 
                         <div class="mt-4 grid grid-cols-3 gap-3 text-center">
-                            <div class="rounded-2xl bg-gray-50 dark:bg-gray-800/60 px-3 py-2">
-                                <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Jarak</p>
-                                <p class="text-lg font-black text-gray-900 dark:text-gray-100">{{ $segment->distanceKm() }}<span class="text-xs font-semibold text-gray-400"> km</span></p>
+                            <div class="rounded border border-telemetry-line bg-telemetry-well px-3 py-2">
+                                <p class="telemetry-label">Jarak</p>
+                                <p class="mt-1 telemetry-value text-lg">{{ $segment->distanceKm() }}<span class="text-xs font-semibold text-telemetry-slate"> km</span></p>
                             </div>
-                            <div class="rounded-2xl bg-gray-50 dark:bg-gray-800/60 px-3 py-2">
-                                <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Elevasi</p>
-                                <p class="text-lg font-black text-gray-900 dark:text-gray-100">{{ round($segment->elevation_gain_meters) }}<span class="text-xs font-semibold text-gray-400"> m</span></p>
+                            <div class="rounded border border-telemetry-line bg-telemetry-well px-3 py-2">
+                                <p class="telemetry-label">Elevasi</p>
+                                <p class="mt-1 telemetry-value text-lg">{{ round($segment->elevation_gain_meters) }}<span class="text-xs font-semibold text-telemetry-slate"> m</span></p>
                             </div>
-                            <div class="rounded-2xl bg-gray-50 dark:bg-gray-800/60 px-3 py-2">
-                                <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Effort</p>
-                                <p class="text-lg font-black text-gray-900 dark:text-gray-100">{{ $segment->visible_effort_count }}</p>
+                            <div class="rounded border border-telemetry-line bg-telemetry-well px-3 py-2">
+                                <p class="telemetry-label">Effort</p>
+                                <p class="mt-1 telemetry-value text-lg">{{ $segment->visible_effort_count }}</p>
                             </div>
                         </div>
                     </x-card>
                 @empty
                     <x-card class="text-center py-12">
-                        <p class="text-lg font-bold text-gray-900 dark:text-gray-100">Belum Ada Segment</p>
-                        <p class="mt-2 text-gray-500 dark:text-gray-400">Buat segment pertamamu dari salah satu aktivitas GPS, lalu tantang temanmu di leaderboard.</p>
-                        <a href="{{ route('segments.create') }}" class="mt-4 inline-block text-sm font-bold text-raga-primary hover:text-raga-accent transition">Buat Segment →</a>
+                        <p class="text-lg font-bold text-telemetry-ink">Belum Ada Segment</p>
+                        <p class="mt-2 text-telemetry-slate">Buat segment pertamamu dari salah satu aktivitas GPS, lalu tantang temanmu di leaderboard.</p>
+                        <a href="{{ route('segments.create') }}" class="mt-4 inline-block text-sm font-bold text-telemetry-ember hover:text-telemetry-ember-deep transition-colors">Buat Segment →</a>
                     </x-card>
                 @endforelse
             </div>

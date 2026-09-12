@@ -1,42 +1,42 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-extrabold text-gray-900 leading-tight">
-            {{ __('Running Pace & HR') }}
-        </h2>
-        <p class="mt-1 text-sm font-medium text-gray-500">Tren pace, heart rate, dan VO2 Max dari lari kamu.</p>
+        <div>
+            <h1 class="telemetry-value text-4xl sm:text-5xl">{{ __('Running Pace & HR') }}</h1>
+            <p class="mt-2 text-sm font-medium text-telemetry-slate">Tren pace, heart rate, dan VO2 Max dari lari kamu.</p>
+        </div>
     </x-slot>
 
     <div class="py-6 pb-16">
         <div class="px-4 sm:px-6 lg:px-8 space-y-6">
 
             <x-card>
-                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">Tren</h3>
+                <p class="mb-3 telemetry-label-lg text-telemetry-ink">Tren</p>
                 <x-health-trend-chart :series="$series" :ranges="[7, 30, 90, 365]" />
             </x-card>
 
             <x-card class="!p-0 overflow-hidden">
-                <h3 class="px-5 pt-5 pb-3 text-xs font-bold uppercase tracking-wider text-gray-400">Pace vs HR per Lari</h3>
+                <p class="px-5 pt-5 pb-3 telemetry-label-lg text-telemetry-ink">Pace vs HR per Lari</p>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>
-                            <tr class="text-left text-[10px] font-bold uppercase text-gray-400 border-b border-gray-100">
-                                <th class="px-5 py-2">Tanggal</th>
-                                <th class="px-5 py-2">Jarak</th>
-                                <th class="px-5 py-2">Pace</th>
-                                <th class="px-5 py-2">Avg HR</th>
+                            <tr class="border-b border-telemetry-line text-left">
+                                <th class="px-5 py-2 telemetry-label">Tanggal</th>
+                                <th class="px-5 py-2 text-right telemetry-label">Jarak</th>
+                                <th class="px-5 py-2 text-right telemetry-label">Pace</th>
+                                <th class="px-5 py-2 text-right telemetry-label">Avg HR</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100">
+                        <tbody class="divide-y divide-telemetry-line">
                             @forelse ($recentRuns as $run)
                                 @php $p = $run->average_pace_seconds_per_km ? (int) round($run->average_pace_seconds_per_km) : null; @endphp
-                                <tr>
-                                    <td class="px-5 py-2.5 text-gray-500">{{ $run->start_date->translatedFormat('d M') }}</td>
-                                    <td class="px-5 py-2.5 font-bold text-gray-900">{{ $run->distance_meters ? number_format($run->distance_meters / 1000, 2).' km' : '--' }}</td>
-                                    <td class="px-5 py-2.5 font-bold text-gray-900">{{ $p ? sprintf('%d:%02d', intdiv($p, 60), $p % 60).'/km' : '--' }}</td>
-                                    <td class="px-5 py-2.5 text-gray-500">{{ $run->average_heart_rate ? round($run->average_heart_rate).' bpm' : '--' }}</td>
+                                <tr class="transition-colors hover:bg-telemetry-well">
+                                    <td class="px-5 py-2.5 text-telemetry-slate">{{ $run->start_date->translatedFormat('d M') }}</td>
+                                    <td class="px-5 py-2.5 text-right telemetry-value">{{ $run->distance_meters ? number_format($run->distance_meters / 1000, 2).' km' : '--' }}</td>
+                                    <td class="px-5 py-2.5 text-right telemetry-value">{{ $p ? sprintf('%d:%02d', intdiv($p, 60), $p % 60).'/km' : '--' }}</td>
+                                    <td class="px-5 py-2.5 text-right text-telemetry-slate">{{ $run->average_heart_rate ? round($run->average_heart_rate).' bpm' : '--' }}</td>
                                 </tr>
                             @empty
-                                <tr><td colspan="4" class="px-5 py-6 text-center text-gray-400">Belum ada data pace.</td></tr>
+                                <tr><td colspan="4" class="px-5 py-6 text-center text-sm text-telemetry-slate">Belum ada data pace.</td></tr>
                             @endforelse
                         </tbody>
                     </table>

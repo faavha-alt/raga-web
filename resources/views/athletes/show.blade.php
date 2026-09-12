@@ -1,16 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white leading-tight">
+        <h1 class="telemetry-value text-4xl sm:text-5xl leading-tight">
             {{ $athlete->name }}
-        </h2>
-        <p class="mt-1 text-sm font-medium text-gray-500">&#64;{{ $athlete->username }}</p>
+        </h1>
+        <p class="mt-2 text-sm font-medium text-telemetry-slate">&#64;{{ $athlete->username }}</p>
     </x-slot>
 
     <div class="py-6 pb-16">
         <div class="px-4 sm:px-6 lg:px-8 max-w-3xl space-y-6">
 
             @if (session('status'))
-                <div class="rounded-2xl bg-raga-excellent/10 border border-raga-excellent/20 px-4 py-3 text-sm font-semibold text-raga-excellent">
+                <div class="rounded border border-telemetry-emerald/20 bg-telemetry-emerald/10 px-4 py-3 text-sm font-semibold text-telemetry-emerald-deep">
                     {{ session('status') }}
                 </div>
             @endif
@@ -19,18 +19,18 @@
                 <div class="flex flex-wrap items-start gap-4">
                     @if ($athlete->avatar_path)
                         <img src="{{ asset($athlete->avatar_path) }}" alt="{{ $athlete->name }}"
-                            class="h-20 w-20 rounded-3xl object-cover shadow-sm">
+                            class="h-20 w-20 rounded-full object-cover">
                     @else
-                        <span class="flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-raga-accent to-raga-primary text-2xl font-black text-white shadow-glow-accent">
+                        <span class="flex h-20 w-20 items-center justify-center rounded-full border border-telemetry-line bg-telemetry-well text-2xl font-bold text-telemetry-slate">
                             {{ $athlete->initials() }}
                         </span>
                     @endif
 
                     <div class="min-w-0 flex-1">
-                        <h1 class="text-xl font-black text-gray-900 dark:text-gray-100">{{ $athlete->name }}</h1>
-                        <p class="text-sm font-semibold text-gray-400">&#64;{{ $athlete->username }}</p>
+                        <h1 class="telemetry-value text-xl">{{ $athlete->name }}</h1>
+                        <p class="text-sm font-semibold text-telemetry-slate">&#64;{{ $athlete->username }}</p>
 
-                        <div class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-400">
+                        <div class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-telemetry-slate">
                             @if ($athlete->location)
                                 <span>📍 {{ $athlete->location }}</span>
                             @endif
@@ -38,17 +38,17 @@
                         </div>
 
                         @if ($athlete->bio)
-                            <p class="mt-3 text-sm text-gray-600 dark:text-gray-300">{{ $athlete->bio }}</p>
+                            <p class="mt-3 text-sm text-telemetry-slate">{{ $athlete->bio }}</p>
                         @endif
 
                         <div class="mt-4 flex items-center gap-5 text-sm">
-                            <a href="{{ route('athletes.followers', $athlete) }}" class="hover:text-raga-primary">
-                                <span class="font-black text-gray-900 dark:text-gray-100">{{ $followerCount }}</span>
-                                <span class="text-gray-500">Pengikut</span>
+                            <a href="{{ route('athletes.followers', $athlete) }}" class="hover:text-telemetry-ember transition-colors">
+                                <span class="telemetry-value">{{ $followerCount }}</span>
+                                <span class="text-telemetry-slate">Pengikut</span>
                             </a>
-                            <a href="{{ route('athletes.following', $athlete) }}" class="hover:text-raga-primary">
-                                <span class="font-black text-gray-900 dark:text-gray-100">{{ $followingCount }}</span>
-                                <span class="text-gray-500">Mengikuti</span>
+                            <a href="{{ route('athletes.following', $athlete) }}" class="hover:text-telemetry-ember transition-colors">
+                                <span class="telemetry-value">{{ $followingCount }}</span>
+                                <span class="text-telemetry-slate">Mengikuti</span>
                             </a>
                         </div>
                     </div>
@@ -56,7 +56,7 @@
                     <div class="shrink-0">
                         @if ($viewer->id === $athlete->id)
                             <a href="{{ route('profile.edit') }}"
-                                class="inline-flex items-center justify-center rounded-full border-2 border-gray-200 px-6 py-2.5 text-sm font-bold text-gray-700 transition hover:border-raga-primary hover:text-raga-primary dark:border-gray-700 dark:text-gray-200">
+                                class="inline-flex items-center justify-center rounded border border-telemetry-line px-6 py-2.5 text-sm font-bold text-telemetry-ink transition-colors hover:border-telemetry-ember hover:text-telemetry-ember">
                                 Edit Profil
                             </a>
                         @elseif ($isFollowing)
@@ -84,19 +84,19 @@
             </div>
 
             <x-card class="!p-4 text-center">
-                <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Jarak 4 Minggu Terakhir</p>
-                <p class="mt-1 text-2xl font-black text-gradient">{{ number_format($stats['last_4_weeks_distance_meters'] / 1000, 1) }} km</p>
+                <p class="telemetry-label">Jarak 4 Minggu Terakhir</p>
+                <p class="mt-1 telemetry-value text-2xl">{{ number_format($stats['last_4_weeks_distance_meters'] / 1000, 1) }} km</p>
             </x-card>
 
             <section>
-                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">Aktivitas Terbaru</h3>
+                <x-section-heading title="Aktivitas Terbaru" />
 
                 <div class="space-y-4">
                     @forelse ($activities as $workout)
                         <x-activity-card :workout="$workout" :viewer="$viewer" />
                     @empty
                         <x-card class="text-center py-10">
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Belum ada aktivitas yang bisa ditampilkan.</p>
+                            <p class="text-sm text-telemetry-slate">Belum ada aktivitas yang bisa ditampilkan.</p>
                         </x-card>
                     @endforelse
                 </div>

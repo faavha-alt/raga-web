@@ -1,16 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-extrabold text-gray-900 leading-tight">
+        <h1 class="telemetry-value text-4xl sm:text-5xl">
             {{ __('Training Trends') }}
-        </h2>
-        <p class="mt-1 text-sm font-medium text-gray-500">Tren volume dan beban latihan kamu dari waktu ke waktu.</p>
+        </h1>
+        <p class="mt-2 text-sm font-medium text-telemetry-slate">Tren volume dan beban latihan kamu dari waktu ke waktu.</p>
     </x-slot>
 
     <div class="py-6 pb-16">
         <div class="px-4 sm:px-6 lg:px-8 space-y-6">
 
             <x-card>
-                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">Tren</h3>
+                <h3 class="mb-3 telemetry-label-lg text-telemetry-ink">Tren</h3>
                 <x-health-trend-chart :series="$series" :ranges="[7, 30, 90, 182, 365]" />
             </x-card>
 

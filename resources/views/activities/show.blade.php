@@ -43,8 +43,8 @@
                             })"
                             x-on:click="toggle()"
                             :disabled="pending"
-                            :class="given ? 'bg-raga-accent/10 text-raga-accent' : 'text-telemetry-slate hover:text-raga-accent'"
-                            class="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold transition disabled:opacity-60"
+                            :class="given ? 'bg-[rgba(0,184,101,0.08)] text-telemetry-emerald-deep' : 'text-telemetry-slate hover:text-telemetry-emerald-deep'"
+                            class="inline-flex items-center gap-1.5 rounded border border-telemetry-line px-3 py-2 font-display text-[11px] font-bold uppercase tracking-[0.08em] transition-colors disabled:opacity-60"
                             aria-label="Beri kudos"
                         >
                             <span x-text="given ? '👍' : '👏'"></span>
@@ -52,7 +52,7 @@
                             <span class="font-semibold">Kudos</span>
                         </button>
 
-                        <a href="#comments" class="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold text-telemetry-slate transition hover:text-raga-primary">
+                        <a href="#comments" class="inline-flex items-center gap-1.5 rounded border border-transparent px-3 py-2 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-slate transition-colors hover:border-telemetry-line hover:text-telemetry-chrono-deep">
                             💬 {{ $commentsCount }} Komentar
                         </a>
                     </div>
@@ -63,7 +63,7 @@
                             @method('PATCH')
                             <label for="visibility" class="telemetry-label">Visibilitas</label>
                             <select id="visibility" name="visibility"
-                                class="border border-telemetry-line bg-telemetry-well px-3 py-2 text-sm font-semibold text-telemetry-ink focus:border-raga-primary focus:bg-white focus:ring-raga-primary dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
+                                class="rounded border border-telemetry-line bg-telemetry-well px-3 py-2 text-sm font-semibold text-telemetry-ink transition-colors focus:border-telemetry-ink focus:outline-none focus:ring-0">
                                 @foreach (\App\Support\ActivityVisibility::cases() as $case)
                                     <option value="{{ $case->value }}" @selected($workout->visibility === $case)>{{ $case->icon() }} {{ $case->label() }}</option>
                                 @endforeach
@@ -163,7 +163,7 @@
                         @endif
                     </div>
                     @if ($workout->training_effect_label)
-                        <p class="mt-3 text-xs font-semibold text-raga-primary">{{ ucwords(str_replace('_', ' ', strtolower($workout->training_effect_label))) }}</p>
+                        <p class="mt-3 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono-deep">{{ ucwords(str_replace('_', ' ', strtolower($workout->training_effect_label))) }}</p>
                     @endif
                 </x-card>
             @endif
@@ -245,31 +245,31 @@
             <div id="comments" class="space-y-4">
                 <h3 class="telemetry-label">Komentar</h3>
 
-                <x-card class="!p-0 divide-y divide-telemetry-line dark:divide-gray-800 overflow-hidden">
+                <x-card class="!p-0 divide-y divide-telemetry-line overflow-hidden">
                     @forelse ($comments as $comment)
                         <div class="flex gap-3 px-5 py-4">
                             @if ($comment->user->avatar_path)
                                 <img src="{{ asset($comment->user->avatar_path) }}"
                                     alt="{{ $comment->user->name }}" class="h-9 w-9 shrink-0 rounded-full object-cover">
                             @else
-                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-raga-accent to-raga-primary text-xs font-black text-white">
+                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-telemetry-ink font-display text-xs font-bold text-white">
                                     {{ $comment->user->initials() }}
                                 </span>
                             @endif
 
                             <div class="min-w-0 flex-1">
                                 <p class="text-sm">
-                                    <span class="font-bold text-telemetry-ink dark:text-gray-100">{{ $comment->user->name }}</span>
+                                    <span class="font-semibold text-telemetry-ink">{{ $comment->user->name }}</span>
                                     <span class="ml-1 text-xs text-telemetry-slate">{{ str_replace(' yang lalu', ' lalu', $comment->created_at->locale('id')->diffForHumans()) }}</span>
                                 </p>
-                                <p class="mt-0.5 break-words text-sm text-telemetry-ink dark:text-gray-300">{{ $comment->body }}</p>
+                                <p class="mt-0.5 break-words text-sm text-telemetry-ink">{{ $comment->body }}</p>
                             </div>
 
                             @if ($viewer->id === $comment->user_id || $viewer->id === $workout->user_id)
                                 <form method="POST" action="{{ route('comments.destroy', $comment) }}" class="shrink-0">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-xs font-semibold text-raga-low hover:underline">Hapus</button>
+                                    <button type="submit" class="font-display text-[10px] font-bold uppercase tracking-[0.08em] text-telemetry-ember-deep hover:underline">Hapus</button>
                                 </form>
                             @endif
                         </div>
@@ -283,7 +283,7 @@
                         @csrf
                         <x-input-label for="body" value="Tambah Komentar" />
                         <textarea id="body" name="body" rows="3" required maxlength="1000" placeholder="Tulis komentar..."
-                            class="w-full border border-telemetry-line dark:border-gray-700 bg-telemetry-well dark:bg-gray-900 px-4 py-3 text-sm font-medium text-telemetry-ink dark:text-gray-100 placeholder:text-telemetry-slate focus:border-raga-primary focus:bg-white dark:focus:bg-gray-800 focus:ring-raga-primary transition">{{ old('body') }}</textarea>
+                            class="w-full rounded border border-telemetry-line bg-telemetry-well px-3 py-2 text-sm font-medium text-telemetry-ink placeholder:text-telemetry-slate transition-colors focus:border-telemetry-ink focus:outline-none focus:ring-0">{{ old('body') }}</textarea>
                         <x-input-error :messages="$errors->get('body')" class="mt-2" />
                         <x-primary-button>Kirim</x-primary-button>
                     </form>

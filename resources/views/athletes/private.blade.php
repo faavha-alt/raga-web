@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white leading-tight">
+        <h1 class="telemetry-value text-4xl sm:text-5xl leading-tight">
             {{ $athlete->name }}
-        </h2>
-        <p class="mt-1 text-sm font-medium text-gray-500">Profil privat</p>
+        </h1>
+        <p class="mt-2 text-sm font-medium text-telemetry-slate">Profil privat</p>
     </x-slot>
 
     <div class="py-6 pb-16">
@@ -11,19 +11,19 @@
             <x-card class="text-center py-12">
                 @if ($athlete->avatar_path)
                     <img src="{{ asset($athlete->avatar_path) }}" alt="{{ $athlete->name }}"
-                        class="mx-auto h-20 w-20 rounded-3xl object-cover">
+                        class="mx-auto h-20 w-20 rounded-full object-cover">
                 @else
-                    <span class="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-raga-accent to-raga-primary text-2xl font-black text-white">
+                    <span class="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-telemetry-line bg-telemetry-well text-2xl font-bold text-telemetry-slate">
                         {{ $athlete->initials() }}
                     </span>
                 @endif
 
-                <h1 class="mt-4 text-xl font-black text-gray-900 dark:text-gray-100">{{ $athlete->name }}</h1>
+                <h1 class="mt-4 telemetry-value text-xl">{{ $athlete->name }}</h1>
                 @if ($athlete->username)
-                    <p class="text-sm font-semibold text-gray-400">&#64;{{ $athlete->username }}</p>
+                    <p class="text-sm font-semibold text-telemetry-slate">&#64;{{ $athlete->username }}</p>
                 @endif
 
-                <p class="mx-auto mt-4 max-w-md text-sm text-gray-500 dark:text-gray-400">
+                <p class="mx-auto mt-4 max-w-md text-sm text-telemetry-slate">
                     🔒 Profil ini privat. Ikuti atlet ini untuk melihat aktivitasnya.
                 </p>
 

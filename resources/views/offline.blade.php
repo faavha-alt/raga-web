@@ -10,7 +10,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noindex">
-        <meta name="theme-color" content="#21A08C">
+        <meta name="theme-color" content="#F8F9FA">
         <title>Offline — RAGA</title>
         <link rel="icon" type="image/svg+xml" href="{{ asset('icons/icon.svg') }}">
         <style>
@@ -29,20 +29,19 @@
                 align-items: center;
                 justify-content: center;
                 padding: 24px;
-                font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-                background-color: #f8fafc;
-                color: #0f172a;
+                font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+                background-color: #f8f9fa;
+                color: #0d1117;
             }
 
             .card {
                 width: 100%;
                 max-width: 420px;
                 background: #ffffff;
-                border: 1px solid #f1f5f9;
-                border-radius: 28px;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
                 padding: 40px 32px;
                 text-align: center;
-                box-shadow: 0 18px 40px -24px rgba(16, 24, 40, 0.35);
             }
 
             .badge {
@@ -52,36 +51,44 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                border-radius: 20px;
+                border-radius: 4px;
                 font-size: 28px;
                 color: #ffffff;
-                background: linear-gradient(135deg, #21A08C 0%, #6C5CE7 100%);
+                background: #ff3e1d;
             }
 
             h1 {
                 margin: 0 0 8px;
+                font-family: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
                 font-size: 22px;
-                font-weight: 800;
+                font-weight: 700;
+                letter-spacing: -0.01em;
             }
 
             p {
                 margin: 0 0 24px;
                 font-size: 14px;
                 line-height: 1.6;
-                color: #64748b;
+                color: #495057;
             }
 
             button {
                 width: 100%;
                 border: 0;
                 cursor: pointer;
-                border-radius: 999px;
+                border-radius: 4px;
                 padding: 14px 24px;
-                font-size: 14px;
+                font-size: 12px;
                 font-weight: 700;
-                font-family: inherit;
+                font-family: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
                 color: #ffffff;
-                background: linear-gradient(90deg, #21A08C 0%, #6C5CE7 100%);
+                background: #ff3e1d;
+            }
+
+            button:hover {
+                background: #e03214;
             }
 
             button:active {
@@ -91,7 +98,7 @@
             .hint {
                 margin: 16px 0 0;
                 font-size: 12px;
-                color: #94a3b8;
+                color: #6c757d;
             }
         </style>
     </head>

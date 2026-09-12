@@ -73,15 +73,15 @@
         x-transition.opacity
         class="fixed bottom-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2"
     >
-        <div class="flex items-center gap-3 rounded-2xl border border-gray-100 bg-white px-4 py-3 shadow-glow dark:border-gray-800 dark:bg-gray-900">
-            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-raga-accent to-raga-primary text-base">📲</span>
-            <p class="min-w-0 flex-1 text-xs font-semibold text-gray-700 dark:text-gray-200">
+        <div class="flex items-center gap-3 rounded-lg border border-telemetry-line bg-white px-4 py-3 shadow-overlay">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded bg-telemetry-ink text-base">📲</span>
+            <p class="min-w-0 flex-1 text-xs font-medium text-telemetry-slate">
                 Pasang RAGA di layar utama untuk akses lebih cepat.
             </p>
-            <button type="button" @click="install()" class="shrink-0 rounded-full bg-gradient-to-r from-raga-accent to-raga-primary px-3 py-1.5 text-xs font-bold text-white">
+            <button type="button" @click="install()" class="shrink-0 rounded bg-telemetry-ember px-3 py-1.5 font-display text-[10px] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-telemetry-ember-dark">
                 Pasang aplikasi
             </button>
-            <button type="button" @click="installable = false" class="shrink-0 text-xs font-semibold text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+            <button type="button" @click="installable = false" class="shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.08em] text-telemetry-slate transition-colors hover:text-telemetry-ink">
                 Nanti
             </button>
         </div>

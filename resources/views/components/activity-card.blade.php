@@ -35,24 +35,24 @@
             <a href="{{ $author->username ? route('athletes.show', $author) : '#' }}" class="shrink-0">
                 @if ($author->avatar_path)
                     <img src="{{ asset($author->avatar_path) }}" alt="{{ $author->name }}"
-                        class="h-10 w-10 rounded-full object-cover ring-2 ring-white shadow-sm">
+                        class="h-10 w-10 rounded-full object-cover ring-2 ring-telemetry-surface">
                 @else
-                    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-raga-accent to-raga-primary text-sm font-black text-white shadow-glow-accent">
+                    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-telemetry-steel text-sm font-bold text-white">
                         {{ $author->initials() }}
                     </span>
                 @endif
             </a>
             <div class="min-w-0">
-                <p class="truncate text-sm font-bold text-gray-900 dark:text-gray-100">
+                <p class="truncate text-sm font-bold text-telemetry-ink">
                     {{ $author->name }}
                     @if ($author->username)
-                        <a href="{{ route('athletes.show', $author) }}" class="font-medium text-gray-400 hover:text-raga-primary">&#64;{{ $author->username }}</a>
+                        <a href="{{ route('athletes.show', $author) }}" class="font-medium text-telemetry-slate hover:text-telemetry-ember-deep">&#64;{{ $author->username }}</a>
                     @endif
                 </p>
-                <p class="text-xs text-gray-400">{{ $relative }}</p>
+                <p class="text-xs text-telemetry-slate">{{ $relative }}</p>
             </div>
             @if ($isOwner)
-                <span class="ml-auto shrink-0 rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-bold text-gray-500 dark:bg-gray-800 dark:text-gray-300">
+                <span class="ml-auto shrink-0 rounded border border-telemetry-line bg-telemetry-well px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-telemetry-slate">
                     {{ $visibility->icon() }} {{ $visibility->label() }}
                 </span>
             @endif
@@ -61,47 +61,47 @@
 
     <div class="px-5 py-4">
         <div class="flex items-center gap-2">
-            <span class="flex h-9 w-9 items-center justify-center rounded-2xl bg-gray-50 text-lg dark:bg-gray-800">{{ $icon }}</span>
+            <span class="flex h-9 w-9 items-center justify-center rounded border border-telemetry-line bg-telemetry-well text-lg">{{ $icon }}</span>
             <div class="min-w-0">
-                <a href="{{ route('activities.show', $workout) }}" class="block truncate font-bold text-gray-900 hover:text-raga-primary dark:text-gray-100">
+                <a href="{{ route('activities.show', $workout) }}" class="block truncate font-bold text-telemetry-ink hover:text-telemetry-ember-deep">
                     {{ $title }}
                 </a>
-                <p class="text-xs text-gray-400">{{ $label }}</p>
+                <p class="telemetry-label">{{ $label }}</p>
             </div>
         </div>
 
         <div class="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
             @if ($workout->distance_meters)
                 <div>
-                    <p class="text-[10px] font-bold uppercase text-gray-400">Jarak</p>
-                    <p class="font-black text-gray-900 dark:text-gray-100">{{ number_format($workout->distance_meters / 1000, 2) }} km</p>
+                    <p class="telemetry-label">Jarak</p>
+                    <p class="mt-1 telemetry-value text-base">{{ number_format($workout->distance_meters / 1000, 2) }} km</p>
                 </div>
             @endif
             <div>
-                <p class="text-[10px] font-bold uppercase text-gray-400">Durasi</p>
-                <p class="font-black text-gray-900 dark:text-gray-100">{{ intdiv($durationMin, 60) }}h {{ $durationMin % 60 }}m</p>
+                <p class="telemetry-label">Durasi</p>
+                <p class="mt-1 telemetry-value text-base">{{ intdiv($durationMin, 60) }}h {{ $durationMin % 60 }}m</p>
             </div>
             @if ($isRide && $speed)
                 <div>
-                    <p class="text-[10px] font-bold uppercase text-gray-400">Kecepatan</p>
-                    <p class="font-black text-gray-900 dark:text-gray-100">{{ number_format($speed, 1) }} km/j</p>
+                    <p class="telemetry-label">Kecepatan</p>
+                    <p class="mt-1 telemetry-value text-base">{{ number_format($speed, 1) }} km/j</p>
                 </div>
             @elseif ($pace)
                 <div>
-                    <p class="text-[10px] font-bold uppercase text-gray-400">Pace</p>
-                    <p class="font-black text-gray-900 dark:text-gray-100">{{ sprintf('%d:%02d', intdiv($pace, 60), $pace % 60) }} /km</p>
+                    <p class="telemetry-label">Pace</p>
+                    <p class="mt-1 telemetry-value text-base">{{ sprintf('%d:%02d', intdiv($pace, 60), $pace % 60) }} /km</p>
                 </div>
             @endif
             @if ($workout->elevation_gain_meters)
                 <div>
-                    <p class="text-[10px] font-bold uppercase text-gray-400">Elevasi</p>
-                    <p class="font-black text-gray-900 dark:text-gray-100">{{ round($workout->elevation_gain_meters) }} m</p>
+                    <p class="telemetry-label">Elevasi</p>
+                    <p class="mt-1 telemetry-value text-base">{{ round($workout->elevation_gain_meters) }} m</p>
                 </div>
             @endif
         </div>
     </div>
 
-    <div class="flex items-center gap-4 border-t border-gray-100 px-5 py-3 dark:border-gray-800">
+    <div class="flex items-center gap-4 border-t border-telemetry-line px-5 py-3">
         <button
             type="button"
             x-data="activityKudos({
@@ -112,8 +112,10 @@
             })"
             x-on:click="toggle()"
             :disabled="pending"
-            :class="given ? 'bg-raga-accent/10 text-raga-accent' : 'text-gray-500 hover:text-raga-accent'"
-            class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold transition disabled:opacity-60"
+            :class="given
+                ? 'border-telemetry-ember/25 bg-[rgba(255,62,29,0.08)] text-telemetry-ember-deep'
+                : 'border-telemetry-line text-telemetry-slate hover:border-telemetry-line-strong hover:text-telemetry-ember-deep'"
+            class="inline-flex h-8 items-center gap-1.5 rounded border px-3 text-xs font-bold uppercase tracking-[0.08em] transition disabled:opacity-60"
             :aria-pressed="given ? 'true' : 'false'"
             aria-label="Beri kudos"
         >
@@ -121,7 +123,7 @@
             <span x-text="count">{{ $kudosCount }}</span>
         </button>
 
-        <a href="{{ route('activities.show', $workout) }}#comments" class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold text-gray-500 transition hover:text-raga-primary">
+        <a href="{{ route('activities.show', $workout) }}#comments" class="inline-flex h-8 items-center gap-1.5 rounded border border-transparent px-3 text-xs font-bold uppercase tracking-[0.08em] text-telemetry-slate transition hover:border-telemetry-line hover:text-telemetry-ember-deep">
             💬 <span>{{ $commentsCount }}</span>
         </a>
     </div>

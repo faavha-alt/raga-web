@@ -1,36 +1,36 @@
 <x-app-layout>
     <x-slot name="header">
-        <a href="{{ route('athletes.show', $athlete) }}" class="text-sm font-bold text-gray-400 hover:text-gray-600 transition">← {{ $athlete->name }}</a>
-        <h2 class="mt-2 text-2xl font-extrabold text-gray-900 dark:text-white leading-tight">{{ $title }}</h2>
+        <a href="{{ route('athletes.show', $athlete) }}" class="telemetry-label transition-colors hover:text-telemetry-ink">← {{ $athlete->name }}</a>
+        <h1 class="mt-2 telemetry-value text-4xl sm:text-5xl leading-tight">{{ $title }}</h1>
     </x-slot>
 
     <div class="py-6 pb-16">
         <div class="px-4 sm:px-6 lg:px-8 max-w-2xl space-y-4">
 
             @if (session('status'))
-                <div class="rounded-2xl bg-raga-excellent/10 border border-raga-excellent/20 px-4 py-3 text-sm font-semibold text-raga-excellent">
+                <div class="rounded border border-telemetry-emerald/20 bg-telemetry-emerald/10 px-4 py-3 text-sm font-semibold text-telemetry-emerald-deep">
                     {{ session('status') }}
                 </div>
             @endif
 
-            <x-card class="!p-0 divide-y divide-gray-100 dark:divide-gray-800 overflow-hidden">
+            <x-card class="!p-0 divide-y divide-telemetry-line overflow-hidden">
                 @forelse ($people as $person)
-                    <div class="flex items-center gap-3 px-5 py-4">
+                    <div class="flex items-center gap-3 px-5 py-4 transition-colors hover:bg-telemetry-well">
                         @if ($person->avatar_path)
                             <img src="{{ asset($person->avatar_path) }}" alt="{{ $person->name }}"
                                 class="h-11 w-11 shrink-0 rounded-full object-cover">
                         @else
-                            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-raga-accent to-raga-primary text-sm font-black text-white">
+                            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-telemetry-line bg-telemetry-well text-sm font-bold text-telemetry-slate">
                                 {{ $person->initials() }}
                             </span>
                         @endif
 
                         <div class="min-w-0 flex-1">
-                            <a href="{{ $person->username ? route('athletes.show', $person) : '#' }}" class="block truncate font-bold text-gray-900 hover:text-raga-primary dark:text-gray-100">
+                            <a href="{{ $person->username ? route('athletes.show', $person) : '#' }}" class="block truncate font-bold text-telemetry-ink hover:text-telemetry-ember transition-colors">
                                 {{ $person->name }}
                             </a>
                             @if ($person->username)
-                                <p class="truncate text-xs text-gray-400">&#64;{{ $person->username }}</p>
+                                <p class="truncate text-xs text-telemetry-slate">&#64;{{ $person->username }}</p>
                             @endif
                         </div>
 
@@ -52,7 +52,7 @@
                         @endif
                     </div>
                 @empty
-                    <div class="px-5 py-10 text-center text-sm text-gray-400">
+                    <div class="px-5 py-10 text-center text-sm text-telemetry-slate">
                         {{ $isFollowers ? 'Belum ada pengikut.' : 'Belum mengikuti siapa pun.' }}
                     </div>
                 @endforelse

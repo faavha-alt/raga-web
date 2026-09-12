@@ -1,26 +1,27 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white leading-tight">
-            {{ $plan->name }}
-        </h2>
+        <div>
+            <h1 class="telemetry-value text-4xl sm:text-5xl">{{ $plan->name }}</h1>
+            <p class="mt-2 text-sm font-medium text-telemetry-slate">Detail rencana latihan, minggu, dan workout terencana.</p>
+        </div>
     </x-slot>
 
     <div class="py-6 pb-16">
         <div class="px-4 sm:px-6 lg:px-8 max-w-4xl space-y-5">
 
             @if (session('status'))
-                <div class="rounded-2xl bg-raga-excellent/10 border border-raga-excellent/20 px-4 py-3 text-sm font-semibold text-raga-excellent">
+                <div class="rounded border border-telemetry-emerald/20 bg-[rgba(0,184,101,0.08)] px-4 py-3 text-sm font-semibold text-telemetry-emerald-deep">
                     {{ session('status') }}
                 </div>
             @endif
 
             <div class="flex items-center justify-between">
-                <a href="{{ route('training') }}" class="text-sm font-bold text-raga-primary hover:text-raga-accent transition">← Kembali ke Training</a>
+                <a href="{{ route('training') }}" class="telemetry-label transition-colors hover:text-telemetry-ink">← Kembali ke Training</a>
                 <div class="flex items-center gap-3">
-                    <a href="{{ route('training.calendar') }}" class="text-sm font-bold text-raga-primary hover:text-raga-accent transition">Lihat Kalender →</a>
+                    <a href="{{ route('training.calendar') }}" class="telemetry-label transition-colors hover:text-telemetry-ink">Lihat Kalender →</a>
                     <button type="button"
                         onclick="if (confirm('Hapus training plan "{{ $plan->name }}"? Semua minggu dan workout terencana di dalamnya akan ikut terhapus.')) document.getElementById('delete-plan-form').submit();"
-                        class="text-sm font-semibold text-raga-low hover:underline">
+                        class="font-display text-[10px] font-bold uppercase tracking-[0.12em] text-telemetry-ember-deep hover:underline">
                         Hapus Plan
                     </button>
                 </div>
@@ -34,15 +35,15 @@
             <x-card>
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                        <p class="text-lg font-black text-gray-900 dark:text-gray-100">{{ $plan->name }}</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                        <p class="telemetry-value text-lg">{{ $plan->name }}</p>
+                        <p class="mt-1 text-sm text-telemetry-slate">
                             {{ ucfirst($plan->status) }} ·
                             {{ $plan->start_date->translatedFormat('d M Y') }} – {{ $plan->target_date->translatedFormat('d M Y') }}
                         </p>
                     </div>
                     <div class="text-right text-sm">
-                        <p class="font-bold text-gray-900 dark:text-gray-100">{{ $plan->weeks->count() }} minggu</p>
-                        <p class="text-xs text-gray-400">
+                        <p class="telemetry-value">{{ $plan->weeks->count() }} minggu</p>
+                        <p class="mt-0.5 text-[11px] text-telemetry-slate">
                             {{ $plan->weeks->sum(fn ($w) => $w->days->count()) }} hari ·
                             {{ $plan->weeks->flatMap->days->sum(fn ($d) => $d->plannedWorkouts->count()) }} workout terencana
                         </p>
@@ -54,13 +55,13 @@
                     $doneWo = $plan->completedPlannedWorkouts();
                     $woPercent = $totalWo > 0 ? (int) round(($doneWo / $totalWo) * 100) : 0;
                 @endphp
-                <div class="mt-4">
+                <div class="mt-4 border-t border-telemetry-line pt-3">
                     <div class="flex items-center justify-between text-xs font-bold">
-                        <span class="text-gray-500 dark:text-gray-400">Progress Plan</span>
-                        <span class="text-gray-900 dark:text-gray-100">{{ $doneWo }} / {{ $totalWo }} selesai ({{ $woPercent }}%)</span>
+                        <span class="telemetry-label">Progress Plan</span>
+                        <span class="telemetry-value">{{ $doneWo }} / {{ $totalWo }} selesai ({{ $woPercent }}%)</span>
                     </div>
-                    <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
-                        <div class="h-full rounded-full bg-raga-primary transition-all" style="width: {{ $woPercent }}%"></div>
+                    <div class="mt-2 h-1 w-full bg-telemetry-well">
+                        <div class="h-full bg-telemetry-ink transition-all" style="width: {{ $woPercent }}%"></div>
                     </div>
                 </div>
             </x-card>
@@ -68,16 +69,16 @@
             @forelse ($plan->weeks as $week)
                 <x-card>
                     <div class="mb-4 flex items-center justify-between">
-                        <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Minggu {{ $week->week_number }}</p>
-                        <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">
+                        <p class="telemetry-label">Minggu {{ $week->week_number }}</p>
+                        <p class="telemetry-value text-sm">
                             {{ $week->start_date->translatedFormat('d M') }} – {{ $week->end_date->translatedFormat('d M Y') }}
                         </p>
                     </div>
 
                     <div class="space-y-2">
                         @forelse ($week->days as $day)
-                            <div class="rounded-xl border border-gray-100 dark:border-gray-700 p-3">
-                                <p class="text-sm font-bold text-gray-900 dark:text-gray-100">
+                            <div class="rounded border border-telemetry-line p-3">
+                                <p class="telemetry-value text-sm">
                                     {{ $day->date->translatedFormat('D, d M') }}
                                 </p>
                                 @forelse ($day->plannedWorkouts as $wo)
@@ -86,20 +87,20 @@
                                         $label = \App\Support\ActivityTypeIcon::label($wo->type);
                                         $pace = $wo->target_pace_seconds_per_km ? (int) round($wo->target_pace_seconds_per_km) : null;
                                     @endphp
-                                    <div class="mt-2 flex flex-wrap items-start justify-between gap-2 rounded-lg bg-gray-50 dark:bg-gray-800/60 p-2.5 {{ $wo->completedWorkout ? 'opacity-70' : '' }}">
+                                    <div class="mt-2 flex flex-wrap items-start justify-between gap-2 rounded bg-telemetry-well p-2.5 {{ $wo->completedWorkout ? 'opacity-70' : '' }}">
                                         <div class="flex items-center gap-2">
                                             <span class="text-lg">{{ $icon }}</span>
                                             <div>
-                                                <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                                <p class="text-sm font-semibold text-telemetry-ink">
                                                     {{ $label }}
                                                     @if ($wo->completedWorkout)
-                                                        <span class="ml-1 text-xs font-bold text-raga-excellent">✓ Selesai</span>
+                                                        <span class="ml-1 inline-flex h-5 items-center rounded border border-telemetry-emerald/20 bg-[rgba(0,184,101,0.08)] px-2 text-[10px] font-bold uppercase tracking-[0.08em] text-telemetry-emerald-deep">✓ Selesai</span>
                                                     @endif
                                                     @if ($wo->intensity)
-                                                        <span class="ml-1 text-xs font-medium text-raga-primary">({{ $wo->intensity }})</span>
+                                                        <span class="ml-1 text-xs font-medium text-telemetry-chrono-deep">({{ $wo->intensity }})</span>
                                                     @endif
                                                 </p>
-                                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                                <p class="mt-0.5 text-[11px] text-telemetry-slate">
                                                     @if ($wo->distance_meters)
                                                         {{ number_format($wo->distance_meters / 1000, 2) }} km
                                                     @endif
@@ -117,7 +118,7 @@
                                         </div>
                                         <div class="flex flex-col items-end gap-1.5">
                                             @if ($wo->warm_up || $wo->main_set || $wo->cool_down || $wo->notes)
-                                                <p class="max-w-md text-xs text-gray-500 dark:text-gray-400 text-right">
+                                                <p class="max-w-md text-right text-[11px] text-telemetry-slate">
                                                     @if ($wo->warm_up)<span>Warm-up: {{ $wo->warm_up }}</span><br>@endif
                                                     @if ($wo->main_set)<span>Main: {{ $wo->main_set }}</span><br>@endif
                                                     @if ($wo->cool_down)<span>Cool-down: {{ $wo->cool_down }}</span><br>@endif
@@ -126,26 +127,26 @@
                                             @endif
                                             <form method="POST" action="{{ route('training.planned-workout.toggle', $wo) }}">
                                                 @csrf
-                                                <label class="inline-flex items-center gap-1.5 cursor-pointer select-none text-xs font-semibold text-gray-500 dark:text-gray-400">
-                                                    <input type="checkbox" {{ $wo->completedWorkout ? 'checked' : '' }} onchange="this.form.submit()" class="rounded border-gray-300 text-raga-primary focus:ring-raga-primary" />
+                                                <label class="inline-flex cursor-pointer select-none items-center gap-1.5 text-[11px] font-semibold text-telemetry-slate">
+                                                    <input type="checkbox" {{ $wo->completedWorkout ? 'checked' : '' }} onchange="this.form.submit()" class="rounded border-telemetry-line-strong text-telemetry-ember focus:ring-telemetry-ember" />
                                                     Selesai
                                                 </label>
                                             </form>
                                         </div>
                                     </div>
                                 @empty
-                                    <p class="mt-1 text-xs text-gray-400">Rest day</p>
+                                    <p class="mt-1 text-[11px] text-telemetry-slate">Rest day</p>
                                 @endforelse
                             </div>
                         @empty
-                            <p class="text-sm text-gray-400">Minggu ini tidak punya hari.</p>
+                            <p class="text-sm text-telemetry-slate">Minggu ini tidak punya hari.</p>
                         @endforelse
                     </div>
                 </x-card>
             @empty
                 <x-card class="text-center py-10">
-                    <p class="text-lg font-bold text-gray-900 dark:text-gray-100">Plan Ini Kosong</p>
-                    <p class="mt-2 text-gray-500 dark:text-gray-400">Belum ada minggu yang tercatat untuk plan ini.</p>
+                    <p class="telemetry-value text-lg">Plan Ini Kosong</p>
+                    <p class="mt-2 text-sm text-telemetry-slate">Belum ada minggu yang tercatat untuk plan ini.</p>
                 </x-card>
             @endforelse
         </div>

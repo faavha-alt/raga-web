@@ -1,21 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white leading-tight">
-            {{ __('Garmin Connect') }}
-        </h2>
+        <h1 class="telemetry-value text-4xl sm:text-5xl">{{ __('Garmin Connect') }}</h1>
+        <p class="mt-2 text-sm font-medium text-telemetry-slate">Sumber data aktivitas, biometrik, dan tidurmu.</p>
     </x-slot>
 
     <div class="py-6 pb-16">
-        <div class="px-4 sm:px-6 lg:px-8 space-y-4">
+        <div class="px-4 sm:px-6 lg:px-8 max-w-xl space-y-4">
 
             @if (session('status'))
-                <div class="rounded-2xl bg-raga-excellent/10 border border-raga-excellent/20 px-4 py-3 text-sm font-semibold text-raga-excellent">
+                <div class="rounded border border-telemetry-emerald/20 bg-telemetry-emerald/10 px-4 py-3 text-sm font-semibold text-telemetry-emerald-deep">
                     {{ session('status') }}
                 </div>
             @endif
 
             @if ($errors->any())
-                <div class="rounded-2xl bg-raga-low/10 border border-raga-low/20 px-4 py-3 text-sm font-semibold text-raga-low">
+                <div class="rounded border border-telemetry-ember/25 bg-telemetry-ember/10 px-4 py-3 text-sm font-semibold text-telemetry-ember-deep">
                     {{ $errors->first() }}
                 </div>
             @endif
@@ -23,22 +22,22 @@
             @if ($connection && $connection->connected_at)
                 <x-card>
                     <div class="flex items-center gap-3">
-                        <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-raga-excellent/10 text-xl">✅</span>
+                        <span class="flex h-11 w-11 items-center justify-center border border-telemetry-line bg-telemetry-well text-xl">✅</span>
                         <div>
-                            <p class="font-bold text-gray-900 dark:text-white">Terhubung ke Garmin Connect</p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Sejak {{ $connection->connected_at->translatedFormat('d M Y, H:i') }}</p>
+                            <p class="font-display font-semibold text-telemetry-ink">Terhubung ke Garmin Connect</p>
+                            <p class="text-sm text-telemetry-slate">Sejak {{ $connection->connected_at->translatedFormat('d M Y, H:i') }}</p>
                         </div>
                     </div>
 
-                    <div class="mt-5 pt-5 border-t border-gray-100 dark:border-gray-700 space-y-1 text-sm">
-                        <p class="text-gray-500 dark:text-gray-400">
+                    <div class="mt-5 pt-5 border-t border-telemetry-line space-y-1 text-sm">
+                        <p class="text-telemetry-slate">
                             Sync terakhir:
-                            <span class="font-semibold text-gray-700 dark:text-gray-200">
+                            <span class="font-semibold text-telemetry-ink">
                                 {{ $connection->last_synced_at?->diffForHumans() ?? 'Belum pernah' }}
                             </span>
                         </p>
                         @if ($connection->last_sync_status === 'error')
-                            <p class="text-raga-low font-medium">Sync terakhir gagal: {{ $connection->last_sync_message }}</p>
+                            <p class="font-medium text-telemetry-ember-deep">Sync terakhir gagal: {{ $connection->last_sync_message }}</p>
                         @endif
                     </div>
 
@@ -60,10 +59,10 @@
             @else
                 <x-card>
                     <div class="flex items-center gap-3 mb-5">
-                        <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-raga-primary/10 text-xl">⌚</span>
+                        <span class="flex h-11 w-11 items-center justify-center border border-telemetry-line bg-telemetry-well text-xl">⌚</span>
                         <div>
-                            <p class="font-bold text-gray-900 dark:text-white">Hubungkan Garmin Connect</p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Login pakai akun Garmin kamu. Kredensial tidak disimpan — hanya dipakai sekali untuk ambil token.</p>
+                            <p class="font-display font-semibold text-telemetry-ink">Hubungkan Garmin Connect</p>
+                            <p class="text-sm text-telemetry-slate">Login pakai akun Garmin kamu. Kredensial tidak disimpan — hanya dipakai sekali untuk ambil token.</p>
                         </div>
                     </div>
 
@@ -85,7 +84,7 @@
                             <div>
                                 <x-input-label for="mfa_code" value="Kode MFA" />
                                 <x-text-input id="mfa_code" type="text" name="mfa_code" inputmode="numeric" autocomplete="one-time-code" placeholder="Kode dari authenticator/email" required autofocus />
-                                <p class="mt-1.5 text-xs text-gray-400">Akun kamu pakai verifikasi 2 langkah — masukkan kodenya, lalu submit lagi bareng email &amp; password.</p>
+                                <p class="mt-1.5 text-xs text-telemetry-slate">Akun kamu pakai verifikasi 2 langkah — masukkan kodenya, lalu submit lagi bareng email &amp; password.</p>
                             </div>
                         @endif
 

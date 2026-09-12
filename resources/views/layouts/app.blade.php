@@ -8,9 +8,9 @@
         <title>{{ config('app.name', 'RAGA') }}</title>
 
         <!-- PWA Meta & Icons -->
-        <meta name="theme-color" content="#090d16">
+        <meta name="theme-color" content="#F8F9FA">
         <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
         <meta name="apple-mobile-web-app-title" content="RAGA">
         <link rel="manifest" href="/manifest.webmanifest">
         <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">

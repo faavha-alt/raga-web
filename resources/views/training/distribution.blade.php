@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-extrabold text-gray-900 leading-tight">
-            {{ __('Training Distribution') }}
-        </h2>
-        <p class="mt-1 text-sm font-medium text-gray-500">Distribusi tipe aktivitas & HR zone {{ $days }} hari terakhir.</p>
+        <div>
+            <h1 class="telemetry-value text-4xl sm:text-5xl">{{ __('Training Distribution') }}</h1>
+            <p class="mt-2 text-sm font-medium text-telemetry-slate">Distribusi tipe aktivitas & HR zone {{ $days }} hari terakhir.</p>
+        </div>
     </x-slot>
 
     <div class="py-6 pb-16">
@@ -12,14 +12,14 @@
             <div class="flex gap-2">
                 @foreach ([7, 30, 90] as $rangeDays)
                     <a href="{{ route('training.distribution', ['days' => $rangeDays]) }}"
-                       class="px-3 py-1.5 rounded-full text-xs font-bold transition {{ $days === $rangeDays ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-500 hover:text-gray-800' }}">
+                       class="rounded border px-3 py-1.5 font-display text-[11px] font-bold uppercase tracking-[0.08em] transition {{ $days === $rangeDays ? 'border-telemetry-ink bg-telemetry-ink text-white' : 'border-telemetry-line bg-telemetry-well text-telemetry-slate hover:text-telemetry-ink' }}">
                         {{ $rangeDays }}D
                     </a>
                 @endforeach
             </div>
 
             <x-card>
-                <h3 class="mb-4 text-xs font-bold uppercase tracking-wider text-gray-400">📈 Tipe Aktivitas</h3>
+                <p class="mb-4 telemetry-label-lg text-telemetry-ink">Tipe Aktivitas</p>
                 <x-category-bar-chart :items="collect($types)->map(fn ($t) => [
                     'label' => $t['label'],
                     'icon' => $t['icon'],
@@ -30,26 +30,26 @@
             </x-card>
 
             <x-card>
-                <h3 class="mb-1 text-xs font-bold uppercase tracking-wider text-gray-400">⚡ Relative Effort</h3>
+                <p class="mb-1 telemetry-label-lg text-telemetry-ink">Relative Effort</p>
 
                 @if ($relativeEffortWorkouts > 0)
-                    <p class="mt-2 text-3xl font-black text-gray-900">{{ number_format($relativeEffortTotal) }}</p>
-                    <p class="mt-1 text-[11px] text-gray-400">
+                    <p class="mt-2 telemetry-value text-3xl">{{ number_format($relativeEffortTotal) }}</p>
+                    <p class="mt-1 text-[11px] text-telemetry-slate">
                         Total estimasi beban latihan dari {{ $relativeEffortWorkouts }} aktivitas yang punya data HR per-detik
                         (rata-rata {{ round($relativeEffortTotal / $relativeEffortWorkouts) }} per aktivitas).
                         Dihitung RAGA sendiri dari zona HR kamu (model TRIMP zona Edwards: bobot Z1–Z5 = 1–5),
                         bukan angka dari Garmin.
                     </p>
                 @else
-                    <p class="mt-2 text-sm text-gray-400">Belum ada aktivitas dengan data HR per-detik pada periode ini.</p>
+                    <p class="mt-2 text-sm text-telemetry-slate">Belum ada aktivitas dengan data HR per-detik pada periode ini.</p>
                 @endif
             </x-card>
 
             <x-card>
-                <h3 class="mb-1 text-xs font-bold uppercase tracking-wider text-gray-400">❤️ Distribusi HR Zone</h3>
+                <p class="mb-1 telemetry-label-lg text-telemetry-ink">Distribusi HR Zone</p>
 
                 @if ($hrZoneDistribution['available'])
-                    <p class="mb-4 text-[11px] text-gray-400">
+                    <p class="mb-4 text-[11px] text-telemetry-slate">
                         Estimasi HR maksimum: {{ $hrZoneDistribution['max_hr'] }} bpm — dari data tercatat kamu sendiri.
                         Dihitung dari {{ $hrZoneDistribution['workouts_with_samples'] }} dari {{ $hrZoneDistribution['workouts_total'] }} aktivitas yang punya data HR per-detik.
                     </p>
@@ -64,7 +64,7 @@
                         'percent' => $z['percent'],
                     ])->all()" />
                 @else
-                    <p class="mt-2 text-sm text-gray-400">
+                    <p class="mt-2 text-sm text-telemetry-slate">
                         @if ($hrZoneDistribution['max_hr'] === null)
                             Belum ada data heart rate yang cukup untuk mengestimasi zona HR kamu.
                         @else

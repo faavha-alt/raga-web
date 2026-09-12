@@ -1,31 +1,30 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white leading-tight">
-            {{ __('API Tokens') }}
-        </h2>
+        <h1 class="telemetry-value text-4xl sm:text-5xl">{{ __('API Tokens') }}</h1>
+        <p class="mt-2 text-sm font-medium text-telemetry-slate">Token statis untuk mengakses RAGA dari klien eksternal.</p>
     </x-slot>
 
     <div class="py-6 pb-16">
         <div class="px-4 sm:px-6 lg:px-8 max-w-xl space-y-4">
 
             @if (session('status'))
-                <div class="rounded-2xl bg-raga-excellent/10 border border-raga-excellent/20 px-4 py-3 text-sm font-semibold text-raga-excellent">
+                <div class="rounded border border-telemetry-emerald/20 bg-telemetry-emerald/10 px-4 py-3 text-sm font-semibold text-telemetry-emerald-deep">
                     {{ session('status') }}
                 </div>
             @endif
 
             @if (session('plain_text_token'))
-                <x-card class="border-2 border-raga-primary">
-                    <p class="text-sm font-bold text-gray-900 dark:text-gray-100">Token baru kamu</p>
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <x-card class="border-2 border-telemetry-ember">
+                    <p class="font-display text-sm font-semibold text-telemetry-ink">Token baru kamu</p>
+                    <p class="mt-1 text-xs text-telemetry-slate">
                         Salin sekarang — token ini tidak akan ditampilkan lagi.
                     </p>
-                    <code class="mt-3 block break-all rounded-xl bg-gray-100 dark:bg-gray-800 px-3 py-2.5 text-xs text-gray-800 dark:text-gray-100 select-all">{{ session('plain_text_token') }}</code>
+                    <code class="mt-3 block break-all rounded bg-telemetry-well px-3 py-2.5 font-display text-xs text-telemetry-ink select-all">{{ session('plain_text_token') }}</code>
                 </x-card>
             @endif
 
             <x-card>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-5">
+                <p class="text-sm text-telemetry-slate mb-5">
                     Token statis untuk mengakses RAGA tanpa alur login OAuth. Pakai sebagai
                     <code>Authorization: Bearer &lt;token&gt;</code> untuk REST API (<code>/api/*</code>)
                     maupun endpoint MCP jarak jauh (<code>POST {{ url('/mcp') }}</code>).
@@ -46,10 +45,10 @@
 
             <x-card class="!p-0 overflow-hidden">
                 @forelse ($tokens as $token)
-                    <div class="flex items-center justify-between px-6 py-4 {{ ! $loop->last ? 'border-b border-gray-100 dark:border-gray-700' : '' }}">
+                    <div class="flex items-center justify-between px-6 py-4 {{ ! $loop->last ? 'border-b border-telemetry-line' : '' }}">
                         <div>
-                            <p class="font-medium text-gray-900 dark:text-gray-100">{{ $token->name }}</p>
-                            <p class="text-xs text-gray-400">
+                            <p class="text-sm font-medium text-telemetry-ink">{{ $token->name }}</p>
+                            <p class="text-xs text-telemetry-slate">
                                 Dibuat {{ $token->created_at->diffForHumans() }} ·
                                 @if ($token->last_used_at)
                                     terakhir dipakai {{ $token->last_used_at->diffForHumans() }}
@@ -62,11 +61,11 @@
                             onsubmit="return confirm('Cabut token &quot;{{ $token->name }}&quot;? Klien yang memakainya akan langsung kehilangan akses.')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-sm font-semibold text-raga-low hover:underline">Cabut</button>
+                            <button type="submit" class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ember-deep hover:underline">Cabut</button>
                         </form>
                     </div>
                 @empty
-                    <p class="px-6 py-4 text-sm text-gray-400">Belum ada token.</p>
+                    <p class="py-6 text-center text-sm text-telemetry-slate">Belum ada token.</p>
                 @endforelse
             </x-card>
 

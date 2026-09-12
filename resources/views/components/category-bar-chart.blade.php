@@ -5,23 +5,23 @@
 <div class="space-y-3">
     @forelse ($items as $item)
         <div>
-            <div class="flex items-center justify-between text-sm mb-1">
-                <span class="font-bold text-gray-700 flex items-center gap-1.5">
-                    @if (!empty($item['icon']))<span>{{ $item['icon'] }}</span>@endif
+            <div class="mb-1.5 flex items-center justify-between gap-3 text-sm">
+                <span class="flex items-center gap-1.5 font-semibold text-telemetry-ink">
+                    @if (!empty($item['icon']))<span aria-hidden="true">{{ $item['icon'] }}</span>@endif
                     {{ $item['label'] }}
                 </span>
-                <span class="text-xs font-semibold text-gray-400 tabular-nums">
+                <span class="telemetry-value text-xs">
                     {{ $item['value'] }}
                     @if (!empty($item['secondary']))
-                        <span class="text-gray-300">· {{ $item['secondary'] }}</span>
+                        <span class="font-sans font-normal text-telemetry-slate">· {{ $item['secondary'] }}</span>
                     @endif
                 </span>
             </div>
-            <div class="h-2.5 w-full rounded-full bg-gray-100 overflow-hidden">
-                <div class="h-full rounded-full bg-raga-primary" style="width: {{ max(2, $item['percent']) }}%"></div>
+            <div class="h-2 w-full overflow-hidden border border-telemetry-line bg-telemetry-well">
+                <div class="h-full bg-telemetry-ember" style="width: {{ max(2, $item['percent']) }}%"></div>
             </div>
         </div>
     @empty
-        <p class="text-sm text-gray-400 text-center py-4">Belum ada data untuk periode ini.</p>
+        <p class="py-6 text-center text-sm text-telemetry-slate">Belum ada data untuk periode ini.</p>
     @endforelse
 </div>

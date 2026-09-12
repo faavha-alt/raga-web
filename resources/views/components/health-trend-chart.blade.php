@@ -9,26 +9,26 @@
                 type="button"
                 @click="activeMetric = key"
                 :class="activeMetric === key
-                    ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'"
-                class="px-3 py-1.5 rounded-full text-xs font-bold transition"
+                    ? 'border-telemetry-ember bg-telemetry-ember text-white'
+                    : 'border-telemetry-line bg-telemetry-well text-telemetry-slate hover:border-telemetry-line-strong hover:text-telemetry-ink'"
+                class="rounded border px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.08em] transition"
                 x-text="series[key].label"
             ></button>
         </template>
     </div>
 
-    <div class="mt-4 flex items-center justify-between">
+    <div class="mt-4 flex items-center justify-between gap-4">
         <div>
-            <p class="text-3xl font-black text-gray-900 dark:text-gray-100" x-text="latestLabel"></p>
-            <p class="text-xs font-semibold text-gray-400" x-text="currentSeries.label + (currentSeries.unit ? ' (' + currentSeries.unit + ')' : '')"></p>
+            <p class="text-3xl telemetry-value" x-text="latestLabel"></p>
+            <p class="mt-1 telemetry-label" x-text="currentSeries.label + (currentSeries.unit ? ' (' + currentSeries.unit + ')' : '')"></p>
         </div>
-        <div class="flex gap-1 rounded-full bg-gray-100 dark:bg-gray-800 p-1">
+        <div class="flex gap-1 border border-telemetry-line bg-telemetry-well p-1">
             <template x-for="r in availableRanges" :key="r">
                 <button
                     type="button"
                     @click="range = r"
-                    :class="range === r ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-white' : 'text-gray-400'"
-                    class="px-3 py-1 rounded-full text-xs font-bold transition"
+                    :class="range === r ? 'bg-telemetry-surface text-telemetry-ink' : 'text-telemetry-slate hover:text-telemetry-ink'"
+                    class="rounded px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] transition"
                     x-text="r >= 365 ? '1Y' : (r >= 180 ? '6M' : r + 'D')"
                 ></button>
             </template>
@@ -36,22 +36,22 @@
     </div>
 
     <template x-if="currentPoints.length === 0">
-        <p class="mt-8 mb-8 text-center text-sm text-gray-400">Belum ada data untuk metrik ini.</p>
+        <p class="mb-8 mt-8 text-center text-sm text-telemetry-slate">Belum ada data untuk metrik ini.</p>
     </template>
 
     <div class="relative mt-4" x-show="currentPoints.length > 0" x-cloak>
         <svg
             :viewBox="`0 0 ${width} ${height}`"
-            class="w-full h-48 select-none"
+            class="h-48 w-full select-none"
             @mousemove="onMove($event)"
             @mouseleave="hoverIndex = null"
             @touchmove="onMove($event.touches[0])"
             @touchend="hoverIndex = null"
         >
-            <line x1="0" :x2="width" :y1="padTop" :y2="padTop" stroke="currentColor" class="text-gray-100 dark:text-gray-800" stroke-width="1" />
-            <line x1="0" :x2="width" :y1="height - padBottom" :y2="height - padBottom" stroke="currentColor" class="text-gray-100 dark:text-gray-800" stroke-width="1" />
+            <line x1="0" :x2="width" :y1="padTop" :y2="padTop" stroke="currentColor" class="text-telemetry-line" stroke-width="1" />
+            <line x1="0" :x2="width" :y1="height - padBottom" :y2="height - padBottom" stroke="currentColor" class="text-telemetry-line" stroke-width="1" />
 
-            <path :d="areaPath" :fill="currentSeries.color" fill-opacity="0.1" stroke="none"></path>
+            <path :d="areaPath" :fill="currentSeries.color" fill-opacity="0.08" stroke="none"></path>
             <path :d="linePath" fill="none" :stroke="currentSeries.color" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
 
             <template x-if="lastPoint">
@@ -60,7 +60,7 @@
 
             <template x-if="hoverIndex !== null">
                 <g>
-                    <line :x1="hoverPoint.x" :x2="hoverPoint.x" :y1="padTop" :y2="height - padBottom" stroke="currentColor" class="text-gray-300 dark:text-gray-600" stroke-width="1"></line>
+                    <line :x1="hoverPoint.x" :x2="hoverPoint.x" :y1="padTop" :y2="height - padBottom" stroke="currentColor" class="text-telemetry-line-strong" stroke-width="1"></line>
                     <circle :cx="hoverPoint.x" :cy="hoverPoint.y" r="5" :fill="currentSeries.color" stroke="white" stroke-width="2"></circle>
                 </g>
             </template>
@@ -69,11 +69,11 @@
         <div
             x-show="hoverIndex !== null"
             x-cloak
-            class="pointer-events-none absolute top-0 -translate-x-1/2 rounded-xl bg-gray-900 dark:bg-black px-3 py-1.5 text-xs font-bold text-white shadow-lg whitespace-nowrap"
+            class="pointer-events-none absolute top-0 -translate-x-1/2 whitespace-nowrap rounded bg-telemetry-steel px-3 py-1.5 text-xs font-bold text-white shadow-overlay"
             :style="`left: ${hoverPercent}%`"
         >
             <span x-text="hoverValueLabel"></span>
-            <span class="ml-1 font-normal text-gray-300" x-text="hoverDateLabel"></span>
+            <span class="ml-1 font-normal text-telemetry-line-strong" x-text="hoverDateLabel"></span>
         </div>
     </div>
 </div>

@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-extrabold text-gray-900 leading-tight">
-            {{ __('Running Distance') }}
-        </h2>
-        <p class="mt-1 text-sm font-medium text-gray-500">Volume lari mingguan, bulanan, dan tahunan.</p>
+        <div>
+            <h1 class="telemetry-value text-4xl sm:text-5xl">{{ __('Running Distance') }}</h1>
+            <p class="mt-2 text-sm font-medium text-telemetry-slate">Volume lari mingguan, bulanan, dan tahunan.</p>
+        </div>
     </x-slot>
 
     <div class="py-6 pb-16">
@@ -19,7 +19,7 @@
             </div>
 
             <x-card>
-                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">Tren Jarak & Durasi</h3>
+                <p class="mb-3 telemetry-label-lg text-telemetry-ink">Tren Jarak & Durasi</p>
                 <x-health-trend-chart :series="$series" :ranges="[7, 30, 90, 365]" />
             </x-card>
 

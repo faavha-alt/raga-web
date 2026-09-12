@@ -8,41 +8,36 @@
         <title>{{ config('app.name', 'RAGA') }}</title>
 
         <!-- PWA Meta & Icons -->
-        <meta name="theme-color" content="#090d16">
+        <meta name="theme-color" content="#F8F9FA">
         <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
         <meta name="apple-mobile-web-app-title" content="RAGA">
         <link rel="manifest" href="/manifest.webmanifest">
         <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
 
-        <!-- Fonts -->
+        <!-- Fonts: Inter (prosa) + Space Grotesk (angka & label telemetry). -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:500,600,700,800&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700|space-grotesk:400,500,600,700&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="relative min-h-screen overflow-hidden bg-gray-950 flex flex-col justify-center items-center px-4 py-10">
-            <!-- Ambient gradient blobs -->
-            <div class="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-raga-accent/30 blur-3xl"></div>
-            <div class="pointer-events-none absolute -bottom-32 -right-24 h-96 w-96 rounded-full bg-raga-primary/30 blur-3xl"></div>
-            <div class="pointer-events-none absolute top-1/3 right-1/4 h-64 w-64 rounded-full bg-raga-energy/20 blur-3xl"></div>
-
+    <body class="font-sans text-telemetry-ink antialiased">
+        <div class="relative flex min-h-screen flex-col items-center justify-center bg-telemetry-canvas px-4 py-10">
             <div class="relative w-full sm:max-w-md">
                 <div class="mb-8 flex justify-center">
                     <a href="/" class="inline-flex items-center gap-2">
-                        <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-raga-accent to-raga-primary text-white font-black text-xl shadow-glow">R</span>
-                        <span class="text-2xl font-extrabold tracking-tight text-white">RAGA</span>
+                        <span class="flex h-12 w-12 items-center justify-center rounded bg-telemetry-ink font-display text-xl font-bold text-white">R</span>
+                        <span class="font-display text-2xl font-bold tracking-tight text-telemetry-ink">RAGA</span>
                     </a>
                 </div>
 
-                <div class="w-full rounded-3xl border border-white/10 bg-white/95 backdrop-blur-xl px-6 py-8 sm:px-8 shadow-2xl">
+                <div class="w-full rounded-lg border border-telemetry-line bg-telemetry-surface px-6 py-8 sm:px-8">
                     {{ $slot }}
                 </div>
 
-                <p class="mt-6 text-center text-sm font-medium text-white/40">
+                <p class="mt-6 text-center font-display text-[10px] font-bold uppercase tracking-[0.12em] text-telemetry-slate">
                     Your Body. Your Data. Your Progress.
                 </p>
             </div>

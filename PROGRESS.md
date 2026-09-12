@@ -4,14 +4,21 @@ Dibuat: 2026-08-26
 
 ## HANDOFF (baca ini dulu — 2026-09-13)
 
-**Status**: live di `raga.favha.cloud`, server & HEAD = `c75a848`. Suite: **396 test hijau** (SQLite) + job CI **MySQL** hijau.
+**Status**: **seluruh halaman kini bertema Swiss Telemetry Sport** (85 file diubah; belum di-commit, belum deploy). Suite **399 test hijau / 1270 assertions** (SQLite); `npm run build` + `php artisan view:cache` sukses.
 
-**Selesai sesi terakhir** (semua sudah live & terverifikasi):
-- Relative Effort/TRIMP: `workouts.relative_effort`, `RelativeEffortCalculator`, command `training:calculate-relative-effort` (backfill 46/46), tampil di detail aktivitas + `training/distribution`.
-- Design system **Swiss Telemetry Sport**: token `telemetry.*` + font Inter/Space Grotesk di `tailwind.config.js`, utilitas `.telemetry-*`, komponen `x-chip`, `x-section-heading`, `x-card`/`x-metric-tile` di-restyle.
-- Shell **top nav** (menggantikan sidebar) + dashboard disusun ulang (Command Center) + halaman `activity` (band gradien + split bertag) + halaman baru **`/athlete-dna`** (heatmap 364 hari, radar 5 pilar, PR suite).
-- Perbaikan bug: `PersonalRecord::formattedValue()` — `longest_run` Garmin dalam **meter**, bukan detik.
-- CI: job `Tests (MySQL)` (`phpunit.mysql.xml`) — deploy di-gate ke kedua job.
+**Selesai sesi ini** (restyle menyeluruh):
+- Kontrak kerja baru **`docs/DESIGN-CONTRACT.md`** (peta warna lama→telemetry, aturan radius/shadow/typography, daftar komponen wajib) — acuan bersama 5 subagent paralel.
+- Restyle seluruh halaman yang belum bertema: health (5), recovery, analytics (4), training (6), running (4), trail (3), feed, explore, segments (3), notifications, athletes (3), goals, profile (4), recording, auth (6), oauth, settings (4), ai, welcome, offline.
+- Komponen: button (primary/secondary/danger), text-input, input-label/error, dropdown(+link), modal, nav-link, notification-bell, application-logo, google-button, sample-chart, chart/kartu (category-bar, weekly-bar, health-trend, health-detail, activity-card, score-tile, route-map); `layouts/guest` diubah ke light telemetry; `partials/pwa`; `activities/index` + sisa kelas lama di `activities/show`.
+- Paginasi: override **`resources/views/vendor/pagination/tailwind.blade.php`** (bawaan Laravel masih gray + `dark:`) — berlaku di 7 halaman ber-`->links()`.
+- Penjaga regresi **`tests/Feature/TelemetryThemeTest.php`** (3 test): smoke semua halaman terautentikasi + guest, dan pemindai statis seluruh Blade — menolak `dark:`, `rounded-2xl/3xl`, gradient, `shadow-glow`, `raga-*`, `gray-*`, `slate-*`.
+- Utilitas mati `.text-gradient`/`.bg-mesh` dihapus dari `app.css`.
+- Catatan: `pint --test` masih menandai 7 file lama (`app/Exceptions/...`, `config/health.php`, 5 test) — **pre-existing**, tidak terkait sesi ini.
+
+**Langkah berikutnya**:
+1. **Manajemen menu profesional** (permintaan user): nav kini 2 baris + panel mobile 2 kolom; perlu penataan IA/route per modul.
+2. Roadmap analitik personal: best efforts → CTL/ATL/Form → GAP → race predictor (Riegel) → korelasi Spearman → dark mode toggle → notifikasi push.
+3. Commit + push (deploy otomatis via CI) setelah tema disetujui.
 
 **Aturan kerja (hemat konteks — wajib)**:
 1. Satu sesi = satu tugas; tugas selesai → sesi baru, jangan menumpuk (sesi sebelumnya menembus 47 jt token karena ini).
@@ -20,6 +27,7 @@ Dibuat: 2026-08-26
 4. Kerja berat → subagent (terbukti hanya ~9% biaya).
 5. Baca file seperlunya (`grep` + potongan), bukan `read` utuh.
 6. **Jangan percaya SQLite saja**: jalankan job CI MySQL sebelum menyatakan aman (bug `as load` lolos dari 395 test SQLite dan jadi 500 di produksi).
+7. **Perubahan tampilan**: patuhi `docs/DESIGN-CONTRACT.md`; verifikasi dengan `php artisan test --filter=TelemetryThemeTest` + `npm run build` (test ini menolak token tema lama di seluruh Blade).
 
 **Langkah berikutnya (roadmap analitik personal, belum dikerjakan)**: best efforts + PR dihitung sendiri dari `workout_samples` → CTL/ATL/Form (Fitness & Freshness) → GAP → race predictor (Riegel) → korelasi Spearman/p-value/lag → dark mode toggle → notifikasi push.
 
@@ -77,7 +85,8 @@ Dibuat: 2026-08-26
 - [x] Utilitas `.telemetry-label` / `.telemetry-value` / `.telemetry-divider` + shell `bg-telemetry-canvas`
 - [x] `x-card` & `x-metric-tile` di-restyle; komponen baru `x-chip` (recovery/pace/strain) dan `x-section-heading`
 - [x] `acuan_tampilan/` masuk `.gitignore`
-- [ ] Penerapan per halaman: dashboard (Command Center), detail aktivitas (split bertag + band gradien), halaman Athlete DNA (heatmap 52 minggu + radar 5 pilar + PR suite)
+- [x] Penerapan per halaman: dashboard (Command Center), detail aktivitas (split bertag + band gradien), halaman Athlete DNA (heatmap 52 minggu + radar 5 pilar + PR suite)
+- [x] **Restyle menyeluruh seluruh halaman + komponen (sesi 2026-09-13, lanjutan)**: 81 Blade di-restyle serentak memakai `docs/DESIGN-CONTRACT.md`; paginasi bawaan Laravel di-override; `layouts/guest` jadi light telemetry; `tests/Feature/TelemetryThemeTest.php` (3 test) mengunci agar token tema lama tidak kembali. Suite **399 passed / 1270 assertions**; `npm run build` + `view:cache` sukses.
 - [x] Top nav horizontal menggantikan sidebar (keputusan user): header sticky (brand + 6 modul utama + tombol Rekam + lonceng + menu profil) dengan strip sekunder untuk Explore/Segment/Goals/Running/Trail/Recovery/Settings, plus panel mobile 2 kolom. Komponen baru `x-topnav-link`; `x-sidebar-link` dihapus (tidak ada pemakai lain)
 - [x] 3 test navigasi baru (`tests/Feature/NavigationTest.php`) yang memastikan sidebar benar-benar hilang, semua modul tetap tertaut, menu profil & logout ada, dan seluruh nama rute navigasi masih terdaftar; full suite **371 passed / 1195 assertions**
 - [x] **Dashboard disusun ulang mengikuti "Athlete Command Center"**: baris greeting + pil status sync Garmin; kartu beban minggu ini (jarak besar + aktivitas/durasi/elevasi) berdampingan dengan grafik puncak 7 hari; strip kondisi fisiologis (recovery, readiness, konsistensi, ACWR); kartu insight 2 kolom; sesi kronologis (hero + 2 ringkas); biometrik hari ini; tren kesehatan; rekomendasi AI
@@ -195,5 +204,10 @@ Dibuat: 2026-08-26
   - **Insiden 500 di `/athlete-dna` (dan pelajarannya).** Beberapa menit setelah deploy, halaman mengembalikan 500. Log produksi: `SQLSTATE[42000] ... near 'load from workouts'` — query exertion grid memakai alias `SUM(training_load) as load`, dan **`load` reserved word MySQL**; SQLite menerimanya sehingga seluruh test lokal hijau. Perbaikan: alias → `training_load_total`. Ditambah **`tests/Unit/SqlAliasReservedWordTest.php`**: memindai semua query mentah (`selectRaw`/`DB::raw`/`orderByRaw`/`havingRaw`) di `app/` dan menolak alias yang termasuk reserved word MySQL — jenis bug ini sekarang tertangkap tanpa perlu MySQL.
   - **Verifikasi verifikasi-ulang terhadap MySQL produksi** (bukan SQLite): skrip sementara di server menjalankan `AthleteDnaService::forUser()` (semua seksi keluar: 30 hari 142,3 km / 30 aktivitas / RE 5.195; grid 37 hari aktif total 8.559; pilar endurance 80, aerobic 31, recovery 45, readiness 30, balance 90; PR termasuk `longest_run` **10.25 km**), `ActivityDetailService::splitsFor()`+`elevationProfileWithGrade()`, dan `WeeklyTrainingService::lastSevenDays()`. Lalu **render halaman utuh** dengan user resolver: `dashboard` OK 77 KB, `athlete-dna` OK 170 KB, dan 4 halaman aktivitas (trail_running, running, walking, open_water_swimming) OK — tabel split muncul di semuanya, band elevasi muncul kecuali renang (memang tanpa altitude). Skrip dihapus setelah dipakai.
   - **Rekomendasi sistemik — DIKERJAKAN.** CI sekarang punya job kedua `Tests (MySQL)` (`ci.yml`): service `mysql:8.0` dengan health check, ekstensi `pdo_mysql`, `php artisan migrate --force --database=mysql`, lalu seluruh suite via `vendor/bin/phpunit -c phpunit.mysql.xml`. Konfigurasi baru `phpunit.mysql.xml` menyalin `phpunit.xml` tetapi memakai `DB_CONNECTION=mysql` + kredensial service dengan `force="true"`, supaya tidak bergantung pada aturan PHPUnit "env yang sudah ada tidak ditimpa". Karena `deploy.yml` di-gate `workflow_run` CI, deploy otomatis berhenti bila salah satu job gagal — jadi bug khusus MySQL tidak akan sampai ke produksi. **Bukti run pertama** (`2d7e49c`): `Tests (MySQL)` hijau 1m10s — semua migrasi `DONE` di MySQL 8 dan `OK (396 tests, 1267 assertions)`; job SQLite tetap 34s. README bagian Testing & CI/CD diperbarui (dua perintah: SQLite default dan `phpunit.mysql.xml`).
+  - **Unifikasi tema ke SELURUH halaman (permintaan user: "eksekusi semua halaman dengan tema yang sejalan dengan menu dashboard", sebelum menata menu secara profesional).** Ditulis kontrak kerja **`docs/DESIGN-CONTRACT.md`** (peta warna lama→`telemetry.*`, aturan: presentasi saja/tanpa `dark:`/tanpa shadow/radius 4–8px/angka tabular Space Grotesk, komponen wajib, daftar file terlarang) supaya 5 subagent paralel menghasilkan bahasa visual yang sama tanpa saling menimpa file. Pembagian: (1) komponen chart & kartu (category-bar, weekly-bar, health-trend, health-detail, activity-card, score-tile, route-map, route-comparison-map); (2) health+recovery+analytics (10 file); (3) training+running+trail (13); (4) sosial: feed/explore/segments/notifications/athletes/goals/profile/recording (15); (5) auth/oauth/settings/ai/welcome/offline (14). Di sesi utama: 15 komponen primitif (button, input, dropdown, modal, nav-link, lonceng, logo, google-button, sample-chart), `layouts/guest` (dari dark hardcoded → light telemetry), `partials/pwa`, `activities/index`, dan sisa kelas lama di `activities/show` (bagian kudos/komentar).
+  - **Paginasi**: bawaan Laravel (`pagination::tailwind`) masih memakai `gray-*` + `dark:`; di-override lewat `resources/views/vendor/pagination/tailwind.blade.php` bergaya telemetry (dipakai 7 halaman ber-`->links()`).
+  - **Penjaga regresi `tests/Feature/TelemetryThemeTest.php`** (3 test, 3 assertion): (a) smoke 37 halaman terautentikasi, (b) 5 halaman guest (`/`, login, register, forgot-password, offline), (c) pemindai statis seluruh `resources/views/**/*.blade.php` untuk halaman ber-parameter yang tak dirender smoke test. Menolak token `dark:`, `rounded-2xl/3xl`, `bg-gradient-to`, `bg-mesh`, `text-gradient`, `shadow-glow`, `raga-*`, `gray-*`, `slate-*`. Keluhan dikumpulkan dalam satu array supaya satu kali gagal langsung memberi daftar lengkap, bukan hanya pelanggaran pertama.
+  - **Verifikasi sesi ini**: `php artisan view:cache` sukses (semua Blade terkompilasi), `php artisan test` **399 passed / 1270 assertions**, `npm run build` sukses (`app-*.css` 10,3 kB + 56,0 kB; `app-*.js` 195,8 kB). Pemindaian sumber: nol token tema lama di `resources/views` (kecuali komentar penjelas di `app.css`/paginasi). Verifikasi visual per halaman belum dilakukan (butuh sesi login); gaya diverifikasi lewat HTML hasil render + pemindai statis. Belum di-commit dan belum di-deploy saat handoff ditulis.
+  - **Catatan kualitas yang ditemukan**: `./vendor/bin/pint --test` menandai 7 file (`app/Exceptions/HealthDataSourceUnavailableException.php`, `config/health.php`, `tests/Feature/{AiCoachModeTest,GarminMultiUserTokenTest,HealthManagementTest,RecoveryEngineTest,TrainingPlanManagementTest}.php`) — semuanya **pre-existing** dan tidak disentuh sesi ini, jadi tidak dibersihkan agar diff tetap fokus.
 
 

@@ -1,9 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-extrabold text-gray-900 leading-tight">
-            {{ __('Activities') }}
-        </h2>
-        <p class="mt-1 text-sm font-medium text-gray-500">Semua aktivitas yang tersinkron dari Garmin.</p>
+        <h1 class="telemetry-value text-4xl sm:text-5xl">{{ mb_strtoupper(__('Activities')) }}</h1>
+        <p class="mt-2 text-sm font-medium text-telemetry-slate">Semua aktivitas yang tersinkron dari Garmin.</p>
     </x-slot>
 
     <div class="py-6 pb-16">
@@ -19,7 +17,7 @@
 
                     <div class="min-w-[140px]">
                         <x-input-label for="type" value="Tipe" />
-                        <select id="type" name="type" class="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-900 focus:border-raga-primary focus:bg-white focus:ring-raga-primary transition">
+                        <select id="type" name="type" class="w-full rounded border border-telemetry-line-strong bg-telemetry-surface px-3 py-2 text-sm font-medium text-telemetry-ink transition-colors focus:border-telemetry-ink focus:outline-none focus:ring-0">
                             <option value="">Semua</option>
                             @foreach ($types as $type)
                                 <option value="{{ $type }}" @selected(($filters['type'] ?? '') === $type)>{{ ucwords(str_replace('_', ' ', $type)) }}</option>
@@ -39,7 +37,7 @@
 
                     <div class="min-w-[140px]">
                         <x-input-label for="sort" value="Urutkan" />
-                        <select id="sort" name="sort" class="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-900 focus:border-raga-primary focus:bg-white focus:ring-raga-primary transition">
+                        <select id="sort" name="sort" class="w-full rounded border border-telemetry-line-strong bg-telemetry-surface px-3 py-2 text-sm font-medium text-telemetry-ink transition-colors focus:border-telemetry-ink focus:outline-none focus:ring-0">
                             @foreach (['date' => 'Tanggal', 'distance' => 'Jarak', 'duration' => 'Durasi', 'calories' => 'Kalori', 'avg_hr' => 'Avg HR'] as $key => $optionLabel)
                                 <option value="{{ $key }}" @selected(($filters['sort'] ?? 'date') === $key)>{{ $optionLabel }}</option>
                             @endforeach
@@ -48,7 +46,7 @@
 
                     <div class="min-w-[120px]">
                         <x-input-label for="direction" value="Arah" />
-                        <select id="direction" name="direction" class="w-full rounded-2xl border-2 border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-900 focus:border-raga-primary focus:bg-white focus:ring-raga-primary transition">
+                        <select id="direction" name="direction" class="w-full rounded border border-telemetry-line-strong bg-telemetry-surface px-3 py-2 text-sm font-medium text-telemetry-ink transition-colors focus:border-telemetry-ink focus:outline-none focus:ring-0">
                             <option value="desc" @selected(($filters['direction'] ?? 'desc') === 'desc')>Terbaru</option>
                             <option value="asc" @selected(($filters['direction'] ?? 'desc') === 'asc')>Terlama</option>
                         </select>
@@ -57,7 +55,7 @@
                     <div class="flex gap-2">
                         <x-primary-button type="submit">Terapkan</x-primary-button>
                         @if (array_filter($filters))
-                            <a href="{{ route('activities') }}" class="inline-flex items-center rounded-full px-4 py-2.5 text-sm font-bold text-gray-400 hover:text-gray-600 transition">Reset</a>
+                            <a href="{{ route('activities') }}" class="inline-flex items-center rounded px-3 py-2 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-slate transition-colors hover:bg-telemetry-well hover:text-telemetry-ink">Reset</a>
                         @endif
                     </div>
                 </form>
@@ -73,27 +71,27 @@
             </div>
 
             {{-- List --}}
-            <x-card class="!p-0 divide-y divide-gray-100 overflow-hidden">
+            <x-card class="!p-0 divide-y divide-telemetry-line overflow-hidden">
                 @forelse ($activities as $workout)
                     @php
                         $icon = \App\Support\ActivityTypeIcon::icon($workout->type);
                         $durationMin = intdiv($workout->duration_seconds, 60);
                     @endphp
-                    <a href="{{ route('activities.show', $workout) }}" class="flex items-center justify-between gap-4 px-5 py-4 hover:bg-gray-50 transition">
+                    <a href="{{ route('activities.show', $workout) }}" class="flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-telemetry-well">
                         <div class="flex items-center gap-3 min-w-0">
-                            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gray-50 text-xl">{{ $icon }}</span>
+                            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded bg-telemetry-well text-xl">{{ $icon }}</span>
                             <div class="min-w-0">
-                                <p class="font-bold text-gray-900 truncate">{{ \App\Support\ActivityTypeIcon::label($workout->type) }}</p>
-                                <p class="text-xs text-gray-400">{{ $workout->start_date->translatedFormat('d M Y, H:i') }}</p>
+                                <p class="truncate font-semibold text-telemetry-ink">{{ \App\Support\ActivityTypeIcon::label($workout->type) }}</p>
+                                <p class="text-xs text-telemetry-slate">{{ $workout->start_date->translatedFormat('d M Y, H:i') }}</p>
                             </div>
                         </div>
-                        <div class="text-right text-sm shrink-0">
-                            <p class="font-bold text-gray-900">{{ $workout->distance_meters ? number_format($workout->distance_meters / 1000, 2).' km' : '--' }}</p>
-                            <p class="text-xs text-gray-400">{{ intdiv($durationMin, 60) }}h {{ $durationMin % 60 }}m</p>
+                        <div class="shrink-0 text-right text-sm">
+                            <p class="telemetry-value text-sm">{{ $workout->distance_meters ? number_format($workout->distance_meters / 1000, 2).' km' : '--' }}</p>
+                            <p class="text-xs text-telemetry-slate">{{ intdiv($durationMin, 60) }}h {{ $durationMin % 60 }}m</p>
                         </div>
                     </a>
                 @empty
-                    <div class="px-5 py-10 text-center text-gray-400">Tidak ada aktivitas yang cocok dengan filter ini.</div>
+                    <div class="px-5 py-10 text-center text-sm text-telemetry-slate">Tidak ada aktivitas yang cocok dengan filter ini.</div>
                 @endforelse
             </x-card>
 

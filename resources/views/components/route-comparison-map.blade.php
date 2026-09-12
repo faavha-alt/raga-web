@@ -8,10 +8,10 @@
 
 @if ($renderableRoutes->isNotEmpty())
     <div>
-        <div class="flex flex-wrap gap-3 mb-2">
+        <div class="mb-2 flex flex-wrap gap-3">
             @foreach ($renderableRoutes as $route)
-                <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500">
-                    <span class="h-2.5 w-2.5 rounded-full" style="background-color: {{ $route['color'] }}"></span>
+                <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-telemetry-slate">
+                    <span class="h-2.5 w-2.5" style="background-color: {{ $route['color'] }}"></span>
                     {{ $route['label'] }}
                 </span>
             @endforeach
@@ -43,7 +43,7 @@
             }"
             x-init="init()"
         >
-            <div x-ref="map" class="w-full h-72 rounded-2xl overflow-hidden"></div>
+            <div x-ref="map" class="h-72 w-full overflow-hidden rounded-lg border border-telemetry-line"></div>
         </div>
     </div>
 @endif

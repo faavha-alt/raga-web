@@ -1,18 +1,18 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white leading-tight">
+        <h1 class="telemetry-value text-4xl sm:text-5xl leading-tight">
             {{ __('Buat Segment') }}
-        </h2>
-        <p class="mt-1 text-sm font-medium text-gray-500">Pilih satu aktivitas GPS milikmu, lalu klik titik awal dan titik akhir di peta.</p>
+        </h1>
+        <p class="mt-2 text-sm font-medium text-telemetry-slate">Pilih satu aktivitas GPS milikmu, lalu klik titik awal dan titik akhir di peta.</p>
     </x-slot>
 
     <div class="py-6 pb-16">
         <div class="px-4 sm:px-6 lg:px-8 max-w-4xl space-y-6">
 
             <x-card>
-                <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-4">1️⃣ Pilih Aktivitas</p>
+                <x-section-heading title="1️⃣ Pilih Aktivitas" />
                 @if ($workouts->isEmpty())
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                    <p class="text-sm text-telemetry-slate">
                         Kamu belum punya aktivitas dengan data GPS. Sinkronkan aktivitas Garmin yang punya rute terlebih dahulu.
                     </p>
                 @else
@@ -20,7 +20,7 @@
                         <div class="flex-1 min-w-[220px]">
                             <x-input-label for="workout_id" value="Aktivitas" />
                             <select id="workout_id" name="workout_id" required
-                                class="w-full rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100 focus:border-raga-primary focus:ring-raga-primary transition">
+                                class="w-full rounded border border-telemetry-line bg-telemetry-surface px-4 py-3 text-sm font-medium text-telemetry-ink focus:border-telemetry-ember focus:ring-telemetry-ember transition">
                                 <option value="">— Pilih aktivitas —</option>
                                 @foreach ($workouts as $workout)
                                     <option value="{{ $workout->id }}" @selected($selectedWorkout && $selectedWorkout->id === $workout->id)>
@@ -36,9 +36,9 @@
 
             @if ($selectedWorkout && count($points) > 1)
                 <x-card>
-                    <div class="flex items-center justify-between mb-3">
-                        <p class="text-xs font-bold uppercase tracking-wider text-gray-400">2️⃣ Tentukan Titik Awal & Akhir</p>
-                        <p class="text-xs text-gray-400">{{ count($points) }} titik GPS</p>
+                    <div class="flex items-center justify-between">
+                        <x-section-heading title="2️⃣ Tentukan Titik Awal & Akhir" />
+                        <p class="telemetry-label">{{ count($points) }} titik GPS</p>
                     </div>
 
                     <div
@@ -109,14 +109,14 @@
                         }"
                         x-init="init()"
                     >
-                        <div x-ref="map" class="w-full h-96 rounded-2xl overflow-hidden"></div>
+                        <div x-ref="map" class="mt-3 w-full h-96 rounded border border-telemetry-line overflow-hidden"></div>
 
                         <div class="mt-3 flex flex-wrap items-center gap-3">
-                            <p class="text-sm font-semibold text-gray-600 dark:text-gray-300">
-                                Awal: <span class="font-black text-raga-accent" x-text="startIndex ?? '—'"></span>
-                                · Akhir: <span class="font-black text-raga-energy" x-text="endIndex ?? '—'"></span>
+                            <p class="text-sm font-semibold text-telemetry-slate">
+                                Awal: <span class="telemetry-value text-telemetry-emerald-deep" x-text="startIndex ?? '—'"></span>
+                                · Akhir: <span class="telemetry-value text-telemetry-ember-deep" x-text="endIndex ?? '—'"></span>
                             </p>
-                            <button type="button" @click="reset()" class="text-xs font-bold text-gray-400 hover:text-gray-600 transition">Ulangi pilihan</button>
+                            <button type="button" @click="reset()" class="text-xs font-bold text-telemetry-slate hover:text-telemetry-ink transition-colors">Ulangi pilihan</button>
                         </div>
 
                         <x-input-error :messages="$errors->get('end_index')" class="mt-2" />
@@ -141,8 +141,8 @@
                                 <x-input-error :messages="$errors->get('description')" class="mt-2" />
                             </div>
 
-                            <label class="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
-                                <input type="checkbox" name="is_public" value="1" checked class="rounded border-gray-300 text-raga-primary focus:ring-raga-primary">
+                            <label class="inline-flex items-center gap-2 text-sm font-semibold text-telemetry-slate">
+                                <input type="checkbox" name="is_public" value="1" checked class="rounded border-telemetry-line text-telemetry-ember focus:ring-telemetry-ember">
                                 Tampilkan ke semua orang
                             </label>
 
@@ -150,14 +150,14 @@
                                 <x-primary-button x-bind:disabled="startIndex === null || endIndex === null || endIndex <= startIndex">
                                     Simpan Segment
                                 </x-primary-button>
-                                <p class="mt-2 text-xs text-gray-400">Titik akhir harus berada setelah titik awal di sepanjang lintasan.</p>
+                                <p class="mt-2 text-xs text-telemetry-slate">Titik akhir harus berada setelah titik awal di sepanjang lintasan.</p>
                             </div>
                         </form>
                     </div>
                 </x-card>
             @endif
 
-            <a href="{{ route('segments.index') }}" class="inline-block text-xs font-bold text-raga-primary hover:text-raga-accent transition">← Kembali ke daftar segment</a>
+            <a href="{{ route('segments.index') }}" class="inline-block text-xs font-bold text-telemetry-ember hover:text-telemetry-ember-deep transition-colors">← Kembali ke daftar segment</a>
         </div>
     </div>
 </x-app-layout>

@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-extrabold text-gray-900 leading-tight">
-            {{ __('Trail') }}
-        </h2>
-        <p class="mt-1 text-sm font-medium text-gray-500">Ringkasan lari trail kamu dari data Garmin (90 hari terakhir).</p>
+        <div>
+            <h1 class="telemetry-value text-4xl sm:text-5xl">{{ __('Trail') }}</h1>
+            <p class="mt-2 text-sm font-medium text-telemetry-slate">Ringkasan lari trail kamu dari data Garmin (90 hari terakhir).</p>
+        </div>
     </x-slot>
 
     <div class="py-6 pb-16">
@@ -23,28 +23,28 @@
             </div>
 
             <div class="flex flex-wrap gap-4">
-                <a href="{{ route('activities', ['type' => 'trail_running']) }}" class="text-xs font-bold text-raga-primary hover:text-raga-accent transition">📋 Lihat semua trail run →</a>
+                <a href="{{ route('activities', ['type' => 'trail_running']) }}" class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">📋 Lihat semua trail run →</a>
                 @if ($repeatedRouteCount > 0)
-                    <a href="{{ route('trail.routes') }}" class="text-xs font-bold text-raga-primary hover:text-raga-accent transition">🔁 Bandingkan {{ $repeatedRouteCount }} rute berulang →</a>
+                    <a href="{{ route('trail.routes') }}" class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">🔁 Bandingkan {{ $repeatedRouteCount }} rute berulang →</a>
                 @endif
             </div>
 
             <div>
-                <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">🏔️ Trail Terakhir</h3>
-                <x-card class="!p-0 divide-y divide-gray-100 overflow-hidden">
+                <p class="mb-3 telemetry-label-lg text-telemetry-ink">Trail Terakhir</p>
+                <x-card class="!p-0 divide-y divide-telemetry-line overflow-hidden">
                     @forelse ($recentRuns as $run)
-                        <a href="{{ route('trail.show', $run) }}" class="flex items-center justify-between px-5 py-3.5 hover:bg-gray-50 transition">
+                        <a href="{{ route('trail.show', $run) }}" class="flex items-center justify-between px-5 py-3.5 transition-colors hover:bg-telemetry-well">
                             <div>
-                                <p class="text-sm font-bold text-gray-900">{{ $run->name ?? 'Trail Run' }}</p>
-                                <p class="text-xs text-gray-400">{{ $run->start_date->translatedFormat('d M Y') }}</p>
+                                <p class="text-sm font-bold text-telemetry-ink">{{ $run->name ?? 'Trail Run' }}</p>
+                                <p class="mt-0.5 text-[11px] text-telemetry-slate">{{ $run->start_date->translatedFormat('d M Y') }}</p>
                             </div>
                             <div class="text-right text-sm">
-                                <p class="font-bold text-gray-900">{{ $run->distance_meters ? number_format($run->distance_meters / 1000, 2).' km' : '--' }}</p>
-                                <p class="text-xs text-gray-400">{{ $run->elevation_gain_meters ? round($run->elevation_gain_meters).' m gain' : '' }}</p>
+                                <p class="telemetry-value">{{ $run->distance_meters ? number_format($run->distance_meters / 1000, 2).' km' : '--' }}</p>
+                                <p class="mt-0.5 text-[11px] text-telemetry-slate">{{ $run->elevation_gain_meters ? round($run->elevation_gain_meters).' m gain' : '' }}</p>
                             </div>
                         </a>
                     @empty
-                        <div class="px-5 py-6 text-center text-gray-400">Belum ada aktivitas trail running.</div>
+                        <div class="px-5 py-6 text-center text-sm text-telemetry-slate">Belum ada aktivitas trail running.</div>
                     @endforelse
                 </x-card>
             </div>

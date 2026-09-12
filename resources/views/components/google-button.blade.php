@@ -8,7 +8,7 @@
 @if (config('services.google.client_id'))
     <div class="space-y-5">
         <a href="{{ route('auth.google.redirect') }}"
-           class="inline-flex w-full items-center justify-center gap-3 rounded-full border-2 border-gray-200 bg-white px-6 py-2.5 text-sm font-bold text-gray-700 transition duration-150 ease-in-out hover:bg-gray-50 hover:shadow-md active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-raga-primary focus:ring-offset-2">
+           class="inline-flex w-full items-center justify-center gap-3 rounded border border-telemetry-line-strong bg-telemetry-surface px-5 py-2.5 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ink transition-colors hover:border-telemetry-ink hover:bg-telemetry-well focus:outline-none focus-visible:ring-2 focus-visible:ring-telemetry-ink focus-visible:ring-offset-2">
             <svg class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
                 <path fill="#4285F4" d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.46a5.52 5.52 0 0 1-2.4 3.62v3.01h3.88c2.27-2.09 3.58-5.17 3.58-8.82Z"/>
                 <path fill="#34A853" d="M12 24c3.24 0 5.96-1.08 7.94-2.91l-3.88-3.01c-1.08.72-2.45 1.15-4.06 1.15-3.12 0-5.77-2.11-6.71-4.95H1.28v3.11A12 12 0 0 0 12 24Z"/>
@@ -24,10 +24,10 @@
 
         <div class="relative">
             <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                <div class="w-full border-t border-gray-200"></div>
+                <div class="w-full border-t border-telemetry-line"></div>
             </div>
             <div class="relative flex justify-center">
-                <span class="bg-white px-3 text-xs font-semibold uppercase tracking-wide text-gray-400">atau</span>
+                <span class="bg-telemetry-surface px-3 font-display text-[10px] font-bold uppercase tracking-[0.12em] text-telemetry-slate">atau</span>
             </div>
         </div>
     </div>

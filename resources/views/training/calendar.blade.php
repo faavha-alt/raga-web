@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-extrabold text-gray-900 leading-tight">
-            {{ __('Training Calendar') }}
-        </h2>
-        <p class="mt-1 text-sm font-medium text-gray-500">Kalender latihan & rest days kamu.</p>
+        <div>
+            <h1 class="telemetry-value text-4xl sm:text-5xl">{{ __('Training Calendar') }}</h1>
+            <p class="mt-2 text-sm font-medium text-telemetry-slate">Kalender latihan & rest days kamu.</p>
+        </div>
     </x-slot>
 
     <div class="py-6 pb-16">
@@ -17,15 +17,15 @@
             </div>
 
             <x-card>
-                <div class="flex items-center justify-between mb-4">
-                    <a href="{{ route('training.calendar', ['month' => $calendar['prev_month']]) }}" class="text-sm font-bold text-gray-400 hover:text-gray-700 transition">← Prev</a>
-                    <p class="text-sm font-bold text-gray-900">{{ $calendar['month_label'] }}</p>
-                    <a href="{{ route('training.calendar', ['month' => $calendar['next_month']]) }}" class="text-sm font-bold text-gray-400 hover:text-gray-700 transition">Next →</a>
+                <div class="mb-4 flex items-center justify-between">
+                    <a href="{{ route('training.calendar', ['month' => $calendar['prev_month']]) }}" class="telemetry-label transition-colors hover:text-telemetry-ink">← Prev</a>
+                    <p class="telemetry-value text-sm">{{ $calendar['month_label'] }}</p>
+                    <a href="{{ route('training.calendar', ['month' => $calendar['next_month']]) }}" class="telemetry-label transition-colors hover:text-telemetry-ink">Next →</a>
                 </div>
 
-                <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold uppercase text-gray-400 mb-1">
+                <div class="mb-1 grid grid-cols-7 gap-1 text-center">
                     @foreach (['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'] as $d)
-                        <div>{{ $d }}</div>
+                        <div class="telemetry-label">{{ $d }}</div>
                     @endforeach
                 </div>
 
@@ -40,18 +40,18 @@
                         @endphp
                         <a
                             href="{{ $href ?? '#' }}"
-                            class="relative aspect-square rounded-xl flex flex-col items-center justify-center gap-0.5 text-xs transition hover:ring-2 hover:ring-raga-primary/40
-                                {{ $day['is_today'] ? 'ring-2 ring-raga-primary' : '' }}
-                                {{ $day['in_month'] && $hasActual ? 'bg-emerald-50' : ($day['in_month'] && $day['is_rest_day'] ? 'bg-gray-50' : '') }}"
+                            class="relative aspect-square rounded border border-transparent flex flex-col items-center justify-center gap-0.5 text-xs transition hover:border-telemetry-line-strong hover:bg-telemetry-well
+                                {{ $day['is_today'] ? 'border-telemetry-ember ring-1 ring-telemetry-ember' : '' }}
+                                {{ $day['in_month'] && $hasActual ? 'bg-[rgba(0,184,101,0.08)]' : ($day['in_month'] && $day['is_rest_day'] ? 'bg-telemetry-well' : '') }}"
                         >
-                            <span class="font-bold {{ $day['in_month'] ? 'text-gray-700' : 'text-gray-300' }}">{{ $day['day'] }}</span>
+                            <span class="telemetry-value {{ $day['in_month'] ? 'text-telemetry-ink' : 'text-telemetry-slate/40' }}">{{ $day['day'] }}</span>
                             @if ($hasActual)
                                 <span class="text-[10px] leading-none">{{ $day['workouts'][0]['icon'] }}</span>
                             @elseif ($hasPlanned)
                                 <span class="text-[10px] leading-none opacity-50">{{ $day['planned_workouts'][0]['icon'] }}</span>
                             @endif
                             @if ($hasPlanned)
-                                <span class="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-raga-accent" title="Ada rencana latihan"></span>
+                                <span class="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-telemetry-emerald" title="Ada rencana latihan"></span>
                             @endif
                         </a>
                     @endforeach
@@ -64,23 +64,23 @@
 
             @if ($plannedDays->isNotEmpty())
                 <div>
-                    <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">📋 Rencana Latihan</h3>
+                    <p class="mb-3 telemetry-label-lg text-telemetry-ink">Rencana Latihan</p>
                     <div class="space-y-3">
                         @foreach ($plannedDays as $day)
                             <x-card id="plan-{{ $day['date'] }}" class="!p-4 scroll-mt-6">
-                                <p class="text-xs font-bold text-gray-400">{{ \Illuminate\Support\Carbon::parse($day['date'])->translatedFormat('l, d M') }}</p>
+                                <p class="telemetry-label">{{ \Illuminate\Support\Carbon::parse($day['date'])->translatedFormat('l, d M') }}</p>
                                 <div class="mt-2 space-y-3">
                                     @foreach ($day['planned_workouts'] as $pw)
                                         <div class="flex items-start gap-3">
                                             <span class="text-xl leading-none">{{ $pw['icon'] }}</span>
                                             <div class="min-w-0">
-                                                <p class="font-bold text-gray-900">
+                                                <p class="font-bold text-telemetry-ink">
                                                     {{ \App\Support\ActivityTypeIcon::label($pw['type']) }}
                                                     @if ($pw['intensity'])
-                                                        <span class="ml-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-bold uppercase text-gray-500">{{ $pw['intensity'] }}</span>
+                                                        <span class="ml-1 inline-flex h-5 items-center rounded border border-telemetry-line bg-telemetry-well px-2 text-[10px] font-bold uppercase tracking-[0.08em] text-telemetry-slate">{{ $pw['intensity'] }}</span>
                                                     @endif
                                                 </p>
-                                                <p class="mt-0.5 text-xs text-gray-500">
+                                                <p class="mt-0.5 text-[11px] text-telemetry-slate">
                                                     @if ($pw['duration_minutes'])
                                                         {{ round($pw['duration_minutes']) }} menit
                                                     @endif
@@ -92,16 +92,16 @@
                                                     @endif
                                                 </p>
                                                 @if ($pw['warm_up'])
-                                                    <p class="mt-2 text-sm text-gray-600"><span class="font-semibold text-gray-700">Warm-up:</span> {{ $pw['warm_up'] }}</p>
+                                                    <p class="mt-2 text-sm text-telemetry-slate"><span class="font-semibold text-telemetry-ink">Warm-up:</span> {{ $pw['warm_up'] }}</p>
                                                 @endif
                                                 @if ($pw['main_set'])
-                                                    <p class="mt-1 text-sm text-gray-600"><span class="font-semibold text-gray-700">Main set:</span> {{ $pw['main_set'] }}</p>
+                                                    <p class="mt-1 text-sm text-telemetry-slate"><span class="font-semibold text-telemetry-ink">Main set:</span> {{ $pw['main_set'] }}</p>
                                                 @endif
                                                 @if ($pw['cool_down'])
-                                                    <p class="mt-1 text-sm text-gray-600"><span class="font-semibold text-gray-700">Cool-down:</span> {{ $pw['cool_down'] }}</p>
+                                                    <p class="mt-1 text-sm text-telemetry-slate"><span class="font-semibold text-telemetry-ink">Cool-down:</span> {{ $pw['cool_down'] }}</p>
                                                 @endif
                                                 @if ($pw['notes'])
-                                                    <p class="mt-1 text-sm text-gray-500 italic">{{ $pw['notes'] }}</p>
+                                                    <p class="mt-1 text-sm italic text-telemetry-slate">{{ $pw['notes'] }}</p>
                                                 @endif
                                             </div>
                                         </div>

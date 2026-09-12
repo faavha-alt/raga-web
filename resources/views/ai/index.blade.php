@@ -1,18 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white leading-tight">
-            🤖 {{ __('AI Coach') }}
-        </h2>
-        <p class="mt-1 text-sm font-medium text-gray-500">Tanya apa saja soal kondisi, latihan, dan recovery kamu.</p>
+        <h1 class="telemetry-value text-4xl sm:text-5xl">{{ __('AI Coach') }}</h1>
+        <p class="mt-2 text-sm font-medium text-telemetry-slate">Tanya apa saja soal kondisi, latihan, dan recovery kamu.</p>
     </x-slot>
 
     <div class="py-6 pb-16">
         <div class="px-4 sm:px-6 lg:px-8">
             @if (! $configured)
                 <x-card class="text-center py-16">
-                    <p class="text-lg font-bold text-gray-900 dark:text-gray-100">AI Coach belum diatur</p>
-                    <p class="mt-2 text-gray-500 dark:text-gray-400">Masukkan API key kamu sendiri (Claude atau Gemini) untuk mulai chat.</p>
-                    <a href="{{ route('settings.ai.show') }}" class="mt-5 inline-block rounded-full bg-raga-primary px-6 py-2.5 text-sm font-bold text-white hover:opacity-90 transition">
+                    <p class="telemetry-value text-xl text-telemetry-ink">AI Coach belum diatur</p>
+                    <p class="mt-2 text-telemetry-slate">Masukkan API key kamu sendiri (Claude atau Gemini) untuk mulai chat.</p>
+                    <a href="{{ route('settings.ai.show') }}" class="mt-5 inline-block rounded bg-telemetry-ember px-6 py-2.5 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-telemetry-ember-dark">
                         Atur API Key →
                     </a>
                 </x-card>
@@ -28,7 +26,7 @@
                     <x-card class="!p-3 lg:sticky lg:top-20">
                         <a
                             href="{{ route('ai') }}"
-                            class="block mb-3 rounded-2xl bg-raga-primary px-4 py-2.5 text-center text-sm font-bold text-white hover:opacity-90 transition"
+                            class="block mb-3 rounded bg-telemetry-ember px-4 py-2.5 text-center font-display text-[11px] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-telemetry-ember-dark"
                         >
                             + Percakapan Baru
                         </a>
@@ -36,12 +34,12 @@
                             @forelse ($conversations as $c)
                                 <a
                                     href="{{ route('ai', ['conversation' => $c->id]) }}"
-                                    class="block rounded-xl px-3 py-2 text-sm truncate transition {{ $conversation?->id === $c->id ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 font-bold' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}"
+                                    class="block rounded px-3 py-2 text-sm truncate transition-colors {{ $conversation?->id === $c->id ? 'bg-telemetry-ink text-white font-semibold' : 'text-telemetry-slate hover:bg-telemetry-well' }}"
                                 >
                                     {{ $c->title }}
                                 </a>
                             @empty
-                                <p class="px-3 py-2 text-sm text-gray-400">Belum ada percakapan.</p>
+                                <p class="px-3 py-2 text-sm text-telemetry-slate">Belum ada percakapan.</p>
                             @endforelse
                         </div>
                     </x-card>
@@ -50,7 +48,7 @@
                     <x-card class="!p-0 flex flex-col h-[75vh]">
                         <div class="flex-1 overflow-y-auto p-5 space-y-5" x-ref="scrollArea">
                             <template x-if="messages.length === 0">
-                                <div class="h-full flex flex-col items-center justify-center text-center text-gray-400 gap-3">
+                                <div class="h-full flex flex-col items-center justify-center text-center text-telemetry-slate gap-3">
                                     <span class="text-4xl">💬</span>
                                     <p class="max-w-xs text-sm">Coba tanya: "bagaimana kondisi saya hari ini?" atau "apakah saya harus latihan berat hari ini?"</p>
                                 </div>
@@ -59,34 +57,34 @@
                             <template x-for="(m, i) in messages" :key="i">
                                 <div :class="m.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
                                     <template x-if="m.role === 'user'">
-                                        <div class="max-w-[80%] rounded-2xl rounded-br-md bg-raga-primary text-white px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap" x-text="m.content"></div>
+                                        <div class="max-w-[80%] rounded rounded-br-sm bg-telemetry-ink text-white px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap" x-text="m.content"></div>
                                     </template>
                                     <template x-if="m.role !== 'user'">
-                                        <div class="ai-message max-w-[85%] rounded-2xl rounded-bl-md bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-4 py-3 text-sm" x-html="renderMarkdown(m.content)"></div>
+                                        <div class="ai-message max-w-[85%] rounded rounded-bl-sm border border-telemetry-line bg-telemetry-well text-telemetry-ink px-4 py-3 text-sm" x-html="renderMarkdown(m.content)"></div>
                                     </template>
                                 </div>
                             </template>
 
                             <div x-show="loading" x-cloak class="flex justify-start">
-                                <div class="rounded-2xl rounded-bl-md bg-gray-100 dark:bg-gray-800 px-4 py-2.5 text-sm text-gray-400">
+                                <div class="rounded rounded-bl-sm border border-telemetry-line bg-telemetry-well px-4 py-2.5 text-sm text-telemetry-slate">
                                     Mengetik…
                                 </div>
                             </div>
                         </div>
 
-                        <form @submit.prevent="send" class="border-t border-gray-100 dark:border-gray-800 p-3 flex items-end gap-2">
+                        <form @submit.prevent="send" class="border-t border-telemetry-line p-3 flex items-end gap-2">
                             <textarea
                                 x-model="draft"
                                 @keydown.enter.prevent="if (!$event.shiftKey) send()"
                                 :disabled="loading"
                                 rows="1"
                                 placeholder="Tulis pertanyaan…"
-                                class="flex-1 resize-none rounded-2xl border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 text-sm focus:border-raga-primary focus:ring-raga-primary"
+                                class="flex-1 resize-none rounded border-telemetry-line bg-telemetry-surface text-sm text-telemetry-ink focus:border-telemetry-ink focus:ring-0"
                             ></textarea>
                             <button
                                 type="submit"
                                 :disabled="loading || !draft.trim()"
-                                class="shrink-0 rounded-full bg-raga-primary text-white px-5 py-2.5 text-sm font-bold disabled:opacity-40 hover:opacity-90 transition"
+                                class="shrink-0 rounded bg-telemetry-ember text-white px-5 py-2.5 font-display text-[11px] font-bold uppercase tracking-[0.08em] disabled:opacity-40 hover:bg-telemetry-ember-dark transition-colors"
                             >
                                 Kirim
                             </button>
@@ -106,8 +104,7 @@
                     .ai-message li { margin: 0.25rem 0; }
                     .ai-message li > p { margin: 0.2rem 0; }
                     .ai-message strong { font-weight: 700; }
-                    .ai-message code { font-size: 0.85em; background: rgba(0, 0, 0, 0.06); padding: 0.1em 0.35em; border-radius: 0.35rem; }
-                    .dark .ai-message code { background: rgba(255, 255, 255, 0.1); }
+                    .ai-message code { font-size: 0.85em; background: rgba(13, 17, 23, 0.06); padding: 0.1em 0.35em; border-radius: 0.25rem; }
                 </style>
 
                 <script>
