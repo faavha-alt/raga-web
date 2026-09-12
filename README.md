@@ -74,20 +74,33 @@ tabel `suunto_connections`). Workout dipetakan ke tabel aktivitas yang sama
 ikut. Yang tidak tersedia dari Suunto: Body Battery, Training Readiness, dan
 respirasi — faktor itu dibiarkan kosong, bukan ditebak.
 
-Aktivasi (sekali, butuh akun Suunto App):
+Aktivasi (butuh **Suunto Partner Program** — lihat catatan di bawah):
 
-1. Langganan **Developer API** di <https://apizone.suunto.com/how-to-start> →
-   salin *subscription key*.
-2. Isi OAuth settings di profil portal: app name, client secret, redirect URI
-   `https://<host>/settings/suunto/callback`.
+1. Ajukan **Suunto Partner Program** lewat
+   <https://www.suunto.com/en-gg/partners/welcome-partners/> (formulir:
+   <https://survey.alchemer.eu/s3/90553908/PARTNER-Become-a-Suunto-Partner>).
+   Centang **Suunto Cloud API** → tanda tangani API agreement → sebutkan email
+   developer yang butuh akses. Jawaban biasanya ≤ 2 minggu; kabar lewat
+   `partners@suunto.com`.
+2. Setelah diterima: login `https://apizone.suunto.com`, langganan **Developer
+   API** → salin *subscription key*, lalu isi OAuth settings (app name, client
+   secret, redirect URI `https://<host>/settings/suunto/callback`).
 3. Set di `.env`: `SUUNTO_CLIENT_ID`, `SUUNTO_CLIENT_SECRET`,
-   `SUUNTO_SUBSCRIPTION_KEY`, `SUUNTO_REDIRECT_URI` → `php artisan config:clear`.
+   `SUUNTO_SUBSCRIPTION_KEY`, `SUUNTO_REDIRECT_URI` → `php artisan config:cache`.
 4. Buka **Settings → Suunto → Hubungkan**, lalu pakai tombol *Sync Now*.
    Cron opsional: `php artisan suunto:sync --days=7`.
 
-Catatan kuota: Suunto membatasi jumlah panggilan API per minggu, jadi daftar
-workout diambil satu kali per rentang dengan parameter `extensions` (stream
-HR/GPS/kecepatan/elevasi ikut dalam respons yang sama).
+Batasan yang perlu diketahui (dari FAQ resmi Suunto):
+- Akses **tidak diberikan untuk pemakaian pribadi** — hanya organisasi/perusahaan
+  (komersial maupun non-komersial). Untuk pemakaian pribadi, alternatifnya ekspor
+  FIT/GPX dari Suunto App atau lewat Strava.
+- Yang tersedia: **workout** (GPS track, sampel HR, lap — tergantung model jam) dan
+  **daily activity** (langkah, kalori). **Data tidur, berat badan, dan HR zone
+  belum tersedia** di Cloud API — jadi skor recovery dari Suunto akan kehilangan
+  faktor tidur/HRV.
+- Detail per-detik paling lengkap ada di **FIT file**; JSON workout hanya ringkasan.
+- Ada kuota panggilan (Developer API di-rate-limit), jadi ambil daftar sekali per
+  rentang tanggal, bukan per aktivitas.
 
 ### AI Health & Performance Coach
 - **BYOK** (Bring Your Own Key) per user — pilih provider **Anthropic** atau **Gemini**
