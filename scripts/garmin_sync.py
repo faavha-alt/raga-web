@@ -32,10 +32,12 @@ import garminconnect
 logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(message)s")
 logger = logging.getLogger("garmin_sync")
 
-TOKEN_STORE = str(Path.home() / ".garmin_tokens")
+DEFAULT_TOKEN_STORE = str(Path.home() / ".garmin_tokens")
 
 
-def login() -> garminconnect.Garmin:
+def login(token_store: str | None = None) -> garminconnect.Garmin:
+    token_store = token_store or os.environ.get("GARMIN_TOKEN_STORE") or DEFAULT_TOKEN_STORE
+    token_dir = Path(token_store)
     email = os.environ.get("GARMIN_EMAIL")
     password = os.environ.get("GARMIN_PASSWORD")
 
@@ -49,7 +51,7 @@ def login() -> garminconnect.Garmin:
     )
 
     try:
-        client.login(tokenstore=TOKEN_STORE)
+        client.login(tokenstore=str(token_dir))
         return client
     except FileNotFoundError:
         # No cached token yet — need credentials for a first-time login.
@@ -62,8 +64,9 @@ def login() -> garminconnect.Garmin:
     if not password:
         password = getpass.getpass("Garmin password: ")
 
+    token_dir.mkdir(parents=True, exist_ok=True)
     client = garminconnect.Garmin(email=email, password=password, prompt_mfa=prompt_mfa)
-    client.login(tokenstore=TOKEN_STORE)
+    client.login(tokenstore=str(token_dir))
     return client
 
 
@@ -140,9 +143,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--days", type=int, default=3, help="How many days back to sync (default 3)")
     parser.add_argument("--out", type=str, default=None, help="Write JSON to this file instead of stdout")
+    parser.add_argument("--token-store", type=str, default=None, help="Path to directory where OAuth token is stored")
     args = parser.parse_args()
 
-    client = login()
+    client = login(token_store=args.token_store)
     payload = collect(client, args.days)
 
     output = json.dumps(payload, default=str)

@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'garmin' => [
+        'python_binary' => env('PYTHON_BINARY', '/usr/bin/python3'),
+    ],
+
 ];

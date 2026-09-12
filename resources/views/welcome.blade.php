@@ -6,6 +6,15 @@
 
         <title>{{ config('app.name', 'RAGA') }} — Your Body. Your Data. Your Progress.</title>
 
+        <!-- PWA Meta & Icons -->
+        <meta name="theme-color" content="#090d16">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-title" content="RAGA">
+        <link rel="manifest" href="/manifest.webmanifest">
+        <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:500,600,700,800,900&display=swap" rel="stylesheet" />
 

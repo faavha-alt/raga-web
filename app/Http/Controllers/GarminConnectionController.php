@@ -6,13 +6,12 @@ use App\Models\GarminConnection;
 use App\Services\HealthData\GarminSyncService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use Illuminate\View\View;
 
 class GarminConnectionController extends Controller
 {
-    private const PYTHON = '/usr/bin/python3';
-
     public function show(Request $request): View
     {
         $connection = $request->user()->garminConnection;
@@ -31,14 +30,17 @@ class GarminConnectionController extends Controller
             'mfa_code' => ['nullable', 'string'],
         ]);
 
+        $tokenStore = GarminSyncService::tokenStorePathForUser($request->user());
+
         $result = Process::path(base_path())
             ->timeout(60)
             ->input(json_encode([
                 'email' => $data['email'],
                 'password' => $data['password'],
                 'mfa_code' => $data['mfa_code'] ?? null,
+                'token_store' => $tokenStore,
             ]))
-            ->run([self::PYTHON, 'scripts/garmin_login.py']);
+            ->run([GarminSyncService::pythonBinary(), 'scripts/garmin_login.py']);
 
         $response = json_decode($result->output(), true);
 
@@ -81,10 +83,10 @@ class GarminConnectionController extends Controller
 
     public function disconnect(Request $request): RedirectResponse
     {
-        $tokenPath = getenv('HOME').'/.garmin_tokens';
+        $tokenPath = GarminSyncService::tokenStorePathForUser($request->user());
 
         if (is_dir($tokenPath)) {
-            Process::run(['rm', '-rf', $tokenPath]);
+            File::deleteDirectory($tokenPath);
         }
 
         $request->user()->garminConnection?->delete();

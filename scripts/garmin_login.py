@@ -17,12 +17,13 @@ does not need to run again until that token is revoked or expires.
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
 import garminconnect
 
-TOKEN_STORE = str(Path.home() / ".garmin_tokens")
+DEFAULT_TOKEN_STORE = str(Path.home() / ".garmin_tokens")
 
 
 class MfaRequired(Exception):
@@ -34,6 +35,7 @@ def main() -> None:
     email = payload.get("email")
     password = payload.get("password")
     mfa_code = payload.get("mfa_code") or None
+    token_store = payload.get("token_store") or os.environ.get("GARMIN_TOKEN_STORE") or DEFAULT_TOKEN_STORE
 
     def prompt_mfa() -> str:
         if mfa_code:
@@ -41,8 +43,10 @@ def main() -> None:
         raise MfaRequired()
 
     try:
+        token_dir = Path(token_store)
+        token_dir.mkdir(parents=True, exist_ok=True)
         client = garminconnect.Garmin(email=email, password=password, prompt_mfa=prompt_mfa)
-        client.login(tokenstore=TOKEN_STORE)
+        client.login(tokenstore=str(token_dir))
         print(json.dumps({"status": "ok"}))
     except MfaRequired:
         print(json.dumps({"status": "mfa_required"}))

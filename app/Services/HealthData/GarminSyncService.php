@@ -5,6 +5,7 @@ namespace App\Services\HealthData;
 use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 
 /**
@@ -19,13 +20,31 @@ use Illuminate\Support\Facades\Process;
  */
 class GarminSyncService
 {
-    private const PYTHON = '/usr/bin/python3';
-
     private const TIMEOUT_SECONDS = 120;
 
     /** Lock TTL — safely longer than the sync+import+recovery so a concurrent
      *  call can't start while another sync for the same user is still running. */
     private const LOCK_SECONDS = 300;
+
+    public static function pythonBinary(): string
+    {
+        return config('services.garmin.python_binary', env('PYTHON_BINARY', '/usr/bin/python3'));
+    }
+
+    public static function tokenStorePathForUser(User $user): string
+    {
+        $userStore = storage_path('app/garmin_tokens/'.$user->id);
+
+        if (! is_dir($userStore)) {
+            $legacyStore = getenv('HOME') ? getenv('HOME').'/.garmin_tokens' : null;
+            if ($legacyStore && is_dir($legacyStore)) {
+                File::makeDirectory($userStore, 0700, true, true);
+                File::copyDirectory($legacyStore, $userStore);
+            }
+        }
+
+        return $userStore;
+    }
 
     /**
      * @return array{status: 'success'|'error', days: int, message: ?string, import_output: ?string}
@@ -66,9 +85,16 @@ class GarminSyncService
             ];
         }
 
+        $tokenStore = self::tokenStorePathForUser($user);
+
         $result = Process::path(base_path())
             ->timeout(self::TIMEOUT_SECONDS)
-            ->run([self::PYTHON, 'scripts/garmin_sync.py', '--days', (string) $days]);
+            ->run([
+                self::pythonBinary(),
+                'scripts/garmin_sync.py',
+                '--days', (string) $days,
+                '--token-store', $tokenStore,
+            ]);
 
         if ($result->failed()) {
             $connection->update([
