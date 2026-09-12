@@ -151,6 +151,19 @@
                 Faktor yang tidak tersedia (Body Battery, Training Readiness, stress) dibiarkan kosong — bukan ditebak.
             </p>
 
+            <x-card>
+                <x-section-heading title="Backfill Riwayat // CLI" hint="1–3 tahun" />
+                <p class="text-sm text-telemetry-slate">
+                    Tombol <span class="font-semibold">Sync Now</span> menarik 7 hari terakhir. Untuk menarik
+                    <span class="font-semibold">1–3 tahun</span>, jalankan dari terminal server (prosesnya lama, jangan lewat browser):
+                </p>
+                <pre class="mt-3 overflow-x-auto rounded border border-telemetry-line bg-telemetry-well px-3 py-2 font-display text-[11px] leading-relaxed text-telemetry-ink">php artisan suunto:sync --days=730 --samples=auto</pre>
+                <p class="mt-2 text-xs text-telemetry-slate">
+                    Opsi <span class="telemetry-value text-xs">--samples</span>: <span class="font-semibold">auto</span> (sampel per-detik hanya untuk 30 hari terakhir),
+                    <span class="font-semibold">all</span> (semua workout, bisa berjam-jam), <span class="font-semibold">none</span> (hanya ringkasan — paling cepat).
+                </p>
+            </x-card>
+
         </div>
     </div>
 </x-app-layout>

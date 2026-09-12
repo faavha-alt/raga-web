@@ -34,3 +34,7 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Python (scripts/garmin_sync.py diuji dengan py_compile)
+__pycache__/
+*.pyc

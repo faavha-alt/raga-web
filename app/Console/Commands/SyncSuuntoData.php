@@ -13,13 +13,17 @@ use Illuminate\Console\Command;
  */
 class SyncSuuntoData extends Command
 {
-    protected $signature = 'suunto:sync {--user= : Target user ID (defaults to every user with a Suunto connection)} {--days=7 : Berapa hari ke belakang yang ditarik}';
+    protected $signature = 'suunto:sync
+        {--user= : Target user ID (defaults to every user with a Suunto connection)}
+        {--days=7 : Berapa hari ke belakang yang ditarik (boleh 730 untuk backfill 2 tahun)}
+        {--samples=auto : Sampel per-detik: auto (hanya N hari terakhir), all, atau none}';
 
     protected $description = 'Sync workouts from Suunto Cloud API into RAGA (mapped to the same tables as Garmin)';
 
     public function handle(SuuntoSyncService $sync): int
     {
         $days = (int) $this->option('days');
+        $samples = (string) $this->option('samples');
 
         if ($this->option('user')) {
             $users = User::whereKey($this->option('user'))->get();
@@ -33,10 +37,21 @@ class SyncSuuntoData extends Command
             return self::SUCCESS;
         }
 
+        if ($days > SuuntoSyncService::STREAM_DAYS) {
+            $this->info(sprintf(
+                'Mode backfill: %d hari (daftar diambil dengan --stream), sampel: %s.',
+                $days,
+                $samples,
+            ));
+        }
+
         $failed = false;
 
         foreach ($users as $user) {
-            $result = $sync->syncForUser($user, $days);
+            $this->info(sprintf('Menarik data untuk %s…', $user->email));
+            $startedAt = microtime(true);
+
+            $result = $sync->syncForUser($user, $days, $samples);
 
             if ($result['status'] === 'error') {
                 $failed = true;
@@ -46,11 +61,12 @@ class SyncSuuntoData extends Command
             }
 
             $this->info(sprintf(
-                '%s: %d workout diimpor (%d dilewati, %d hari).',
+                '%s: %d workout diimpor, %d dilewati (%d hari, %.1f menit).',
                 $user->email,
                 $result['imported'],
                 $result['skipped'],
                 $result['days'],
+                (microtime(true) - $startedAt) / 60,
             ));
         }
 

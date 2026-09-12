@@ -243,6 +243,35 @@ class SuuntoToolClient
     }
 
     /**
+     * Seluruh workout sejak tanggal tertentu, memakai `--stream` sehingga CLI
+     * ikut memaginasi semua cursor `until` (NDJSON satu workout per baris).
+     * Dipakai untuk backfill 1–2 tahun: satu panggilan untuk seluruh riwayat.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function workoutsStream(string $since, int $limit = 0): array
+    {
+        $result = $this->run([
+            'workouts', 'list',
+            '--since', $since,
+            '--stream',
+            '--limit', (string) $limit,
+        ], 600);
+
+        if ($result->failed()) {
+            throw new SuuntoApiException($this->errorFrom($result));
+        }
+
+        // Bentuk tiap baris bisa berupa workout langsung atau masih terbungkus
+        // envelope `{error,payload,metadata}` — dua-duanya diterima.
+        return array_values(array_map(function (array $entry): array {
+            $payload = $entry['payload'] ?? null;
+
+            return is_array($payload) ? $payload : $entry;
+        }, $this->decodeNdjson($result->output())));
+    }
+
+    /**
      * NDJSON wellness sleep (`wellness sleep --since`), sudah didekode per baris.
      *
      * @return list<array<string, mixed>>
@@ -255,9 +284,17 @@ class SuuntoToolClient
             throw new SuuntoApiException($this->errorFrom($result));
         }
 
+        return $this->decodeNdjson($result->output());
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function decodeNdjson(string $output): array
+    {
         $entries = [];
 
-        foreach (preg_split('/\R/', trim($result->output())) ?: [] as $line) {
+        foreach (preg_split('/\R/', trim($output)) ?: [] as $line) {
             $line = trim($line);
 
             if ($line === '') {

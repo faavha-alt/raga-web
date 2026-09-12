@@ -244,6 +244,93 @@ class SuuntoToolIntegrationTest extends TestCase
         }
     }
 
+    public function test_backfill_uses_stream_and_only_fetches_recent_samples_by_default(): void
+    {
+        $old = $this->workoutPayloadWith('wk_old', now()->subYears(2)->valueOf());
+        $recent = $this->workoutPayloadWith('wk_new', now()->subDays(3)->valueOf());
+
+        Process::fake([
+            '*which*' => Process::result("/usr/local/bin/suuntool\n"),
+            '*stream*' => Process::result($this->ndjson([$old, $recent])),
+            '*sml*' => Process::result((string) json_encode($this->smlPayload())),
+            '*sleep*' => Process::result(''),
+        ]);
+
+        $user = $this->connectedToolUser();
+
+        $result = app(SuuntoSyncService::class)->syncForUser($user, 730);
+
+        $this->assertSame('success', $result['status'], (string) $result['message']);
+        $this->assertSame(2, $result['imported']);
+        $this->assertSame(2, Workout::where('user_id', $user->id)->where('source', 'suunto')->count());
+
+        // Rentang panjang → daftar lewat --stream, bukan list biasa.
+        Process::assertRan(fn (PendingProcess $process) => str_contains($this->commandOf($process), '--stream'));
+
+        // Mode auto: sampel ~5 MB hanya untuk workout baru, bukan yang 2 tahun lalu.
+        Process::assertRanTimes(fn (PendingProcess $process) => str_contains($this->commandOf($process), 'sml'), 1);
+    }
+
+    public function test_backfill_with_samples_all_fetches_every_sample_stream(): void
+    {
+        $old = $this->workoutPayloadWith('wk_old', now()->subYears(2)->valueOf());
+
+        Process::fake([
+            '*which*' => Process::result("/usr/local/bin/suuntool\n"),
+            '*stream*' => Process::result($this->ndjson([$old])),
+            '*sml*' => Process::result((string) json_encode($this->smlPayload())),
+            '*sleep*' => Process::result(''),
+        ]);
+
+        $user = $this->connectedToolUser();
+
+        $result = app(SuuntoSyncService::class)->syncForUser($user, 730, SuuntoSyncService::SAMPLES_ALL);
+
+        $this->assertSame('success', $result['status'], (string) $result['message']);
+        Process::assertRanTimes(fn (PendingProcess $process) => str_contains($this->commandOf($process), 'sml'), 1);
+    }
+
+    public function test_backfill_with_samples_none_never_downloads_samples(): void
+    {
+        $recent = $this->workoutPayloadWith('wk_new', now()->subDays(3)->valueOf());
+
+        Process::fake([
+            '*which*' => Process::result("/usr/local/bin/suuntool\n"),
+            '*stream*' => Process::result($this->ndjson([$recent])),
+            '*sml*' => Process::result((string) json_encode($this->smlPayload())),
+            '*sleep*' => Process::result(''),
+        ]);
+
+        $user = $this->connectedToolUser();
+
+        $result = app(SuuntoSyncService::class)->syncForUser($user, 730, SuuntoSyncService::SAMPLES_NONE);
+
+        $this->assertSame('success', $result['status'], (string) $result['message']);
+        $this->assertSame(1, $result['imported']);
+        Process::assertNotRan(fn (PendingProcess $process) => str_contains($this->commandOf($process), 'sml'));
+    }
+
+    private function connectedToolUser(): User
+    {
+        $user = $this->passwordConnectedUser();
+        file_put_contents(SuuntoToolClient::sessionPathForUser($user), '{"session":"stub"}');
+
+        return $user;
+    }
+
+    private function commandOf(PendingProcess $process): string
+    {
+        return is_array($process->command) ? implode(' ', $process->command) : (string) $process->command;
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $workouts
+     */
+    private function ndjson(array $workouts): string
+    {
+        return implode("\n", array_map(static fn (array $w): string => (string) json_encode($w), $workouts))."\n";
+    }
+
     private function passwordConnectedUser(): User
     {
         $user = User::factory()->create();
@@ -275,11 +362,19 @@ class SuuntoToolIntegrationTest extends TestCase
      */
     private function workoutPayload(): array
     {
+        return $this->workoutPayloadWith('wk_abc123', 1757700000000);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function workoutPayloadWith(string $key, int $startMs): array
+    {
         return [
-            'key' => 'wk_abc123',
+            'key' => $key,
             'activityId' => 1,
-            'startTime' => 1757700000000,
-            'stopTime' => 1757703600000,
+            'startTime' => $startMs,
+            'stopTime' => $startMs + 3600000,
             'totalTime' => 3600,
             'totalDistance' => 10000,
             'totalAscent' => 120,

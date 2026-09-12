@@ -64,6 +64,9 @@ return [
         // untuk mematikan; isi path absolut bila binary tidak ada di PATH cron.
         'binary' => env('SUUNTO_TOOL_BINARY', 'suuntool'),
         'sync_limit' => (int) env('SUUNTO_SYNC_LIMIT', 20),
+        // Sampel per-detik (~5 MB/workout) hanya diunduh untuk workout dalam
+        // rentang ini saat mode `--samples=auto`.
+        'samples_days' => (int) env('SUUNTO_SAMPLES_DAYS', 30),
         'timeout' => (int) env('SUUNTO_TIMEOUT', 30),
     ],
 

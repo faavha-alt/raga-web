@@ -93,6 +93,21 @@
                 </x-card>
             @endif
 
+            @if ($connection && $connection->connected_at)
+                <x-card>
+                    <x-section-heading title="Backfill Riwayat // CLI" hint="1–2 tahun" />
+                    <p class="text-sm text-telemetry-slate">
+                        Tombol <span class="font-semibold">Sync Now</span> menarik 2 hari terakhir. Untuk menarik
+                        <span class="font-semibold">1–2 tahun</span> (dipotong per 60 hari agar tidak timeout), jalankan dari
+                        terminal server:
+                    </p>
+                    <pre class="mt-3 overflow-x-auto rounded border border-telemetry-line bg-telemetry-well px-3 py-2 font-display text-[11px] leading-relaxed text-telemetry-ink">php artisan garmin:sync --days=730 --chunk=60</pre>
+                    <p class="mt-2 text-xs text-telemetry-slate">
+                        Progres ditampilkan per chunk (terbaru dulu) dan aman diulang — chunk yang sudah masuk akan dilewati.
+                    </p>
+                </x-card>
+            @endif
+
         </div>
     </div>
 </x-app-layout>

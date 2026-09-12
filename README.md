@@ -271,6 +271,30 @@ python3 scripts/garmin_login.py
 php artisan garmin:import
 ```
 
+### Backfill riwayat panjang (1–3 tahun)
+
+Tombol *Sync Now* di Settings sengaja hanya menarik beberapa hari terakhir.
+Untuk menarik riwayat panjang, jalankan dari terminal server — prosesnya
+lama, jadi jangan lewat browser:
+
+```bash
+# Garmin: 2 tahun, dipotong 60 hari per proses (terbaru dulu, aman diulang)
+php artisan garmin:sync --days=730 --chunk=60
+
+# Suunto: 2 tahun, daftar ditarik sekali dengan --stream (auto-paginasi)
+php artisan suunto:sync --days=730 --samples=auto
+```
+
+- `garmin:sync` memakai `--offset` di `scripts/garmin_sync.py` supaya tiap
+  chunk mengambil jendela tanggal yang berbeda; `recovery:calculate` ikut
+  dijalankan per chunk. Chunk yang gagal menghentikan proses tanpa menghapus
+  hasil chunk sebelumnya.
+- `suunto:sync --samples=auto` hanya mengunduh sampel per-detik (~5 MB per
+  workout) untuk 30 hari terakhir; `--samples=all` mengunduh semuanya (bisa
+  berjam-jam), `--samples=none` hanya ringkasan workout.
+- Keduanya idempoten: workout yang sudah ada dilewati, jadi aman dijalankan
+  ulang untuk melanjutkan.
+
 ## Testing
 
 ```bash

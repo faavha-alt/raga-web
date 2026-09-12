@@ -5,6 +5,13 @@ Usage:
     python3 garmin_sync.py --days 3            # last 3 days, print JSON to stdout
     python3 garmin_sync.py --days 3 --out f.json
 
+Window:
+    The window always ends `--offset` days before today and spans `--days` days,
+    i.e. [today - offset - days + 1 .. today - offset]. `--offset 0` (default) is
+    the ordinary recent sync; a larger offset shifts the whole window further
+    into the past. Backfill calls this script repeatedly with chunk-sized
+    --days and an increasing --offset instead of one huge --days run.
+
 Auth:
     First run needs GARMIN_EMAIL / GARMIN_PASSWORD env vars (or interactive
     prompt) so it can log in and cache an OAuth token at ~/.garmin_tokens.
@@ -81,12 +88,13 @@ def safe(fn, *args, label: str = "", **kwargs):
 MAX_ACTIVITY_DETAILS = 15  # cap per-activity time-series calls per run
 
 
-def collect(client: garminconnect.Garmin, days: int) -> dict:
+def collect(client: garminconnect.Garmin, days: int, offset: int = 0) -> dict:
     today = date.today()
     daily: list[dict] = []
 
-    for offset in range(days):
-        d = today - timedelta(days=offset)
+    # Jendela mundur `offset` hari, lalu ambil `days` hari ke belakang dari situ.
+    for i in range(days):
+        d = today - timedelta(days=offset + i)
         cdate = d.isoformat()
 
         entry = {
@@ -105,8 +113,8 @@ def collect(client: garminconnect.Garmin, days: int) -> dict:
         }
         daily.append(entry)
 
-    start = (today - timedelta(days=days - 1)).isoformat()
-    end = today.isoformat()
+    start = (today - timedelta(days=offset + days - 1)).isoformat()
+    end = (today - timedelta(days=offset)).isoformat()
 
     body_composition = safe(
         client.get_body_composition, start, end, label="body_composition"
@@ -142,12 +150,13 @@ def collect(client: garminconnect.Garmin, days: int) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--days", type=int, default=3, help="How many days back to sync (default 3)")
+    parser.add_argument("--offset", type=int, default=0, help="Shift the whole window N days into the past (default 0)")
     parser.add_argument("--out", type=str, default=None, help="Write JSON to this file instead of stdout")
     parser.add_argument("--token-store", type=str, default=None, help="Path to directory where OAuth token is stored")
     args = parser.parse_args()
 
     client = login(token_store=args.token_store)
-    payload = collect(client, args.days)
+    payload = collect(client, args.days, args.offset)
 
     output = json.dumps(payload, default=str)
     if args.out:

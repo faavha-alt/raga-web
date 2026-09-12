@@ -6,6 +6,7 @@ use App\Models\SleepSession;
 use App\Models\SuuntoConnection;
 use App\Models\User;
 use App\Models\Workout;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -31,6 +32,18 @@ class SuuntoSyncService
 
     public const DEFAULT_DAYS = 7;
 
+    /** Rentang yang dianggap "backfill": pakai `--stream` (auto-paginasi). */
+    public const STREAM_DAYS = 30;
+
+    /** Batas atas rentang backfill (3 tahun) supaya tidak salah ketik. */
+    public const MAX_DAYS = 1095;
+
+    public const SAMPLES_AUTO = 'auto';
+
+    public const SAMPLES_ALL = 'all';
+
+    public const SAMPLES_NONE = 'none';
+
     /** Stream yang dibutuhkan RAGA: HR (Relative Effort), GPS, kecepatan, elevasi, cadence. */
     private const STREAM_EXTENSIONS = [
         'HeartrateStreamExtension',
@@ -52,11 +65,17 @@ class SuuntoSyncService
     }
 
     /**
+     * @param  string  $samples  `auto` (hanya workout dalam `SUUNTO_SAMPLES_DAYS`
+     *                           terakhir yang diunduh sampel ~5 MB-nya), `all`,
+     *                           atau `none`.
      * @return array{status: 'success'|'error', days: int, imported: int, skipped: int, message: ?string, import_output: ?string}
      */
-    public function syncForUser(User $user, int $days = self::DEFAULT_DAYS): array
+    public function syncForUser(User $user, int $days = self::DEFAULT_DAYS, string $samples = self::SAMPLES_AUTO): array
     {
-        $days = max(1, min($days, 90));
+        $days = max(1, min($days, self::MAX_DAYS));
+        $samples = in_array($samples, [self::SAMPLES_AUTO, self::SAMPLES_ALL, self::SAMPLES_NONE], true)
+            ? $samples
+            : self::SAMPLES_AUTO;
 
         $lock = Cache::lock('suunto-sync:user:'.$user->id, self::LOCK_SECONDS);
 
@@ -65,7 +84,7 @@ class SuuntoSyncService
         }
 
         try {
-            return $this->doSync($user, $days);
+            return $this->doSync($user, $days, $samples);
         } finally {
             $lock->release();
         }
@@ -74,7 +93,7 @@ class SuuntoSyncService
     /**
      * @return array{status: 'success'|'error', days: int, imported: int, skipped: int, message: ?string, import_output: ?string}
      */
-    private function doSync(User $user, int $days): array
+    private function doSync(User $user, int $days, string $samples): array
     {
         $connection = $user->suuntoConnection;
 
@@ -82,19 +101,31 @@ class SuuntoSyncService
             return $this->result('error', $days, 0, 0, 'Belum terhubung ke Suunto.');
         }
 
+        // `auto` = sampel penuh untuk sync pendek (jendelanya kecil), tetapi
+        // untuk backfill panjang hanya workout terbaru — kalau tidak, backfill
+        // 2 tahun akan mengunduh ratusan berkas ~5 MB.
+        if ($samples === self::SAMPLES_AUTO && $days <= self::STREAM_DAYS) {
+            $samples = self::SAMPLES_ALL;
+        }
+
         // Dua jalur: `password` (CLI suuntool, backend aplikasi Suunto) atau
         // `oauth` (Suunto Cloud API resmi, butuh Partner Program).
         return $connection->auth_mode === SuuntoToolClient::authMode()
-            ? $this->syncViaTool($user, $connection, $days)
+            ? $this->syncViaTool($user, $connection, $days, $samples)
             : $this->syncViaApi($user, $connection, $days);
     }
 
     /**
      * Jalur tidak resmi: CLI `suuntool` (backend aplikasi Suunto).
      *
+     * Untuk rentang panjang (backfill 1–3 tahun) daftar ditarik dengan
+     * `--stream` (auto-paginasi seluruh cursor) — satu panggilan untuk seluruh
+     * riwayat, hemat kuota. Sampel per-detik tetap opsional karena tiap workout
+     * ~5 MB: mode `auto` hanya mengunduhnya untuk workout terbaru.
+     *
      * @return array{status: 'success'|'error', days: int, imported: int, skipped: int, message: ?string, import_output: ?string}
      */
-    private function syncViaTool(User $user, SuuntoConnection $connection, int $days): array
+    private function syncViaTool(User $user, SuuntoConnection $connection, int $days, string $samples): array
     {
         if (! SuuntoToolClient::isAvailable()) {
             $message = 'Binary `'.SuuntoToolClient::binary().'` tidak ditemukan di server. Pasang suuntool (lihat README).';
@@ -114,43 +145,14 @@ class SuuntoSyncService
 
         try {
             $since = now()->subDays($days)->toDateString();
-            $workouts = $client->workoutsSince($since);
 
-            $activities = [];
-            $skipped = 0;
+            // Rentang panjang → satu panggilan ber-stream (auto-paginasi semua
+            // cursor); rentang pendek → list biasa yang lebih ringan.
+            $workouts = $days > self::STREAM_DAYS
+                ? $client->workoutsStream($since)
+                : $client->workoutsSince($since);
 
-            foreach ($workouts as $workout) {
-                if (! is_array($workout)) {
-                    $skipped++;
-
-                    continue;
-                }
-
-                // Peta dulu tanpa SML: cukup untuk tahu waktu mulai, sehingga
-                // workout yang sudah ada tidak perlu mengunduh sampel ~5 MB.
-                $summary = $this->toolMapper->toGarminActivity($workout);
-
-                if (empty($summary['startTimeLocal']) || empty($summary['duration'])) {
-                    $skipped++;
-
-                    continue;
-                }
-
-                $alreadyImported = Workout::where('user_id', $user->id)
-                    ->where('source', 'suunto')
-                    ->where('start_date', $summary['startTimeLocal'])
-                    ->exists();
-
-                if ($alreadyImported) {
-                    $skipped++;
-
-                    continue;
-                }
-
-                $samples = $this->fetchSamples($client, $workout);
-
-                $activities[] = $this->toolMapper->toGarminActivity($workout, $samples);
-            }
+            [$activities, $skipped] = $this->mapWorkoutsViaTool($user, $client, $workouts, $samples);
 
             $importOutput = $activities === [] ? null : $this->import($user, $activities);
             $sleepCount = $this->importSleep($user, $client, $days);
@@ -176,6 +178,85 @@ class SuuntoSyncService
             $connection->update(['last_synced_at' => now(), 'last_sync_status' => 'error', 'last_sync_message' => 'Sinkronisasi gagal: '.$e->getMessage()]);
 
             return $this->result('error', $days, 0, 0, 'Sinkronisasi gagal: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Peta daftar workout suuntool ke payload importer, melewati yang sudah ada
+     * (sehingga tidak mengunduh SML ~5 MB untuk workout lama).
+     *
+     * @param  list<mixed>  $workouts
+     * @return array{0: list<array<string, mixed>>, 1: int}
+     */
+    private function mapWorkoutsViaTool(User $user, SuuntoToolClient $client, array $workouts, string $samples): array
+    {
+        $activities = [];
+        $skipped = 0;
+
+        foreach ($workouts as $workout) {
+            if (! is_array($workout)) {
+                $skipped++;
+
+                continue;
+            }
+
+            // Peta dulu tanpa SML: cukup untuk tahu waktu mulai & menyaring
+            // mode `auto`.
+            $summary = $this->toolMapper->toGarminActivity($workout);
+
+            if (empty($summary['startTimeLocal']) || empty($summary['duration'])) {
+                $skipped++;
+
+                continue;
+            }
+
+            $alreadyImported = Workout::where('user_id', $user->id)
+                ->where('source', 'suunto')
+                ->where('start_date', $summary['startTimeLocal'])
+                ->exists();
+
+            if ($alreadyImported) {
+                $skipped++;
+
+                continue;
+            }
+
+            $sml = $this->shouldFetchSamples($samples, $summary)
+                ? $this->fetchSamples($client, $workout)
+                : null;
+
+            $activities[] = $this->toolMapper->toGarminActivity($workout, $sml);
+        }
+
+        return [$activities, $skipped];
+    }
+
+    /**
+     * Mode `auto` hanya mengunduh sampel untuk workout yang cukup baru —
+     * backfill 2 tahun tanpa batas akan mengunduh ratusan berkas ~5 MB.
+     *
+     * @param  array<string, mixed>  $summary
+     */
+    private function shouldFetchSamples(string $mode, array $summary): bool
+    {
+        if ($mode === self::SAMPLES_ALL) {
+            return true;
+        }
+
+        if ($mode === self::SAMPLES_NONE) {
+            return false;
+        }
+
+        $start = $summary['startTimeLocal'] ?? null;
+
+        if (! is_string($start) || $start === '') {
+            return false;
+        }
+
+        try {
+            return Carbon::parse($start)->gte(now()->subDays((int) config('services.suunto.samples_days', 30)));
+        } catch (Throwable) {
+            return false;
         }
     }
 
