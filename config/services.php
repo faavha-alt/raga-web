@@ -45,4 +45,22 @@ return [
         'python_binary' => env('PYTHON_BINARY', '/usr/bin/python3'),
     ],
 
+    /*
+     * Suunto Cloud API (apizone.suunto.com).
+     *
+     * Beda dari Garmin: tidak ada skrip Python, semuanya OAuth2 HTTP dari PHP.
+     * `subscription_key` berasal dari langganan "Developer API" di portal Suunto;
+     * `client_id`/`client_secret` dari OAuth settings di profil portal.
+     */
+    'suunto' => [
+        'client_id' => env('SUUNTO_CLIENT_ID'),
+        'client_secret' => env('SUUNTO_CLIENT_SECRET'),
+        'subscription_key' => env('SUUNTO_SUBSCRIPTION_KEY'),
+        'redirect' => env('SUUNTO_REDIRECT_URI', '/settings/suunto/callback'),
+        'oauth_base' => env('SUUNTO_OAUTH_BASE', 'https://cloudapi-oauth.suunto.com'),
+        'api_base' => env('SUUNTO_API_BASE', 'https://cloudapi.suunto.com'),
+        'api_path' => env('SUUNTO_API_PATH', '/v3/workouts'),
+        'timeout' => (int) env('SUUNTO_TIMEOUT', 30),
+    ],
+
 ];

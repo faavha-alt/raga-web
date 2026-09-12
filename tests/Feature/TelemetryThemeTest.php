@@ -54,7 +54,7 @@ class TelemetryThemeTest extends TestCase
             'trail.routes', 'health', 'health.heart', 'health.stress',
             'health.body_battery', 'health.daily_metrics', 'recovery', 'analytics',
             'analytics.health_trends', 'analytics.training_trends', 'athlete.dna',
-            'ai', 'settings', 'settings.garmin.show', 'settings.ai.show',
+            'ai', 'settings', 'settings.garmin.show', 'settings.suunto.show', 'settings.ai.show',
             'settings.api-tokens.show', 'profile.edit', 'notifications.index',
             'athletes.relationships', 'activities',
         ];

@@ -19,11 +19,14 @@ use Illuminate\Console\Command;
 
 class ImportGarminData extends Command
 {
-    protected $signature = 'garmin:import {path : JSON file from garmin_sync.py, or - for stdin} {--user= : Target user ID (defaults to the first user)}';
+    protected $signature = 'garmin:import {path : JSON file from garmin_sync.py, or - for stdin} {--user= : Target user ID (defaults to the first user)} {--source=garmin : Label written to the source column (use suunto for Suunto payloads mapped to this shape)}';
 
-    protected $description = 'Import health data pulled from Garmin Connect (via scripts/garmin_sync.py) into the RAGA database';
+    protected $description = 'Import health data pulled from Garmin Connect (via scripts/garmin_sync.py) into the RAGA database. Other providers (e.g. Suunto) reuse this importer by mapping their payload to the same shape and passing --source.';
 
     private const SOURCE = 'garmin';
+
+    /** Sumber data yang sedang diimpor — dipakai untuk semua baris & dedupe. */
+    private string $source = self::SOURCE;
 
     // Garmin's personal-record "typeId" is an undocumented internal enum. These first few
     // are inferred with reasonably high confidence from Garmin Connect's known PR ordering
@@ -65,6 +68,8 @@ class ImportGarminData extends Command
             ? User::findOrFail($this->option('user'))
             : User::oldest()->firstOrFail();
 
+        $this->source = (string) ($this->option('source') ?: self::SOURCE);
+
         foreach ($payload['daily'] ?? [] as $day) {
             $this->importDay($user, $day);
         }
@@ -74,7 +79,7 @@ class ImportGarminData extends Command
         $this->importActivities($user, $payload['activities'] ?? [], $relativeEffort);
         $this->importPersonalRecords($user, $payload['personal_records'] ?? null);
 
-        $this->info('Garmin import complete for '.$user->email);
+        $this->info(ucfirst($this->source).' import complete for '.$user->email);
 
         return self::SUCCESS;
     }
@@ -111,7 +116,7 @@ class ImportGarminData extends Command
                 'distance_meters' => $stats['totalDistanceMeters'] ?? 0,
                 'active_calories' => $stats['activeKilocalories'] ?? 0,
                 'exercise_minutes' => ($stats['moderateIntensityMinutes'] ?? 0) + ($stats['vigorousIntensityMinutes'] ?? 0),
-                'source' => self::SOURCE,
+                'source' => $this->source,
             ]
         );
 
@@ -129,7 +134,7 @@ class ImportGarminData extends Command
         }
 
         SleepSession::where('user_id', $user->id)
-            ->where('source', self::SOURCE)
+            ->where('source', $this->source)
             ->whereDate('bedtime', $date)
             ->delete();
 
@@ -146,7 +151,7 @@ class ImportGarminData extends Command
             'core_minutes' => ($dto['lightSleepSeconds'] ?? 0) / 60,
             'awake_minutes' => ($dto['awakeSleepSeconds'] ?? 0) / 60,
             'sleep_score' => $overallScore,
-            'source' => self::SOURCE,
+            'source' => $this->source,
         ]);
     }
 
@@ -167,7 +172,7 @@ class ImportGarminData extends Command
         }
 
         HrvSample::where('user_id', $user->id)
-            ->where('source', self::SOURCE)
+            ->where('source', $this->source)
             ->whereDate('timestamp', $date)
             ->delete();
 
@@ -181,7 +186,7 @@ class ImportGarminData extends Command
                 'user_id' => $user->id,
                 'timestamp' => Carbon::parse($reading['readingTimeGMT'], 'UTC')->setTimezone(config('app.timezone')),
                 'sdnn_milliseconds' => $reading['hrvValue'],
-                'source' => self::SOURCE,
+                'source' => $this->source,
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
@@ -208,7 +213,7 @@ class ImportGarminData extends Command
         }
 
         HeartRateSample::where('user_id', $user->id)
-            ->where('source', self::SOURCE)
+            ->where('source', $this->source)
             ->whereDate('timestamp', $date)
             ->delete();
 
@@ -223,7 +228,7 @@ class ImportGarminData extends Command
                 'timestamp' => Carbon::createFromTimestampMs($pair[0]),
                 'bpm' => $pair[1],
                 'is_resting' => false,
-                'source' => self::SOURCE,
+                'source' => $this->source,
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
@@ -362,7 +367,7 @@ class ImportGarminData extends Command
             }
 
             BodyMeasurement::where('user_id', $user->id)
-                ->where('source', self::SOURCE)
+                ->where('source', $this->source)
                 ->whereDate('date', $calendarDate)
                 ->delete();
 
@@ -372,7 +377,7 @@ class ImportGarminData extends Command
                 'weight_kg' => $entry['weight'] / 1000,
                 'bmi' => $entry['bmi'] ?? null,
                 'body_fat_percent' => $entry['bodyFat'] ?? null,
-                'source' => self::SOURCE,
+                'source' => $this->source,
             ]);
         }
     }
@@ -388,7 +393,7 @@ class ImportGarminData extends Command
             $end = $start->copy()->addSeconds((int) $activity['duration']);
 
             Workout::where('user_id', $user->id)
-                ->where('source', self::SOURCE)
+                ->where('source', $this->source)
                 ->where('start_date', $start)
                 ->delete();
 
@@ -412,7 +417,7 @@ class ImportGarminData extends Command
                 'training_effect_anaerobic' => $activity['anaerobicTrainingEffect'] ?? null,
                 'training_effect_label' => $activity['trainingEffectLabel'] ?? null,
                 'training_load' => $activity['activityTrainingLoad'] ?? null,
-                'source' => self::SOURCE,
+                'source' => $this->source,
             ]);
 
             $this->importWorkoutSamples($workout, $activity['details'] ?? null);
@@ -531,7 +536,7 @@ class ImportGarminData extends Command
     private function putVital(User $user, string $type, float $value, string $unit, string $date): void
     {
         VitalMeasurement::where('user_id', $user->id)
-            ->where('source', self::SOURCE)
+            ->where('source', $this->source)
             ->where('type', $type)
             ->whereDate('date', $date)
             ->delete();
@@ -542,7 +547,7 @@ class ImportGarminData extends Command
             'value' => $value,
             'unit' => $unit,
             'date' => $date,
-            'source' => self::SOURCE,
+            'source' => $this->source,
         ]);
     }
 }

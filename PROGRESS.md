@@ -4,21 +4,28 @@ Dibuat: 2026-08-26
 
 ## HANDOFF (baca ini dulu — 2026-09-13)
 
-**Status**: **seluruh halaman kini bertema Swiss Telemetry Sport** (85 file diubah; belum di-commit, belum deploy). Suite **399 test hijau / 1270 assertions** (SQLite); `npm run build` + `php artisan view:cache` sukses.
+**Status**: kerja tema "Swiss Telemetry Sport" sudah **live** (commit `cee71ac`, CI SQLite+MySQL & deploy hijau). Sesi ini menambah **integrasi Suunto (read-only)**: kode selesai & teruji lokal, **belum di-commit/deploy**, dan **belum pernah diuji ke API Suunto asli** (butuh kredensial). Suite **425 test hijau / 1388 assertions** (SQLite); `view:cache` + `npm run build` sukses.
 
-**Selesai sesi ini** (restyle menyeluruh):
-- Kontrak kerja baru **`docs/DESIGN-CONTRACT.md`** (peta warna lama→telemetry, aturan radius/shadow/typography, daftar komponen wajib) — acuan bersama 5 subagent paralel.
-- Restyle seluruh halaman yang belum bertema: health (5), recovery, analytics (4), training (6), running (4), trail (3), feed, explore, segments (3), notifications, athletes (3), goals, profile (4), recording, auth (6), oauth, settings (4), ai, welcome, offline.
-- Komponen: button (primary/secondary/danger), text-input, input-label/error, dropdown(+link), modal, nav-link, notification-bell, application-logo, google-button, sample-chart, chart/kartu (category-bar, weekly-bar, health-trend, health-detail, activity-card, score-tile, route-map); `layouts/guest` diubah ke light telemetry; `partials/pwa`; `activities/index` + sisa kelas lama di `activities/show`.
-- Paginasi: override **`resources/views/vendor/pagination/tailwind.blade.php`** (bawaan Laravel masih gray + `dark:`) — berlaku di 7 halaman ber-`->links()`.
-- Penjaga regresi **`tests/Feature/TelemetryThemeTest.php`** (3 test): smoke semua halaman terautentikasi + guest, dan pemindai statis seluruh Blade — menolak `dark:`, `rounded-2xl/3xl`, gradient, `shadow-glow`, `raga-*`, `gray-*`, `slate-*`.
-- Utilitas mati `.text-gradient`/`.bg-mesh` dihapus dari `app.css`.
-- Catatan: `pint --test` masih menandai 7 file lama (`app/Exceptions/...`, `config/health.php`, 5 test) — **pre-existing**, tidak terkait sesi ini.
+**Selesai sesi ini — integrasi Suunto (read-only)**:
+- Skema & model: `suunto_connections` (token OAuth **terenkripsi**, `suunto_username` dari klaim JWT `user`, `expires_at`, status sync) + `App\Models\SuuntoConnection` + relasi `User::suuntoConnection()`.
+- `App\Services\Suunto\`: **`SuuntoApiClient`** (OAuth2 authorization-code + refresh, header `Authorization: Bearer` & `Ocp-Apim-Subscription-Key`, retry sekali saat 401, error dibaca dari body), **`SuuntoWorkoutMapper`** (`/v3/workouts` → bentuk yang dipahami importer; **toleran** karena bentuk asli belum terverifikasi), **`SuuntoSyncService`** (lock per user, satu panggilan list + `extensions` demi kuota, panggil `garmin:import --source=suunto`, lalu `recovery:calculate` + buang cache AI), `SuuntoApiException`.
+- Web: `SuuntoConnectionController` + 5 rute `settings/suunto/*` (`show`, `connect` → redirect OAuth dengan state session, `callback`, `sync`, `disconnect`), halaman `resources/views/settings/suunto.blade.php` (tema telemetry, memuat petunjuk aktivasi bila kredensial kosong) + kartu "Suunto" di halaman Settings.
+- CLI: `php artisan suunto:sync {--user=} {--days=7}` (untuk cron).
+- **`garmin:import` kini punya `--source`** (default `garmin`) — Suunto memakai jalur penyimpanan yang sama, jadi `workouts`/`workout_samples`/`workout_laps` terisi dengan `source='suunto'`; Recovery/Training/Analytics/AI Coach otomatis ikut.
+- Test: `tests/Feature/SuuntoIntegrationTest.php` (10 test, semua jaringan di-`Http::fake`: OAuth, state salah, refresh token kedaluwarsa, impor workout, error 429 yang terbaca manusia, disconnect) + `tests/Unit/SuuntoWorkoutMapperTest.php` (16 test: ringkasan, 3 bentuk stream, konversi zona, epoch ms, normalisasi olahraga, data kosong).
+
+**Risiko/blocker yang harus diselesaikan user (jujur, belum tervalidasi)**:
+1. **Bentuk JSON `/v3/workouts` belum diverifikasi ke akun asli** — docs publik hanya memberi endpoint + nama extension. Mapper sengaja menerima banyak kandidat key; kalau meleset, perbaikannya terpusat di `SuuntoWorkoutMapper` saja.
+2. **Kuota mingguan** Suunto membatasi jumlah panggilan → satu panggilan list per rentang (`extensions` ikut stream), `SUUNTO_SYNC_LIMIT` default 100, tanpa paginasi.
+3. Yang tidak ada di Suunto: Body Battery, Training Readiness, respirasi, stress — dibiarkan `null`, tidak ditebak. 24/7 (sleep/recovery) Suunto belum diambil (tahap berikutnya).
 
 **Langkah berikutnya**:
-1. **Manajemen menu profesional** (permintaan user): nav kini 2 baris + panel mobile 2 kolom; perlu penataan IA/route per modul.
-2. Roadmap analitik personal: best efforts → CTL/ATL/Form → GAP → race predictor (Riegel) → korelasi Spearman → dark mode toggle → notifikasi push.
-3. Commit + push (deploy otomatis via CI) setelah tema disetujui.
+1. User mengisi `SUUNTO_CLIENT_ID`/`SUUNTO_CLIENT_SECRET`/`SUUNTO_SUBSCRIPTION_KEY` di `.env` server, lalu klik **Settings → Suunto → Hubungkan**; verifikasi bentuk respons nyata dan (bila perlu) sesuaikan `SuuntoWorkoutMapper`.
+2. Ambil 24/7 Suunto (sleep, recovery, activity) → melengkapi faktor skor recovery.
+3. **Manajemen menu profesional** (permintaan user, belum dikerjakan).
+4. Roadmap analitik personal: best efforts → CTL/ATL/Form → GAP → race predictor → korelasi Spearman → dark mode toggle → notifikasi push.
+
+**Pelajaran sesi ini**: bentuk API pihak ketiga sering hanya setengah terdokumentasi — sebelum menulis klien, cek kode klien publik (`suunto-mcp`) untuk endpoint & format OAuth nyata; itu menghemat percobaan buta. Untuk data yang bentuknya belum pasti, tulis mapper toleran + test fixture, dan pisahkan kegagalannya ke satu file.
 
 **Aturan kerja (hemat konteks — wajib)**:
 1. Satu sesi = satu tugas; tugas selesai → sesi baru, jangan menumpuk (sesi sebelumnya menembus 47 jt token karena ini).
@@ -29,13 +36,12 @@ Dibuat: 2026-08-26
 6. **Jangan percaya SQLite saja**: jalankan job CI MySQL sebelum menyatakan aman (bug `as load` lolos dari 395 test SQLite dan jadi 500 di produksi).
 7. **Perubahan tampilan**: patuhi `docs/DESIGN-CONTRACT.md`; verifikasi dengan `php artisan test --filter=TelemetryThemeTest` + `npm run build` (test ini menolak token tema lama di seluruh Blade).
 
-**Langkah berikutnya (roadmap analitik personal, belum dikerjakan)**: best efforts + PR dihitung sendiri dari `workout_samples` → CTL/ATL/Form (Fitness & Freshness) → GAP → race predictor (Riegel) → korelasi Spearman/p-value/lag → dark mode toggle → notifikasi push.
-
 ## Tasks
 
 <!-- Format checklist standar: "- [ ] belum" / "- [x] selesai". Dibaca otomatis oleh Project Dashboard (http://100.94.175.72:4400/) untuk menghitung progres. -->
 
 ### Fitur inti (selesai, berdasarkan histori commit & kode)
+- [x] **Integrasi Suunto Cloud API (read-only)** — OAuth2 per user (`suunto_connections`, token terenkripsi), `SuuntoApiClient`/`SuuntoWorkoutMapper`/`SuuntoSyncService`, halaman Settings + kartu, command `suunto:sync`, importer `garmin:import --source=suunto`; 26 test (`SuuntoIntegrationTest` 10 + `SuuntoWorkoutMapperTest` 16). **Belum divalidasi ke API asli** (butuh kredensial) — lihat HANDOFF.
 - [x] Fondasi Laravel: DB schema, auth (Breeze), navigation skeleton ("Phase 1 web pivot")
 - [x] CI deploy otomatis ke raga.mipa.uns.ac.id via GitHub Actions (SSH)
 - [x] Pipeline ingestion data Garmin Connect (script Python `garmin_sync.py`/`garmin_login.py` + `php artisan garmin:import`)
@@ -209,5 +215,9 @@ Dibuat: 2026-08-26
   - **Penjaga regresi `tests/Feature/TelemetryThemeTest.php`** (3 test, 3 assertion): (a) smoke 37 halaman terautentikasi, (b) 5 halaman guest (`/`, login, register, forgot-password, offline), (c) pemindai statis seluruh `resources/views/**/*.blade.php` untuk halaman ber-parameter yang tak dirender smoke test. Menolak token `dark:`, `rounded-2xl/3xl`, `bg-gradient-to`, `bg-mesh`, `text-gradient`, `shadow-glow`, `raga-*`, `gray-*`, `slate-*`. Keluhan dikumpulkan dalam satu array supaya satu kali gagal langsung memberi daftar lengkap, bukan hanya pelanggaran pertama.
   - **Verifikasi sesi ini**: `php artisan view:cache` sukses (semua Blade terkompilasi), `php artisan test` **399 passed / 1270 assertions**, `npm run build` sukses (`app-*.css` 10,3 kB + 56,0 kB; `app-*.js` 195,8 kB). Pemindaian sumber: nol token tema lama di `resources/views` (kecuali komentar penjelas di `app.css`/paginasi). Verifikasi visual per halaman belum dilakukan (butuh sesi login); gaya diverifikasi lewat HTML hasil render + pemindai statis. Belum di-commit dan belum di-deploy saat handoff ditulis.
   - **Catatan kualitas yang ditemukan**: `./vendor/bin/pint --test` menandai 7 file (`app/Exceptions/HealthDataSourceUnavailableException.php`, `config/health.php`, `tests/Feature/{AiCoachModeTest,GarminMultiUserTokenTest,HealthManagementTest,RecoveryEngineTest,TrainingPlanManagementTest}.php`) — semuanya **pre-existing** dan tidak disentuh sesi ini, jadi tidak dibersihkan agar diff tetap fokus.
+  - **Integrasi Suunto (pertanyaan user: "kalau sekarang menggunakan Garmin, bagaimana dengan Suunto?").** Jawaban riset: Suunto punya **Suunto Cloud API** (portal `apizone.suunto.com`) yang bisa diakses **self-service** — langganan *Developer API* memberi `subscription key`, lalu OAuth2 authorization-code memberi JWT (klaim `user` = username) + refresh token 24 jam. Karena endpoint/bentuk OAuth tidak sepenuhnya ada di halaman docs (portal Azure APIM perlu partner untuk "try it"), spesifikasi ditarik dari **kode klien publik** `jb381/suunto-mcp` (`client.py`, `auth.py`, `tools/workouts.py`): `GET /v3/workouts` (param `limit`/`offset`/`from`/`to`/`modifiedSince`/`extensions`), `GET /v3/workouts/{id}`, `GET /v3/workouts/{id}/fit`, header `Authorization: Bearer` + `Ocp-Apim-Subscription-Key`. Temuan penting: **kuota panggilan mingguan** — maka desain memakai satu panggilan list per rentang dengan `extensions` (stream HR/GPS/kecepatan/elevasi/cadence ikut), bukan satu panggilan per aktivitas.
+  - **Implementasi (2 agen: 1 subagent untuk mapper + test-nya, sisanya di sesi utama).** Skema `suunto_connections` + model (token **terenkripsi**, `isExpired()` dengan margin 60 detik) dan `User::suuntoConnection()`. `SuuntoApiClient` (authorize URL + state, exchange code, refresh, GET dengan retry sekali pada 401, pesan error diambil dari `message`/`error_description` body), `SuuntoWorkoutMapper` (770 baris; toleran terhadap banyak kandidat nama field, streams 3 bentuk, konversi ISO-UTC/ber-offset/epoch detik & ms → zona app, heuristik durasi ms, sinonim olahraga), `SuuntoSyncService` (lock `suunto-sync:user:*` 300 s, satu panggilan list, panggil `garmin:import --source=suunto`, `recovery:calculate`, buang `ai-context:*`), `SuuntoApiException`. Web: controller + 5 rute + `settings/suunto.blade.php` + kartu di index Settings. CLI: `suunto:sync`. Importer Garmin kini menerima `--source` (default `garmin`) sehingga **satu jalur penyimpanan untuk dua provider** — `workouts`/`workout_samples`/`workout_laps` dengan `source='suunto'`, dan Relative Effort tetap dihitung RAGA sendiri dari sampel HR.
+  - **Verifikasi**: `php artisan test` **425 passed / 1388 assertions** (naik 26 dari 399), `php artisan view:cache` + `npm run build` sukses, `pint` bersih untuk seluruh file baru, migrasi sukses di SQLite lokal. Semua test Suunto memalsukan jaringan (`Http::fake`) — tidak ada kredensial di CI.
+  - **Belum diverifikasi & risiko yang dinyatakan terbuka:** bentuk JSON `/v3/workouts` yang sebenarnya belum pernah dilihat (butuh akun berlangganan); mapper toleran adalah mitigasinya, dan titik perbaikan pertama bila data nyata berbeda hanya satu file. Belum ada paginasi (`SUUNTO_SYNC_LIMIT` default 100), dan 24/7 (sleep/recovery/activity) Suunto belum diambil sehingga faktor recovery dari Suunto masih kosong. Langkah aktivasi untuk user ada di README ("Sumber data: Suunto").
 
 

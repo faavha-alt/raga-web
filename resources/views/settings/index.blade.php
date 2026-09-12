@@ -18,6 +18,14 @@
                         <x-chip variant="neutral">Not connected</x-chip>
                     @endif
                 </a>
+                <a href="{{ route('settings.suunto.show') }}" class="flex items-center justify-between px-6 py-4 text-sm font-medium text-telemetry-ink transition-colors hover:bg-telemetry-well">
+                    <span>⌚ Suunto</span>
+                    @if (auth()->user()->suuntoConnection?->connected_at)
+                        <x-chip variant="recovery">Connected</x-chip>
+                    @else
+                        <x-chip variant="neutral">Not connected</x-chip>
+                    @endif
+                </a>
                 <a href="{{ route('settings.ai.show') }}" class="flex items-center justify-between px-6 py-4 text-sm font-medium text-telemetry-ink transition-colors hover:bg-telemetry-well">
                     <span>🤖 AI Coach</span>
                     @if (auth()->user()->aiSetting?->api_key)

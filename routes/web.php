@@ -17,6 +17,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecoveryController;
 use App\Http\Controllers\RunningController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\SuuntoConnectionController;
 use App\Http\Controllers\TrailController;
 use App\Http\Controllers\TrainingController;
 use App\Services\Analytics\RelationshipCatalog;
@@ -94,6 +95,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/connect', [GarminConnectionController::class, 'connect'])->name('connect');
         Route::post('/sync', [GarminConnectionController::class, 'sync'])->name('sync');
         Route::post('/disconnect', [GarminConnectionController::class, 'disconnect'])->name('disconnect');
+    });
+
+    Route::prefix('settings/suunto')->name('settings.suunto.')->group(function () {
+        Route::get('/', [SuuntoConnectionController::class, 'show'])->name('show');
+        Route::get('/connect', [SuuntoConnectionController::class, 'redirect'])->name('connect');
+        Route::get('/callback', [SuuntoConnectionController::class, 'callback'])->name('callback');
+        Route::post('/sync', [SuuntoConnectionController::class, 'sync'])->name('sync');
+        Route::post('/disconnect', [SuuntoConnectionController::class, 'disconnect'])->name('disconnect');
     });
 
     Route::prefix('settings/ai')->name('settings.ai.')->group(function () {

@@ -95,6 +95,11 @@ class User extends Authenticatable
         return $this->hasOne(GarminConnection::class);
     }
 
+    public function suuntoConnection(): HasOne
+    {
+        return $this->hasOne(SuuntoConnection::class);
+    }
+
     public function vitalMeasurements(): HasMany
     {
         return $this->hasMany(VitalMeasurement::class);
