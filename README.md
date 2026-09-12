@@ -107,6 +107,14 @@ Batasan yang perlu diketahui (dari FAQ resmi Suunto):
   + JS + template HTML) saat aktivitas berlangsung — bukan menarik riwayat workout.
   Untuk RAGA (menarik data ke server), tetap harus lewat Partner Program + Cloud API.
   Menerbitkan SuuntoPlus app pun tetap butuh Partner Program.
+- **Jalur alternatif "seperti Garmin" (tidak resmi).** RAGA sendiri menarik data
+  Garmin lewat klien tidak resmi (`garminconnect`, bukan Garmin Health API). Analog
+  untuk Suunto adalah CLI **`suuntool`** (<https://github.com/tajchert/suuntool>,
+  Go) yang memakai backend aplikasi Suunto: `workouts list/get/sml/fit` plus wellness
+  `sleep`/`activity`/`recovery`/`sleepstages` — jadi **lebih lengkap** dari Cloud API
+  resmi (yang tidak punya data tidur). Risiko: API privat, bisa berubah sewaktu-waktu,
+  **berpotensi melanggar ToS Suunto**, kuota ketat, dan akun bisa di-flag/ban; hanya
+  untuk data sendiri. Belum diimplementasikan — keputusan ada di user.
 
 ### AI Health & Performance Coach
 - **BYOK** (Bring Your Own Key) per user — pilih provider **Anthropic** atau **Gemini**
