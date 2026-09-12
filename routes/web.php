@@ -5,6 +5,7 @@ use App\Http\Controllers\AiController;
 use App\Http\Controllers\AiSettingsController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ApiTokenController;
+use App\Http\Controllers\AthleteDnaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GarminConnectionController;
 use App\Http\Controllers\GoalController;
@@ -78,6 +79,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/health/daily-metrics', [HealthController::class, 'dailyMetrics'])->name('health.daily_metrics');
     Route::get('/recovery', [RecoveryController::class, 'index'])->name('recovery');
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
+    Route::get('/athlete-dna', [AthleteDnaController::class, 'index'])->name('athlete.dna');
     Route::get('/analytics/health-trends', [AnalyticsController::class, 'healthTrends'])->name('analytics.health_trends');
     Route::get('/analytics/training-trends', [AnalyticsController::class, 'trainingTrends'])->name('analytics.training_trends');
     Route::get('/analytics/{pair}', [AnalyticsController::class, 'relationship'])

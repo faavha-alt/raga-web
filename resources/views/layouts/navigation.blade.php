@@ -17,6 +17,7 @@
         ['route' => 'running', 'active' => 'running*', 'icon' => '🏃', 'label' => 'Running'],
         ['route' => 'trail', 'active' => 'trail*', 'icon' => '⛰️', 'label' => 'Trail'],
         ['route' => 'recovery', 'active' => 'recovery', 'icon' => '🔋', 'label' => 'Recovery'],
+        ['route' => 'athlete.dna', 'active' => 'athlete.dna', 'icon' => '🧬', 'label' => 'Athlete DNA'],
         ['route' => 'settings', 'active' => 'settings', 'icon' => '⚙️', 'label' => 'Settings'],
     ];
 
@@ -39,6 +40,7 @@
         ['route' => 'trail', 'active' => 'trail*', 'icon' => '⛰️', 'label' => 'Trail'],
         ['route' => 'health', 'active' => 'health*', 'icon' => '❤️', 'label' => 'Health'],
         ['route' => 'recovery', 'active' => 'recovery', 'icon' => '🔋', 'label' => 'Recovery'],
+        ['route' => 'athlete.dna', 'active' => 'athlete.dna', 'icon' => '🧬', 'label' => 'Athlete DNA'],
         ['route' => 'analytics', 'active' => 'analytics*', 'icon' => '📊', 'label' => 'Analytics'],
         ['route' => 'ai', 'active' => 'ai', 'icon' => '🤖', 'label' => 'AI'],
         ['route' => 'settings', 'active' => 'settings', 'icon' => '⚙️', 'label' => 'Settings'],
