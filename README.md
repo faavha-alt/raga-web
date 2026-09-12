@@ -202,19 +202,30 @@ php artisan garmin:import
 ## Testing
 
 ```bash
-php artisan test
+php artisan test                     # SQLite in-memory (cepat, default)
+vendor/bin/phpunit -c phpunit.mysql.xml   # suite yang sama, terhadap MySQL
 ```
 
 Test suite mencakup unit test untuk engine/calculator (recovery, training load,
 running performance, dll.) dan feature test untuk halaman serta alur auth.
 
+Default suite berjalan di **SQLite in-memory**. SQLite menerima banyak hal yang
+ditolak MySQL (alias reserved word seperti `SUM(x) as load`, pelanggaran
+`ONLY_FULL_GROUP_BY`, perbedaan tipe kolom), jadi ada konfigurasi kedua
+`phpunit.mysql.xml` untuk menjalankan suite terhadap MySQL — itulah yang dipakai
+job `test-mysql` di CI.
+
 ## CI/CD
 
-- **`ci.yml`** — test workflow: PHP 8.4 + Node 24, `composer install` →
-  `npm run build` → `php artisan test`, jalan di setiap push ke `main` dan PR.
+- **`ci.yml`** — dua job, keduanya harus hijau:
+  - `test`: PHP 8.4 + Node 24, `composer install` → `npm run build` →
+    `php artisan test` (SQLite), jalan di setiap push ke `main` dan PR.
+  - `Tests (MySQL)`: service MySQL 8, `php artisan migrate --force --database=mysql`
+    → `vendor/bin/phpunit -c phpunit.mysql.xml`. Menangkap bug yang hanya muncul
+    di MySQL sebelum sampai ke produksi.
 - **`deploy.yml`** — deploy otomatis ke `raga.favha.cloud` via SSH
   (`git reset --hard` + build di server). Di-gate sebagai `workflow_run` yang hanya
-  jalan kalau CI hijau; `workflow_dispatch` tetap bisa deploy manual.
+  jalan kalau **seluruh CI** hijau; `workflow_dispatch` tetap bisa deploy manual.
 
 ## Deploy ke CloudPanel (server mandiri)
 
