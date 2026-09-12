@@ -34,9 +34,9 @@ class SuuntoToolClient
     public function __construct(private User $user) {}
 
     /**
-     * Path binary. Karena proses PHP-FPM/cron sering tidak memuat
-     * `~/.local/bin` di PATH (tempat deploy menaruh binary-nya), path itu ikut
-     * dicoba sebelum menyerah.
+     * Path binary. Urutan pencarian: path absolut dari config, `~/.local/bin`
+     * (tempat deploy memasangnya), lalu `storage/app/bin` yang ikut deploy dan
+     * tidak bergantung pada `HOME` proses PHP-FPM.
      */
     public static function binary(): string
     {
@@ -47,10 +47,16 @@ class SuuntoToolClient
         }
 
         $home = getenv('HOME') ?: null;
-        $localBin = $home ? $home.'/.local/bin/'.$configured : null;
 
-        if ($localBin && is_executable($localBin)) {
-            return $localBin;
+        $candidates = [
+            $home ? $home.'/.local/bin/'.$configured : null,
+            storage_path('app/bin/'.$configured),
+        ];
+
+        foreach ($candidates as $candidate) {
+            if ($candidate && is_executable($candidate)) {
+                return $candidate;
+            }
         }
 
         return $configured;

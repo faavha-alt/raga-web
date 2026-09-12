@@ -58,6 +58,10 @@ jobs:
                 || { echo "suuntool: checksum tidak cocok, dilewati"; return 0; }
               tar -xzf /tmp/suuntool-dl/suuntool.tar.gz -C "$HOME/.local/bin" suuntool
               chmod 0755 "$HOME/.local/bin/suuntool"
+              # Salinan app-local: PHP-FPM sering tidak punya HOME di environment-nya.
+              mkdir -p storage/app/bin
+              cp "$HOME/.local/bin/suuntool" storage/app/bin/suuntool
+              chmod 0755 storage/app/bin/suuntool
               rm -rf /tmp/suuntool-dl
             }
             install_suuntool

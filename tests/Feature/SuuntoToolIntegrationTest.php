@@ -229,6 +229,21 @@ class SuuntoToolIntegrationTest extends TestCase
         });
     }
 
+    public function test_binary_falls_back_to_the_app_storage_copy(): void
+    {
+        // PHP-FPM sering tidak punya HOME; versi app-local harus tetap ditemukan.
+        $path = storage_path('app/bin/suuntool');
+        File::ensureDirectoryExists(dirname($path));
+        file_put_contents($path, "#!/bin/sh\nexit 0\n");
+        chmod($path, 0755);
+
+        try {
+            $this->assertSame($path, SuuntoToolClient::binary());
+        } finally {
+            @unlink($path);
+        }
+    }
+
     private function passwordConnectedUser(): User
     {
         $user = User::factory()->create();
