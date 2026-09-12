@@ -4,7 +4,9 @@ Dibuat: 2026-08-26
 
 ## HANDOFF (baca ini dulu — 2026-09-13)
 
-**Status**: **jalur Suunto (tidak resmi) sudah LIVE** di `raga.favha.cloud` (commit `ab66f3f`, CI+deploy hijau) dan **binary `suuntool` sudah terpasang di server** — `SuuntoToolClient::isAvailable()` = true, `suuntool doctor` bisa menghubungi `api.sports-tracker.com`. **Yang belum: login akun Suunto asli** (butuh kredensial user). Tema "Swiss Telemetry Sport" juga sudah live (`cee71ac`).
+**Status**: **jalur Suunto (tidak resmi) sudah LIVE dan TERBUKTI di produksi** — user sudah login lewat Settings, sync pertama sukses (16 workout, **372.884 sampel** HR/GPS, 14 sesi tidur, Relative Effort terhitung). Binary `suuntool` terpasang di server. **Backfill 1–3 tahun juga sudah ada** untuk Garmin (`garmin:sync --days=730 --chunk=60`) dan Suunto (`suunto:sync --days=730 --samples=auto`). Tema "Swiss Telemetry Sport" live (`cee71ac`).
+
+**Dua akun RAGA di produksi (jangan tertukar saat menganalisis)**: `user_id=1` = **favha@staff.uns.ac.id** (koneksi Garmin, 56 workout garmin) dan `user_id=207` = **ehp.tiwi@gmail.com** (koneksi Suunto, 11 workout suunto). Keduanya memuat 8 workout Suunto yang sama (akun Suunto yang sama dihubungkan ke dua akun RAGA) — bukan duplikasi bug.
 
 **Akses server (penting untuk sesi berikutnya)**: SSH alias **`raga-favha`** (`ssh raga-favha`, user `raga`, key `~/.ssh/id_ed25519_raga_favha_cloud`) → aplikasi di `~/htdocs/raga.favha.cloud`. Alias `raga-web` menunjuk server KAMPUS LAMA (`raga.mipa.uns.ac.id`) — jangan tertukar. Tinker di server: `ssh raga-favha 'cd ~/htdocs/raga.favha.cloud && php artisan tinker --execute="..."'`.
 
@@ -52,7 +54,8 @@ Dibuat: 2026-08-26
 
 ### Fitur inti (selesai, berdasarkan histori commit & kode)
 - [x] **Integrasi Suunto Cloud API (read-only)** — OAuth2 per user (`suunto_connections`, token terenkripsi), `SuuntoApiClient`/`SuuntoWorkoutMapper`/`SuuntoSyncService`, halaman Settings + kartu, command `suunto:sync`, importer `garmin:import --source=suunto`.
-- [x] **Jalur Suunto tidak resmi lewat CLI `suuntool`** (dipakai sekarang; jalur resmi tertutup untuk pemakaian pribadi) — `SuuntoToolClient` + `SuuntoToolMapper` + login email/password (password tidak disimpan) + impor workout/SML/tidur + install binary otomatis di deploy dengan verifikasi sha256. 54 test Suunto total; **belum diuji ke akun asli**.
+- [x] **Jalur Suunto tidak resmi lewat CLI `suuntool`** (dipakai sekarang; jalur resmi tertutup untuk pemakaian pribadi) — `SuuntoToolClient` + `SuuntoToolMapper` + login email/password (password tidak disimpan) + impor workout/SML/tidur + install binary otomatis di deploy dengan verifikasi sha256. **Terbukti di produksi**: 16 workout, 372.884 sampel, 14 sesi tidur, Relative Effort terhitung.
+- [x] **Backfill riwayat panjang (1–3 tahun)** — Garmin: `garmin:sync {--user=} {--days=2} {--chunk=60}` + opsi `--offset` baru di `scripts/garmin_sync.py` (tanpa itu jendela selalu dihitung dari hari ini); Suunto: `suunto:sync {--days=} {--samples=auto|all|none}` dengan `workouts list --stream` (auto-paginasi seluruh cursor) dan sampel ~5 MB opsional. Tombol di UI tetap incremental; backfill dijalankan dari CLI.
 - [x] Fondasi Laravel: DB schema, auth (Breeze), navigation skeleton ("Phase 1 web pivot")
 - [x] CI deploy otomatis ke raga.mipa.uns.ac.id via GitHub Actions (SSH)
 - [x] Pipeline ingestion data Garmin Connect (script Python `garmin_sync.py`/`garmin_login.py` + `php artisan garmin:import`)
