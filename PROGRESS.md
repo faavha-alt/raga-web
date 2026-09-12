@@ -2,6 +2,27 @@
 
 Dibuat: 2026-08-26
 
+## HANDOFF (baca ini dulu — 2026-09-13)
+
+**Status**: live di `raga.favha.cloud`, server & HEAD = `c75a848`. Suite: **396 test hijau** (SQLite) + job CI **MySQL** hijau.
+
+**Selesai sesi terakhir** (semua sudah live & terverifikasi):
+- Relative Effort/TRIMP: `workouts.relative_effort`, `RelativeEffortCalculator`, command `training:calculate-relative-effort` (backfill 46/46), tampil di detail aktivitas + `training/distribution`.
+- Design system **Swiss Telemetry Sport**: token `telemetry.*` + font Inter/Space Grotesk di `tailwind.config.js`, utilitas `.telemetry-*`, komponen `x-chip`, `x-section-heading`, `x-card`/`x-metric-tile` di-restyle.
+- Shell **top nav** (menggantikan sidebar) + dashboard disusun ulang (Command Center) + halaman `activity` (band gradien + split bertag) + halaman baru **`/athlete-dna`** (heatmap 364 hari, radar 5 pilar, PR suite).
+- Perbaikan bug: `PersonalRecord::formattedValue()` — `longest_run` Garmin dalam **meter**, bukan detik.
+- CI: job `Tests (MySQL)` (`phpunit.mysql.xml`) — deploy di-gate ke kedua job.
+
+**Aturan kerja (hemat konteks — wajib)**:
+1. Satu sesi = satu tugas; tugas selesai → sesi baru, jangan menumpuk (sesi sebelumnya menembus 47 jt token karena ini).
+2. Jawaban < 200 kata; jangan ulangi isi file/tabel besar.
+3. Verifikasi dalam SATU perintah shell (test+build+cek live), bukan rangkaian percakapan.
+4. Kerja berat → subagent (terbukti hanya ~9% biaya).
+5. Baca file seperlunya (`grep` + potongan), bukan `read` utuh.
+6. **Jangan percaya SQLite saja**: jalankan job CI MySQL sebelum menyatakan aman (bug `as load` lolos dari 395 test SQLite dan jadi 500 di produksi).
+
+**Langkah berikutnya (roadmap analitik personal, belum dikerjakan)**: best efforts + PR dihitung sendiri dari `workout_samples` → CTL/ATL/Form (Fitness & Freshness) → GAP → race predictor (Riegel) → korelasi Spearman/p-value/lag → dark mode toggle → notifikasi push.
+
 ## Tasks
 
 <!-- Format checklist standar: "- [ ] belum" / "- [x] selesai". Dibaca otomatis oleh Project Dashboard (http://100.94.175.72:4400/) untuk menghitung progres. -->

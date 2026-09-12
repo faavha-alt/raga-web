@@ -25,6 +25,18 @@ RAGA adalah aplikasi web tracking kesehatan & training (lari/trail running) berb
 - AI Coach: selalu pisahkan DATA vs INFERENSI di jawaban, tidak boleh mendiagnosis kondisi medis (aturan eksplisit di system prompt `AiCoachService`).
 - Testing: PHPUnit (Feature + Unit) di `tests/`, penamaan `<Domain>Test.php` mengikuti nama Service/Engine yang diuji. Beberapa commit history ("Fix false-positive test failure...", "Fix Training module date-range and int/float test failures") menunjukkan pola: build fitur besar lalu commit fix terpisah untuk test yang gagal.
 
+## Cara kerja (hemat konteks — wajib)
+
+Sesi panjang terbukti mahal: satu sesi pernah menembus 47 juta token dengan rata-rata ~198 rb token konteks per langkah. Aturan berikut mengikat setiap sesi:
+
+1. **Satu sesi = satu tugas.** Selesai satu tugas → mulai sesi baru; jangan menumpuk banyak fitur dalam satu sesi.
+2. **Baca `HANDOFF` di bagian atas `PROGRESS.md` lebih dulu**, jangan telusuri ulang repo dari nol.
+3. **Jawaban ringkas** (< 200 kata). Jangan mengulang isi file atau menempel tabel besar di percakapan — konteks itu dibayar ulang di setiap langkah berikutnya.
+4. **Verifikasi dalam satu perintah** (test + build + cek live sekali jalan), bukan rangkaian percakapan bolak-balik.
+5. **Kerja berat → subagent** (terbukti ~9% biaya sesi): audit, riset, satu halaman utuh.
+6. Baca file seperlunya (`grep` + `read` dengan offset), hindari `read` utuh file besar.
+7. **Jangan percaya SQLite saja.** Suite lokal SQLite menerima SQL yang ditolak MySQL (alias reserved word seperti `SUM(x) as load` pernah lolos 395 test lalu jadi 500 di produksi). Jalankan job CI `Tests (MySQL)` sebelum menyatakan aman.
+
 ## Status
 
-Lihat `PROGRESS.md` untuk progres detail dan riwayat sesi kerja.
+Lihat `PROGRESS.md` untuk progres detail dan riwayat sesi kerja; bagian `HANDOFF` di atasnya memuat kondisi terkini dan langkah berikutnya.
