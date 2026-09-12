@@ -1,8 +1,11 @@
 *.log
 .DS_Store
-.env
-.env.backup
-.env.production
+# Semua salinan environment, bukan cuma nama yang lazim. Cadangan manual di
+# server sering diberi nama seperti .env.bak.tz atau .env.bak.google-<tanggal>,
+# dan pola `.env` saja tidak menangkapnya — berkas itu berisi seluruh rahasia
+# produksi, jadi harus tidak pernah bisa ter-stage oleh `git add -A`.
+.env*
+!.env.example
 .phpactor.json
 .phpunit.result.cache
 /.codex
