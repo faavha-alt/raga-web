@@ -14,7 +14,7 @@
         <meta name="apple-mobile-web-app-title" content="RAGA">
         <link rel="manifest" href="/manifest.webmanifest">
         <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
 
         <!-- Fonts: Inter (prosa) + Space Grotesk (angka & label telemetry). -->
         <link rel="preconnect" href="https://fonts.bunny.net">

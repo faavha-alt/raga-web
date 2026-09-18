@@ -164,13 +164,64 @@ class PwaTest extends TestCase
         $this->assertStringNotContainsString("asset('manifest.webmanifest')", $partial);
     }
 
+    public function test_pwa_partial_shows_an_ios_install_hint_that_is_dismissible(): void
+    {
+        $partial = $this->contents('resources/views/partials/pwa.blade.php');
+
+        // Safari iOS tidak mendukung beforeinstallprompt, jadi panduan manual
+        // ini yang membuat pengguna iPhone/iPad tahu cara memasang aplikasi.
+        $this->assertStringContainsString('Alpine.data(\'ragaIosInstallHint\'', $partial);
+        $this->assertStringContainsString('Ketuk tombol Bagikan di Safari, lalu pilih Tambahkan ke Layar Utama.', $partial);
+
+        // Hanya muncul di iOS yang belum terpasang.
+        $this->assertStringContainsString('maxTouchPoints', $partial);
+        $this->assertStringContainsString("display-mode: standalone", $partial);
+        $this->assertStringContainsString('navigator.standalone', $partial);
+
+        // Preferensi tutup disimpan di localStorage.
+        $this->assertStringContainsString('raga:ios-install-hint-dismissed', $partial);
+        $this->assertStringContainsString('localStorage.setItem', $partial);
+    }
+
+    public function test_apple_touch_icon_is_a_180_px_square_png(): void
+    {
+        $path = public_path('icons/apple-touch-icon.png');
+
+        $bytes = $this->contents('public/icons/apple-touch-icon.png');
+
+        // Tanda tangan berkas PNG: \x89PNG\r\n\x1a\n
+        $this->assertSame("\x89PNG\r\n\x1a\n", substr($bytes, 0, 8), 'apple-touch-icon.png bukan berkas PNG yang sah.');
+
+        // iOS memakai berkas ini apa adanya; ukuran 180x180 adalah yang
+        // direkomendasikan Apple untuk iPhone ber-Retina.
+        $size = getimagesize($path);
+        $this->assertIsArray($size);
+        $this->assertSame(180, $size[0]);
+        $this->assertSame(180, $size[1]);
+    }
+
+    public function test_all_layouts_reference_the_apple_touch_icon(): void
+    {
+        foreach ([
+            'resources/views/layouts/app.blade.php',
+            'resources/views/layouts/guest.blade.php',
+            'resources/views/welcome.blade.php',
+        ] as $relative) {
+            $this->assertStringContainsString(
+                'rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png"',
+                $this->contents($relative),
+                "$relative belum menunjuk ikon apple-touch 180x180.",
+            );
+        }
+    }
+
     public function test_layout_declares_pwa_head_tags_once(): void
     {
         $layout = $this->contents('resources/views/layouts/app.blade.php');
 
         $this->assertStringContainsString('<link rel="manifest" href="/manifest.webmanifest">', $layout);
         $this->assertStringContainsString('name="theme-color"', $layout);
-        $this->assertStringContainsString('rel="apple-touch-icon" href="/icons/icon-192x192.png"', $layout);
+        $this->assertStringContainsString('rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png"', $layout);
         $this->assertStringContainsString("@include('partials.pwa')", $layout);
 
         // iOS tidak mendukung SVG untuk apple-touch-icon — harus PNG.
