@@ -2,7 +2,19 @@
 
 Dibuat: 2026-08-26
 
-## HANDOFF (baca ini dulu — 2026-09-13)
+## HANDOFF (baca ini dulu — 2026-09-18): shell mobile-app + kepadatan + target sentuh
+
+**Status**: **PWA kini terasa seperti app di iPhone, sudah LIVE** (`raga.favha.cloud`, commit `4b062a0`). Tiga fase selesai, tiap fase test hijau: (1) `62ddc31` shell — app bar `sticky` ringkas (`h-14 lg:h-16`, `pt-[env(safe-area-inset-top)]`), **bottom tab bar** `lg:hidden` (5 tab dari `$mobileNav`, difilter `Route::has()`), `viewport-fit=cover` di 3 layout, konten `pb-[calc(4.5rem+env(safe-area-inset-bottom))]`; (2) `f42226e` kepadatan — header halaman `text-2xl sm:text-3xl lg:text-5xl`, `<x-card>` `p-4 sm:p-6`, `metric-tile` `p-3 sm:p-4`, jarak seksi `space-y-3 sm:space-y-6`, padding halaman `py-4 sm:py-6`; (3) `4b062a0` target sentuh — tombol/`text-input` `min-h-11 sm:min-h-0`, back-link & tautan aksi kecil dapat area 44px. Plus `0b6a412`: hint pemasangan khusus iOS (Safari tak punya `beforeinstallprompt`) + `apple-touch-icon` 180x180.
+
+**Bukti verifikasi**: `php artisan test` → 464 passed (1564 assertions) di setiap fase; `npm run build` ✓; deploy CI terverifikasi di produksi (`viewport-fit=cover`, `min-h-11`, ikon 180 → 200).
+
+**Cara memeriksa tampilan tanpa Mac**: harness tangkapan layar CDP ada di `/tmp/shots/shoot.mjs` (butuh `chrome-headless-shell` dari cache Playwright + cookie jar hasil `curl` login). Render viewport 390x844/360x640; `JAR=/tmp/raga-cookies.txt node shoot.mjs <url> <out.png> [w] [h]`. Sesi pratinjau lokal: user `preview@local.test` dan password `demo@raga.test` = `demo-local-123` (**hanya di SQLite lokal**, produksi tak tersentuh).
+
+**Langkah berikutnya**: sapu sisa halaman non-tab (analytics, athlete-dna, settings, notifications, AI) dengan harness yang sama; pertimbangkan empty-state yang lebih informatif di dashboard; `PROGRESS.md` belum diisi checklist fitur baru ini.
+
+**Jebakan**: screenshot full-page menaruh elemen `fixed` (tab bar) di posisi viewport, jadi ia tampak "menempel di tengah" gambar — itu artefak, bukan bug. `env()` bernilai 0 di desktop sehingga padding safe-area tidak menggandakan. Label form **jangan** dijadikan target sentuh (bukan elemen interaktif).
+
+## HANDOFF SEBELUMNYA (2026-09-13)
 
 **Status**: **jalur Suunto (tidak resmi) sudah LIVE dan TERBUKTI di produksi** — user sudah login lewat Settings, sync pertama sukses (16 workout, **372.884 sampel** HR/GPS, 14 sesi tidur, Relative Effort terhitung). Binary `suuntool` terpasang di server. **Backfill 1–3 tahun juga sudah ada** untuk Garmin (`garmin:sync --days=730 --chunk=60`) dan Suunto (`suunto:sync --days=730 --samples=auto`). Tema "Swiss Telemetry Sport" live (`cee71ac`).
 
