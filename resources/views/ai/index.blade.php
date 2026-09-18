@@ -10,7 +10,7 @@
                 <x-card class="text-center py-16">
                     <p class="telemetry-value text-xl text-telemetry-ink">AI Coach belum diatur</p>
                     <p class="mt-2 text-telemetry-slate">Masukkan API key kamu sendiri (Claude atau Gemini) untuk mulai chat.</p>
-                    <a href="{{ route('settings.ai.show') }}" class="mt-5 inline-block rounded bg-telemetry-ember px-6 py-2.5 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-telemetry-ember-dark">
+                    <a href="{{ route('settings.ai.show') }}" class="mt-5 inline-flex items-center justify-center min-h-11 sm:min-h-0 rounded bg-telemetry-ember px-6 py-2.5 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-telemetry-ember-dark">
                         Atur API Key →
                     </a>
                 </x-card>
@@ -26,7 +26,7 @@
                     <x-card class="!p-3 lg:sticky lg:top-20">
                         <a
                             href="{{ route('ai') }}"
-                            class="block mb-3 rounded bg-telemetry-ember px-4 py-2.5 text-center font-display text-[11px] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-telemetry-ember-dark"
+                            class="flex items-center justify-center min-h-11 sm:min-h-0 mb-3 rounded bg-telemetry-ember px-4 py-2.5 text-center font-display text-[11px] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-telemetry-ember-dark"
                         >
                             + Percakapan Baru
                         </a>
@@ -34,7 +34,7 @@
                             @forelse ($conversations as $c)
                                 <a
                                     href="{{ route('ai', ['conversation' => $c->id]) }}"
-                                    class="block rounded px-3 py-2 text-sm truncate transition-colors {{ $conversation?->id === $c->id ? 'bg-telemetry-ink text-white font-semibold' : 'text-telemetry-slate hover:bg-telemetry-well' }}"
+                                    class="block min-h-11 sm:min-h-0 rounded px-3 py-2 text-sm truncate transition-colors {{ $conversation?->id === $c->id ? 'bg-telemetry-ink text-white font-semibold' : 'text-telemetry-slate hover:bg-telemetry-well' }}"
                                 >
                                     {{ $c->title }}
                                 </a>
@@ -79,12 +79,12 @@
                                 :disabled="loading"
                                 rows="1"
                                 placeholder="Tulis pertanyaan…"
-                                class="flex-1 resize-none rounded border-telemetry-line bg-telemetry-surface text-sm text-telemetry-ink focus:border-telemetry-ink focus:ring-0"
+                                class="flex-1 min-h-11 sm:min-h-0 resize-none rounded border-telemetry-line bg-telemetry-surface text-sm text-telemetry-ink focus:border-telemetry-ink focus:ring-0"
                             ></textarea>
                             <button
                                 type="submit"
                                 :disabled="loading || !draft.trim()"
-                                class="shrink-0 rounded bg-telemetry-ember text-white px-5 py-2.5 font-display text-[11px] font-bold uppercase tracking-[0.08em] disabled:opacity-40 hover:bg-telemetry-ember-dark transition-colors"
+                                class="shrink-0 inline-flex items-center justify-center min-h-11 sm:min-h-0 rounded bg-telemetry-ember text-white px-5 py-2.5 font-display text-[11px] font-bold uppercase tracking-[0.08em] disabled:opacity-40 hover:bg-telemetry-ember-dark transition-colors"
                             >
                                 Kirim
                             </button>

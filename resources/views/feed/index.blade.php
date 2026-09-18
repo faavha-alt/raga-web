@@ -24,7 +24,7 @@
                         Ikuti atlet lain untuk melihat aktivitas mereka di sini.
                     </p>
                     <a href="{{ route('explore') }}"
-                        class="mt-5 inline-flex items-center justify-center rounded bg-telemetry-ember px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-telemetry-ember-dark">
+                        class="mt-5 inline-flex items-center justify-center min-h-11 sm:min-h-0 rounded bg-telemetry-ember px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-telemetry-ember-dark">
                         Jelajahi Atlet
                     </a>
                 </x-card>

@@ -12,7 +12,7 @@
             <div class="flex gap-2">
                 @foreach ([7, 30, 90] as $rangeDays)
                     <a href="{{ route('training.distribution', ['days' => $rangeDays]) }}"
-                       class="rounded border px-3 py-1.5 font-display text-[11px] font-bold uppercase tracking-[0.08em] transition {{ $days === $rangeDays ? 'border-telemetry-ink bg-telemetry-ink text-white' : 'border-telemetry-line bg-telemetry-well text-telemetry-slate hover:text-telemetry-ink' }}">
+                       class="inline-flex items-center justify-center min-h-11 sm:min-h-0 rounded border px-3 py-1.5 font-display text-[11px] font-bold uppercase tracking-[0.08em] transition {{ $days === $rangeDays ? 'border-telemetry-ink bg-telemetry-ink text-white' : 'border-telemetry-line bg-telemetry-well text-telemetry-slate hover:text-telemetry-ink' }}">
                         {{ $rangeDays }}D
                     </a>
                 @endforeach

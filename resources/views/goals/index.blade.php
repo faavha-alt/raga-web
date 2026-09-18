@@ -24,7 +24,7 @@
                     <div>
                         <x-input-label for="type" value="Jenis Goal" />
                         <select id="type" name="type" x-model="type" required
-                            class="mt-1 block w-full rounded border border-telemetry-line bg-telemetry-surface text-telemetry-ink focus:border-telemetry-ember focus:ring-telemetry-ember">
+                            class="mt-1 block w-full min-h-11 sm:min-h-0 rounded border border-telemetry-line bg-telemetry-surface text-telemetry-ink focus:border-telemetry-ember focus:ring-telemetry-ember">
                             @foreach ($goalTypes as $t)
                                 <option value="{{ $t['type'] }}" @selected(old('type', 'weekly_distance') === $t['type'])>{{ $t['label'] }}</option>
                             @endforeach

@@ -26,7 +26,7 @@
                 <div>
                     <div class="mb-3 flex items-end justify-between gap-4">
                         <h3 class="telemetry-label-lg text-telemetry-ink">{{ $title }}</h3>
-                        <a href="{{ route($section['route']) }}" class="telemetry-label transition-colors hover:text-telemetry-ink">Lihat detail →</a>
+                        <a href="{{ route($section['route']) }}" class="telemetry-label inline-flex items-center min-h-11 sm:min-h-0 transition-colors hover:text-telemetry-ink">Lihat detail →</a>
                     </div>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         @foreach ($section['metrics'] as $key => $icon)
@@ -59,7 +59,7 @@
                     <p class="mt-2 telemetry-value text-2xl">
                         {{ $garminReadiness['value'] !== null ? round($garminReadiness['value']) : '--' }}
                     </p>
-                    <p class="mt-2 text-[11px] text-telemetry-slate">Skor readiness bawaan Garmin (perhitungannya tertutup) — beda dengan <a href="{{ route('recovery') }}" class="font-semibold text-telemetry-chrono hover:text-telemetry-ember transition-colors">Readiness Score</a> kita yang transparan.</p>
+                    <p class="mt-2 text-[11px] text-telemetry-slate">Skor readiness bawaan Garmin (perhitungannya tertutup) — beda dengan <a href="{{ route('recovery') }}" class="inline-flex items-center min-h-11 sm:min-h-0 font-semibold text-telemetry-chrono hover:text-telemetry-ember transition-colors">Readiness Score</a> kita yang transparan.</p>
                 </x-card>
             </div>
 

@@ -116,7 +116,7 @@
                                 Awal: <span class="telemetry-value text-telemetry-emerald-deep" x-text="startIndex ?? '—'"></span>
                                 · Akhir: <span class="telemetry-value text-telemetry-ember-deep" x-text="endIndex ?? '—'"></span>
                             </p>
-                            <button type="button" @click="reset()" class="text-xs font-bold text-telemetry-slate hover:text-telemetry-ink transition-colors">Ulangi pilihan</button>
+                            <button type="button" @click="reset()" class="inline-flex items-center min-h-11 sm:min-h-0 text-xs font-bold text-telemetry-slate hover:text-telemetry-ink transition-colors">Ulangi pilihan</button>
                         </div>
 
                         <x-input-error :messages="$errors->get('end_index')" class="mt-2" />
@@ -157,7 +157,7 @@
                 </x-card>
             @endif
 
-            <a href="{{ route('segments.index') }}" class="inline-block text-xs font-bold text-telemetry-ember hover:text-telemetry-ember-deep transition-colors">← Kembali ke daftar segment</a>
+            <a href="{{ route('segments.index') }}" class="inline-flex items-center min-h-11 sm:min-h-0 text-xs font-bold text-telemetry-ember hover:text-telemetry-ember-deep transition-colors">← Kembali ke daftar segment</a>
         </div>
     </div>
 </x-app-layout>

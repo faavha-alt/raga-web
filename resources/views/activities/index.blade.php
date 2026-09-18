@@ -17,7 +17,7 @@
 
                     <div class="min-w-[140px]">
                         <x-input-label for="type" value="Tipe" />
-                        <select id="type" name="type" class="w-full rounded border border-telemetry-line-strong bg-telemetry-surface px-3 py-2 text-sm font-medium text-telemetry-ink transition-colors focus:border-telemetry-ink focus:outline-none focus:ring-0">
+                        <select id="type" name="type" class="w-full min-h-11 sm:min-h-0 rounded border border-telemetry-line-strong bg-telemetry-surface px-3 py-2 text-sm font-medium text-telemetry-ink transition-colors focus:border-telemetry-ink focus:outline-none focus:ring-0">
                             <option value="">Semua</option>
                             @foreach ($types as $type)
                                 <option value="{{ $type }}" @selected(($filters['type'] ?? '') === $type)>{{ ucwords(str_replace('_', ' ', $type)) }}</option>
@@ -37,7 +37,7 @@
 
                     <div class="min-w-[140px]">
                         <x-input-label for="sort" value="Urutkan" />
-                        <select id="sort" name="sort" class="w-full rounded border border-telemetry-line-strong bg-telemetry-surface px-3 py-2 text-sm font-medium text-telemetry-ink transition-colors focus:border-telemetry-ink focus:outline-none focus:ring-0">
+                        <select id="sort" name="sort" class="w-full min-h-11 sm:min-h-0 rounded border border-telemetry-line-strong bg-telemetry-surface px-3 py-2 text-sm font-medium text-telemetry-ink transition-colors focus:border-telemetry-ink focus:outline-none focus:ring-0">
                             @foreach (['date' => 'Tanggal', 'distance' => 'Jarak', 'duration' => 'Durasi', 'calories' => 'Kalori', 'avg_hr' => 'Avg HR'] as $key => $optionLabel)
                                 <option value="{{ $key }}" @selected(($filters['sort'] ?? 'date') === $key)>{{ $optionLabel }}</option>
                             @endforeach
@@ -46,7 +46,7 @@
 
                     <div class="min-w-[120px]">
                         <x-input-label for="direction" value="Arah" />
-                        <select id="direction" name="direction" class="w-full rounded border border-telemetry-line-strong bg-telemetry-surface px-3 py-2 text-sm font-medium text-telemetry-ink transition-colors focus:border-telemetry-ink focus:outline-none focus:ring-0">
+                        <select id="direction" name="direction" class="w-full min-h-11 sm:min-h-0 rounded border border-telemetry-line-strong bg-telemetry-surface px-3 py-2 text-sm font-medium text-telemetry-ink transition-colors focus:border-telemetry-ink focus:outline-none focus:ring-0">
                             <option value="desc" @selected(($filters['direction'] ?? 'desc') === 'desc')>Terbaru</option>
                             <option value="asc" @selected(($filters['direction'] ?? 'desc') === 'asc')>Terlama</option>
                         </select>
@@ -55,7 +55,7 @@
                     <div class="flex gap-2">
                         <x-primary-button type="submit">Terapkan</x-primary-button>
                         @if (array_filter($filters))
-                            <a href="{{ route('activities') }}" class="inline-flex items-center rounded px-3 py-2 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-slate transition-colors hover:bg-telemetry-well hover:text-telemetry-ink">Reset</a>
+                            <a href="{{ route('activities') }}" class="inline-flex items-center min-h-11 sm:min-h-0 rounded px-3 py-2 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-slate transition-colors hover:bg-telemetry-well hover:text-telemetry-ink">Reset</a>
                         @endif
                     </div>
                 </form>

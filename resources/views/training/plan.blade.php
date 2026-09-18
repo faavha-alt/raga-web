@@ -16,9 +16,9 @@
             @endif
 
             <div class="flex items-center justify-between">
-                <a href="{{ route('training') }}" class="telemetry-label transition-colors hover:text-telemetry-ink">← Kembali ke Training</a>
+                <a href="{{ route('training') }}" class="telemetry-label inline-flex items-center min-h-11 sm:min-h-0 transition-colors hover:text-telemetry-ink">← Kembali ke Training</a>
                 <div class="flex items-center gap-3">
-                    <a href="{{ route('training.calendar') }}" class="telemetry-label transition-colors hover:text-telemetry-ink">Lihat Kalender →</a>
+                    <a href="{{ route('training.calendar') }}" class="telemetry-label inline-flex items-center min-h-11 sm:min-h-0 transition-colors hover:text-telemetry-ink">Lihat Kalender →</a>
                     <button type="button"
                         onclick="if (confirm('Hapus training plan "{{ $plan->name }}"? Semua minggu dan workout terencana di dalamnya akan ikut terhapus.')) document.getElementById('delete-plan-form').submit();"
                         class="font-display text-[10px] font-bold uppercase tracking-[0.12em] text-telemetry-ember-deep hover:underline">

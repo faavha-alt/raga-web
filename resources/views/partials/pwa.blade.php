@@ -131,7 +131,7 @@
                     type="button"
                     @click="dismiss()"
                     aria-label="Tutup panduan pasang"
-                    class="shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.08em] text-telemetry-slate transition-colors hover:text-telemetry-ink"
+                    class="shrink-0 inline-flex items-center min-h-11 sm:min-h-0 font-display text-[10px] font-bold uppercase tracking-[0.08em] text-telemetry-slate transition-colors hover:text-telemetry-ink"
                 >
                     Tutup
                 </button>
@@ -153,10 +153,10 @@
             <p class="min-w-0 flex-1 text-xs font-medium text-telemetry-slate">
                 Pasang RAGA di layar utama untuk akses lebih cepat.
             </p>
-            <button type="button" @click="install()" class="shrink-0 rounded bg-telemetry-ember px-3 py-1.5 font-display text-[10px] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-telemetry-ember-dark">
+            <button type="button" @click="install()" class="shrink-0 inline-flex items-center justify-center min-h-11 sm:min-h-0 rounded bg-telemetry-ember px-3 py-1.5 font-display text-[10px] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-telemetry-ember-dark">
                 Pasang aplikasi
             </button>
-            <button type="button" @click="installable = false" class="shrink-0 font-display text-[10px] font-bold uppercase tracking-[0.08em] text-telemetry-slate transition-colors hover:text-telemetry-ink">
+            <button type="button" @click="installable = false" class="shrink-0 inline-flex items-center min-h-11 sm:min-h-0 font-display text-[10px] font-bold uppercase tracking-[0.08em] text-telemetry-slate transition-colors hover:text-telemetry-ink">
                 Nanti
             </button>
         </div>

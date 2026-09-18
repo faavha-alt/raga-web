@@ -16,7 +16,7 @@
                     &lsaquo; Sebelumnya
                 </span>
             @else
-                <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="inline-flex items-center rounded border border-telemetry-line px-3 py-1.5 font-display text-[10px] font-bold uppercase tracking-[0.08em] text-telemetry-slate transition-colors hover:border-telemetry-ink hover:bg-telemetry-well hover:text-telemetry-ink">
+                <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="inline-flex items-center min-h-11 sm:min-h-0 rounded border border-telemetry-line px-3 py-1.5 font-display text-[10px] font-bold uppercase tracking-[0.08em] text-telemetry-slate transition-colors hover:border-telemetry-ink hover:bg-telemetry-well hover:text-telemetry-ink">
                     &lsaquo; Sebelumnya
                 </a>
             @endif
@@ -32,7 +32,7 @@
                         @if ($page == $paginator->currentPage())
                             <span aria-current="page" class="inline-flex min-w-8 items-center justify-center rounded bg-telemetry-ink px-2 py-1.5 font-display text-xs font-bold tabular-nums text-white">{{ $page }}</span>
                         @else
-                            <a href="{{ $url }}" class="inline-flex min-w-8 items-center justify-center rounded border border-telemetry-line px-2 py-1.5 font-display text-xs font-bold tabular-nums text-telemetry-slate transition-colors hover:border-telemetry-ink hover:bg-telemetry-well hover:text-telemetry-ink">{{ $page }}</a>
+                            <a href="{{ $url }}" class="inline-flex min-w-8 items-center justify-center min-h-11 sm:min-h-0 rounded border border-telemetry-line px-2 py-1.5 font-display text-xs font-bold tabular-nums text-telemetry-slate transition-colors hover:border-telemetry-ink hover:bg-telemetry-well hover:text-telemetry-ink">{{ $page }}</a>
                         @endif
                     @endforeach
                 @endif
@@ -40,7 +40,7 @@
 
             {{-- Berikutnya --}}
             @if ($paginator->hasMorePages())
-                <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="inline-flex items-center rounded border border-telemetry-line px-3 py-1.5 font-display text-[10px] font-bold uppercase tracking-[0.08em] text-telemetry-slate transition-colors hover:border-telemetry-ink hover:bg-telemetry-well hover:text-telemetry-ink">
+                <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="inline-flex items-center min-h-11 sm:min-h-0 rounded border border-telemetry-line px-3 py-1.5 font-display text-[10px] font-bold uppercase tracking-[0.08em] text-telemetry-slate transition-colors hover:border-telemetry-ink hover:bg-telemetry-well hover:text-telemetry-ink">
                     Berikutnya &rsaquo;
                 </a>
             @else

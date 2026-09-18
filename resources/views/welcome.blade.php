@@ -33,15 +33,15 @@
 
                     <nav class="flex items-center gap-2">
                         @auth
-                            <a href="{{ url('/dashboard') }}" class="inline-flex items-center rounded bg-telemetry-ember px-5 py-2 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-telemetry-ember-dark">
+                            <a href="{{ url('/dashboard') }}" class="inline-flex items-center min-h-11 sm:min-h-0 rounded bg-telemetry-ember px-5 py-2 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-telemetry-ember-dark">
                                 Dashboard
                             </a>
                         @else
-                            <a href="{{ route('login') }}" class="inline-flex items-center rounded border border-telemetry-line px-4 py-2 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ink transition-colors hover:bg-telemetry-well">
+                            <a href="{{ route('login') }}" class="inline-flex items-center min-h-11 sm:min-h-0 rounded border border-telemetry-line px-4 py-2 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ink transition-colors hover:bg-telemetry-well">
                                 Log in
                             </a>
                             @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="inline-flex items-center rounded bg-telemetry-ember px-5 py-2 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-telemetry-ember-dark">
+                                <a href="{{ route('register') }}" class="inline-flex items-center min-h-11 sm:min-h-0 rounded bg-telemetry-ember px-5 py-2 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-white transition-colors hover:bg-telemetry-ember-dark">
                                     Daftar Gratis
                                 </a>
                             @endif

@@ -13,7 +13,7 @@
                 <x-card>
                     <div class="mb-4 flex items-end justify-between gap-4">
                         <p class="telemetry-label">Volume 7 Hari</p>
-                        <a href="{{ route('training.volume') }}" class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Detail →</a>
+                        <a href="{{ route('training.volume') }}" class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Detail →</a>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -52,7 +52,7 @@
                 <x-card>
                     <div class="mb-4 flex items-end justify-between gap-4">
                         <p class="telemetry-label">Training Status</p>
-                        <a href="{{ route('training.load') }}" class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Detail →</a>
+                        <a href="{{ route('training.load') }}" class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Detail →</a>
                     </div>
                     <div class="flex items-center justify-between">
                         <div>
@@ -66,7 +66,7 @@
                 <x-card>
                     <div class="mb-4 flex items-end justify-between gap-4">
                         <p class="telemetry-label">Konsistensi 30 Hari</p>
-                        <a href="{{ route('training.calendar') }}" class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Detail →</a>
+                        <a href="{{ route('training.calendar') }}" class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Detail →</a>
                     </div>
                     <div class="grid grid-cols-3 gap-4">
                         <div>
@@ -87,7 +87,7 @@
                 <x-card>
                     <div class="mb-4 flex items-end justify-between gap-4">
                         <p class="telemetry-label">Distribusi Aktivitas</p>
-                        <a href="{{ route('training.distribution') }}" class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Detail →</a>
+                        <a href="{{ route('training.distribution') }}" class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Detail →</a>
                     </div>
                     @forelse ($topTypes as $type)
                         <div class="flex items-center justify-between border-b border-telemetry-line/70 py-1.5 text-sm last:border-0">
@@ -103,7 +103,7 @@
             <div>
                 <div class="mb-3 flex items-end justify-between gap-4">
                     <p class="telemetry-label-lg text-telemetry-ink">Training Plan</p>
-                    <a href="{{ route('training.calendar') }}" class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Lihat Kalender →</a>
+                    <a href="{{ route('training.calendar') }}" class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Lihat Kalender →</a>
                 </div>
 
                 @if ($plans->isEmpty())
@@ -150,7 +150,7 @@
             <div>
                 <div class="mb-3 flex items-end justify-between gap-4">
                     <p class="telemetry-label-lg text-telemetry-ink">Aktivitas Terakhir</p>
-                    <a href="{{ route('activities') }}" class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Lihat semua →</a>
+                    <a href="{{ route('activities') }}" class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Lihat semua →</a>
                 </div>
                 <x-card class="!p-0 divide-y divide-telemetry-line overflow-hidden">
                     @forelse ($recentWorkouts as $workout)

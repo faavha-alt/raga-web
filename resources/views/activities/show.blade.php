@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <a href="{{ route('activities') }}" class="telemetry-label transition-colors hover:text-telemetry-ink">← Activities</a>
+        <a href="{{ route('activities') }}" class="telemetry-label inline-flex items-center min-h-11 sm:min-h-0 transition-colors hover:text-telemetry-ink">← Activities</a>
     </x-slot>
 
     <div class="py-4 sm:py-6 pb-16">
@@ -44,7 +44,7 @@
                             x-on:click="toggle()"
                             :disabled="pending"
                             :class="given ? 'bg-[rgba(0,184,101,0.08)] text-telemetry-emerald-deep' : 'text-telemetry-slate hover:text-telemetry-emerald-deep'"
-                            class="inline-flex items-center gap-1.5 rounded border border-telemetry-line px-3 py-2 font-display text-[11px] font-bold uppercase tracking-[0.08em] transition-colors disabled:opacity-60"
+                            class="inline-flex items-center gap-1.5 rounded border border-telemetry-line px-3 py-2 min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] transition-colors disabled:opacity-60"
                             aria-label="Beri kudos"
                         >
                             <span x-text="given ? '👍' : '👏'"></span>
@@ -52,7 +52,7 @@
                             <span class="font-semibold">Kudos</span>
                         </button>
 
-                        <a href="#comments" class="inline-flex items-center gap-1.5 rounded border border-transparent px-3 py-2 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-slate transition-colors hover:border-telemetry-line hover:text-telemetry-chrono-deep">
+                        <a href="#comments" class="inline-flex items-center gap-1.5 rounded border border-transparent px-3 py-2 min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-slate transition-colors hover:border-telemetry-line hover:text-telemetry-chrono-deep">
                             💬 {{ $commentsCount }} Komentar
                         </a>
                     </div>
@@ -61,9 +61,9 @@
                         <form method="POST" action="{{ route('activities.visibility.update', $workout) }}" class="flex items-center gap-2">
                             @csrf
                             @method('PATCH')
-                            <label for="visibility" class="telemetry-label">Visibilitas</label>
+                            <label for="visibility" class="telemetry-label inline-flex items-center min-h-11 sm:min-h-0">Visibilitas</label>
                             <select id="visibility" name="visibility"
-                                class="rounded border border-telemetry-line bg-telemetry-well px-3 py-2 text-sm font-semibold text-telemetry-ink transition-colors focus:border-telemetry-ink focus:outline-none focus:ring-0">
+                                class="rounded border border-telemetry-line bg-telemetry-well px-3 py-2 min-h-11 sm:min-h-0 text-sm font-semibold text-telemetry-ink transition-colors focus:border-telemetry-ink focus:outline-none focus:ring-0">
                                 @foreach (\App\Support\ActivityVisibility::cases() as $case)
                                     <option value="{{ $case->value }}" @selected($workout->visibility === $case)>{{ $case->icon() }} {{ $case->label() }}</option>
                                 @endforeach
@@ -269,7 +269,7 @@
                                 <form method="POST" action="{{ route('comments.destroy', $comment) }}" class="shrink-0">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="font-display text-[10px] font-bold uppercase tracking-[0.08em] text-telemetry-ember-deep hover:underline">Hapus</button>
+                                    <button type="submit" class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[10px] font-bold uppercase tracking-[0.08em] text-telemetry-ember-deep hover:underline">Hapus</button>
                                 </form>
                             @endif
                         </div>

@@ -40,7 +40,7 @@
                 </x-card>
             @endif
 
-            <a href="{{ route('activities.show', $workout) }}" class="inline-block font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Lihat detail aktivitas lengkap →</a>
+            <a href="{{ route('activities.show', $workout) }}" class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Lihat detail aktivitas lengkap →</a>
 
         </div>
     </div>

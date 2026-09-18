@@ -13,7 +13,7 @@
                 <x-card>
                     <div class="mb-4 flex items-end justify-between gap-4">
                         <p class="telemetry-label">Volume 7 Hari</p>
-                        <a href="{{ route('running.distance') }}" class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Detail →</a>
+                        <a href="{{ route('running.distance') }}" class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Detail →</a>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -49,7 +49,7 @@
                 <x-card>
                     <div class="mb-4 flex items-end justify-between gap-4">
                         <p class="telemetry-label">Running Performance</p>
-                        <a href="{{ route('running.pace') }}" class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Detail →</a>
+                        <a href="{{ route('running.pace') }}" class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Detail →</a>
                     </div>
                     @if ($performance)
                         @php $category = \App\Support\ScoreCategory::fromScore($performance['score']); @endphp
@@ -109,7 +109,7 @@
                 <div>
                     <div class="mb-3 flex items-end justify-between gap-4">
                         <p class="telemetry-label-lg text-telemetry-ink">Lari Terjauh</p>
-                        <a href="{{ route('running.records') }}" class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Lihat semua →</a>
+                        <a href="{{ route('running.records') }}" class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Lihat semua →</a>
                     </div>
                     <div class="grid grid-cols-3 gap-3">
                         @foreach ($longestRuns as $run)
@@ -128,7 +128,7 @@
                 <div>
                     <div class="mb-3 flex items-end justify-between gap-4">
                         <p class="telemetry-label-lg text-telemetry-ink">Personal Records</p>
-                        <a href="{{ route('running.records') }}" class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Lihat semua →</a>
+                        <a href="{{ route('running.records') }}" class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">Lihat semua →</a>
                     </div>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         @foreach ($personalRecords->take(6) as $pr)

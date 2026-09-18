@@ -61,7 +61,7 @@
                             onsubmit="return confirm('Cabut token &quot;{{ $token->name }}&quot;? Klien yang memakainya akan langsung kehilangan akses.')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ember-deep hover:underline">Cabut</button>
+                            <button type="submit" class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ember-deep hover:underline">Cabut</button>
                         </form>
                     </div>
                 @empty

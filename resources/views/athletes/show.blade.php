@@ -56,7 +56,7 @@
                     <div class="shrink-0">
                         @if ($viewer->id === $athlete->id)
                             <a href="{{ route('profile.edit') }}"
-                                class="inline-flex items-center justify-center rounded border border-telemetry-line px-6 py-2.5 text-sm font-bold text-telemetry-ink transition-colors hover:border-telemetry-ember hover:text-telemetry-ember">
+                                class="inline-flex items-center justify-center min-h-11 sm:min-h-0 rounded border border-telemetry-line px-6 py-2.5 text-sm font-bold text-telemetry-ink transition-colors hover:border-telemetry-ember hover:text-telemetry-ember">
                                 Edit Profil
                             </a>
                         @elseif ($isFollowing)

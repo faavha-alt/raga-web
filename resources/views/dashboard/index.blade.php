@@ -175,7 +175,7 @@
                                     <x-chip variant="neutral">Data</x-chip>
                                 </div>
                                 <p class="mt-3 text-sm leading-relaxed text-telemetry-ink">{{ $insight }}</p>
-                                <a href="{{ route('training') }}" class="mt-4 inline-flex items-center gap-1 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ember-deep hover:underline">
+                                <a href="{{ route('training') }}" class="mt-4 inline-flex items-center gap-1 min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ember-deep hover:underline">
                                     Buka Training →
                                 </a>
                             </x-card>
@@ -215,7 +215,7 @@
                                     <h3 class="telemetry-value text-xl">{{ $latest->name ?: ucwords(str_replace('_', ' ', (string) $latest->type)) }}</h3>
                                 </div>
                             </div>
-                            <a href="{{ route('activities.show', $latest) }}" class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ember-deep hover:underline">
+                            <a href="{{ route('activities.show', $latest) }}" class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ember-deep hover:underline">
                                 Lihat aktivitas →
                             </a>
                         </div>
@@ -277,7 +277,7 @@
                 <section>
                     <div class="mb-3 flex items-end justify-between gap-4">
                         <h3 class="telemetry-label-lg text-telemetry-ink">Goals Aktif</h3>
-                        <a href="{{ route('goals.index') }}" class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ember-deep hover:underline">Kelola →</a>
+                        <a href="{{ route('goals.index') }}" class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ember-deep hover:underline">Kelola →</a>
                     </div>
 
                     <div class="grid gap-3 sm:grid-cols-3">
@@ -353,10 +353,10 @@
 
             {{-- 9. AKSI CEPAT --}}
             <div class="flex gap-3">
-                <a href="{{ route('health') }}" class="flex-1 border border-telemetry-line bg-white px-5 py-2.5 text-center font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ink transition-colors hover:bg-telemetry-well">
+                <a href="{{ route('health') }}" class="flex-1 inline-flex items-center justify-center min-h-11 sm:min-h-0 border border-telemetry-line bg-white px-5 py-2.5 text-center font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ink transition-colors hover:bg-telemetry-well">
                     Lihat Data Kesehatan →
                 </a>
-                <a href="{{ route('training') }}" class="flex-1 border border-telemetry-line bg-white px-5 py-2.5 text-center font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ink transition-colors hover:bg-telemetry-well">
+                <a href="{{ route('training') }}" class="flex-1 inline-flex items-center justify-center min-h-11 sm:min-h-0 border border-telemetry-line bg-white px-5 py-2.5 text-center font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ink transition-colors hover:bg-telemetry-well">
                     Lihat Training →
                 </a>
             </div>

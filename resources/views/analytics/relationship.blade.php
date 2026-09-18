@@ -16,7 +16,7 @@
             <div class="flex flex-wrap gap-2">
                 @foreach ([7 => '7D', 30 => '30D', 90 => '90D', 182 => '6M', 365 => '1Y'] as $rangeDays => $label)
                     <a href="{{ route('analytics.relationship', ['pair' => $definition['slug'], 'days' => $rangeDays]) }}"
-                       class="px-3 py-1.5 rounded border text-[10px] font-bold uppercase tracking-[0.08em] transition-colors {{ $days === $rangeDays ? 'bg-telemetry-ink text-white border-telemetry-ink' : 'bg-telemetry-well text-telemetry-slate border-telemetry-line hover:text-telemetry-ink hover:border-telemetry-line-strong' }}">
+                       class="inline-flex items-center justify-center min-h-11 sm:min-h-0 px-3 py-1.5 rounded border text-[10px] font-bold uppercase tracking-[0.08em] transition-colors {{ $days === $rangeDays ? 'bg-telemetry-ink text-white border-telemetry-ink' : 'bg-telemetry-well text-telemetry-slate border-telemetry-line hover:text-telemetry-ink hover:border-telemetry-line-strong' }}">
                         {{ $label }}
                     </a>
                 @endforeach

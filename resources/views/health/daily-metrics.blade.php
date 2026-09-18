@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <a href="{{ route('health') }}" class="telemetry-label transition-colors hover:text-telemetry-ink">← Health</a>
+        <a href="{{ route('health') }}" class="telemetry-label inline-flex items-center min-h-11 sm:min-h-0 transition-colors hover:text-telemetry-ink">← Health</a>
         <h1 class="mt-2 telemetry-value text-2xl sm:text-3xl lg:text-5xl">📊 Daily Metrics</h1>
     </x-slot>
 

@@ -189,7 +189,7 @@
                 @endforelse
             </x-card>
 
-            <a href="{{ route('segments.index') }}" class="inline-block text-xs font-bold text-telemetry-ember hover:text-telemetry-ember-deep transition-colors">← Kembali ke daftar segment</a>
+            <a href="{{ route('segments.index') }}" class="inline-flex items-center min-h-11 sm:min-h-0 text-xs font-bold text-telemetry-ember hover:text-telemetry-ember-deep transition-colors">← Kembali ke daftar segment</a>
         </div>
     </div>
 </x-app-layout>

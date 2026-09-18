@@ -23,9 +23,9 @@
             </div>
 
             <div class="flex flex-wrap gap-4">
-                <a href="{{ route('activities', ['type' => 'trail_running']) }}" class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">📋 Lihat semua trail run →</a>
+                <a href="{{ route('activities', ['type' => 'trail_running']) }}" class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">📋 Lihat semua trail run →</a>
                 @if ($repeatedRouteCount > 0)
-                    <a href="{{ route('trail.routes') }}" class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">🔁 Bandingkan {{ $repeatedRouteCount }} rute berulang →</a>
+                    <a href="{{ route('trail.routes') }}" class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-chrono hover:underline">🔁 Bandingkan {{ $repeatedRouteCount }} rute berulang →</a>
                 @endif
             </div>
 

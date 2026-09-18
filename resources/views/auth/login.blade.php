@@ -41,7 +41,7 @@
             </label>
 
             @if (Route::has('password.request'))
-                <a class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ember-deep hover:underline" href="{{ route('password.request') }}">
+                <a class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ember-deep hover:underline" href="{{ route('password.request') }}">
                     {{ __('Forgot password?') }}
                 </a>
             @endif
@@ -54,7 +54,7 @@
         @if (Route::has('register'))
             <p class="text-center text-sm text-telemetry-slate">
                 Belum punya akun?
-                <a href="{{ route('register') }}" class="font-semibold text-telemetry-ember-deep hover:underline">Daftar sekarang</a>
+                <a href="{{ route('register') }}" class="inline-flex items-center min-h-11 sm:min-h-0 font-semibold text-telemetry-ember-deep hover:underline">Daftar sekarang</a>
             </p>
         @endif
     </form>

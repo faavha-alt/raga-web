@@ -8,7 +8,7 @@
                 <p class="mt-1 text-sm font-medium text-telemetry-slate">Potongan rute untuk diperlombakan — leaderboard per atlet.</p>
             </div>
             <a href="{{ route('segments.create') }}"
-               class="inline-flex items-center gap-2 rounded bg-telemetry-ember px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-telemetry-ember-dark">
+               class="inline-flex items-center gap-2 min-h-11 sm:min-h-0 rounded bg-telemetry-ember px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-telemetry-ember-dark">
                 ➕ Buat Segment
             </a>
         </div>
@@ -63,7 +63,7 @@
                     <div class="flex gap-2">
                         <x-primary-button type="submit">Terapkan</x-primary-button>
                         @if (array_filter($filters))
-                            <a href="{{ route('segments.index') }}" class="inline-flex items-center px-4 py-2.5 text-sm font-bold text-telemetry-slate hover:text-telemetry-ink transition-colors">Reset</a>
+                            <a href="{{ route('segments.index') }}" class="inline-flex items-center min-h-11 sm:min-h-0 px-4 py-2.5 text-sm font-bold text-telemetry-slate hover:text-telemetry-ink transition-colors">Reset</a>
                         @endif
                     </div>
                 </form>
@@ -88,7 +88,7 @@
                                     @if ($segment->start_label) · {{ $segment->start_label }} @endif
                                 </p>
                             </div>
-                            <a href="{{ route('segments.show', $segment) }}" class="shrink-0 text-xs font-bold text-telemetry-ember hover:text-telemetry-ember-deep transition-colors">Leaderboard →</a>
+                            <a href="{{ route('segments.show', $segment) }}" class="shrink-0 inline-flex items-center min-h-11 sm:min-h-0 text-xs font-bold text-telemetry-ember hover:text-telemetry-ember-deep transition-colors">Leaderboard →</a>
                         </div>
 
                         <div class="mt-4 grid grid-cols-3 gap-3 text-center">
@@ -110,7 +110,7 @@
                     <x-card class="text-center py-12">
                         <p class="text-lg font-bold text-telemetry-ink">Belum Ada Segment</p>
                         <p class="mt-2 text-telemetry-slate">Buat segment pertamamu dari salah satu aktivitas GPS, lalu tantang temanmu di leaderboard.</p>
-                        <a href="{{ route('segments.create') }}" class="mt-4 inline-block text-sm font-bold text-telemetry-ember hover:text-telemetry-ember-deep transition-colors">Buat Segment →</a>
+                        <a href="{{ route('segments.create') }}" class="mt-4 inline-flex items-center min-h-11 sm:min-h-0 text-sm font-bold text-telemetry-ember hover:text-telemetry-ember-deep transition-colors">Buat Segment →</a>
                     </x-card>
                 @endforelse
             </div>

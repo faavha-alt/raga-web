@@ -13,7 +13,7 @@
                 <x-card>
                     <div class="flex items-end justify-between gap-4 mb-2">
                         <p class="telemetry-label">📊 Health Trends</p>
-                        <a href="{{ route('analytics.health_trends') }}" class="telemetry-label transition-colors hover:text-telemetry-ink">Lihat →</a>
+                        <a href="{{ route('analytics.health_trends') }}" class="telemetry-label inline-flex items-center min-h-11 sm:min-h-0 transition-colors hover:text-telemetry-ink">Lihat →</a>
                     </div>
                     <p class="text-sm text-telemetry-slate">Tren resting HR, stress, body battery, dan training load.</p>
                 </x-card>
@@ -21,7 +21,7 @@
                 <x-card>
                     <div class="flex items-end justify-between gap-4 mb-2">
                         <p class="telemetry-label">🏋️ Training Trends</p>
-                        <a href="{{ route('analytics.training_trends') }}" class="telemetry-label transition-colors hover:text-telemetry-ink">Lihat →</a>
+                        <a href="{{ route('analytics.training_trends') }}" class="telemetry-label inline-flex items-center min-h-11 sm:min-h-0 transition-colors hover:text-telemetry-ink">Lihat →</a>
                     </div>
                     <p class="text-sm text-telemetry-slate">Tren jarak, durasi, elevasi, jumlah aktivitas, dan training load.</p>
                 </x-card>

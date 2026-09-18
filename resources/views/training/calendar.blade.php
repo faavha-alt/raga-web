@@ -18,9 +18,9 @@
 
             <x-card>
                 <div class="mb-4 flex items-center justify-between">
-                    <a href="{{ route('training.calendar', ['month' => $calendar['prev_month']]) }}" class="telemetry-label transition-colors hover:text-telemetry-ink">← Prev</a>
+                    <a href="{{ route('training.calendar', ['month' => $calendar['prev_month']]) }}" class="telemetry-label inline-flex items-center min-h-11 sm:min-h-0 transition-colors hover:text-telemetry-ink">← Prev</a>
                     <p class="telemetry-value text-sm">{{ $calendar['month_label'] }}</p>
-                    <a href="{{ route('training.calendar', ['month' => $calendar['next_month']]) }}" class="telemetry-label transition-colors hover:text-telemetry-ink">Next →</a>
+                    <a href="{{ route('training.calendar', ['month' => $calendar['next_month']]) }}" class="telemetry-label inline-flex items-center min-h-11 sm:min-h-0 transition-colors hover:text-telemetry-ink">Next →</a>
                 </div>
 
                 <div class="mb-1 grid grid-cols-7 gap-1 text-center">

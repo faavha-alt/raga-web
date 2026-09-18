@@ -25,7 +25,7 @@
                     <div>
                         <x-input-label for="provider" value="Provider" />
                         <select id="provider" name="provider" x-model="provider" required
-                            class="mt-1 block w-full rounded border-telemetry-line bg-telemetry-surface text-sm text-telemetry-ink focus:border-telemetry-ink focus:ring-0">
+                            class="mt-1 block w-full min-h-11 sm:min-h-0 rounded border-telemetry-line bg-telemetry-surface text-sm text-telemetry-ink focus:border-telemetry-ink focus:ring-0">
                             @foreach ($providers as $key => $meta)
                                 <option value="{{ $key }}" @selected(old('provider', $setting?->provider) === $key)>
                                     {{ $meta['label'] }}
@@ -90,7 +90,7 @@
                         @if ($setting)
                             <button type="button"
                                 onclick="if (confirm('Hapus API key AI Coach? Chat dengan AI akan nonaktif sampai kamu isi lagi.')) document.getElementById('delete-ai-key-form').submit();"
-                                class="font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ember-deep hover:underline">
+                                class="inline-flex items-center min-h-11 sm:min-h-0 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-telemetry-ember-deep hover:underline">
                                 Hapus API Key
                             </button>
                         @endif
@@ -109,7 +109,7 @@
             <x-card x-show="provider === 'anthropic'" x-cloak>
                 <p class="telemetry-label-lg text-telemetry-ink mb-3">Cara dapat API key Claude (Anthropic)</p>
                 <ol class="space-y-2 text-sm text-telemetry-slate list-decimal list-inside">
-                    <li>Buka <a href="https://console.anthropic.com" target="_blank" rel="noopener" class="text-telemetry-ember-deep font-semibold hover:underline">console.anthropic.com</a> dan login/daftar.</li>
+                    <li>Buka <a href="https://console.anthropic.com" target="_blank" rel="noopener" class="inline-flex items-center min-h-11 sm:min-h-0 text-telemetry-ember-deep font-semibold hover:underline">console.anthropic.com</a> dan login/daftar.</li>
                     <li>Di sidebar kiri, buka menu <strong>API Keys</strong>.</li>
                     <li>Klik <strong>Create Key</strong>, beri nama bebas (mis. "RAGA"), lalu <strong>Create</strong>.</li>
                     <li>Salin key yang muncul (diawali <code>sk-ant-...</code>) — hanya ditampilkan sekali, tidak bisa dilihat lagi setelah itu.</li>
@@ -123,7 +123,7 @@
             <x-card x-show="provider === 'gemini'" x-cloak>
                 <p class="telemetry-label-lg text-telemetry-ink mb-3">Cara dapat API key Gemini (Google)</p>
                 <ol class="space-y-2 text-sm text-telemetry-slate list-decimal list-inside">
-                    <li>Buka <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" class="text-telemetry-ember-deep font-semibold hover:underline">aistudio.google.com/apikey</a> dan login pakai akun Google.</li>
+                    <li>Buka <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" class="inline-flex items-center min-h-11 sm:min-h-0 text-telemetry-ember-deep font-semibold hover:underline">aistudio.google.com/apikey</a> dan login pakai akun Google.</li>
                     <li>Klik <strong>Create API key</strong>.</li>
                     <li>Pilih project Google Cloud yang sudah ada, atau biarkan Google buatkan project baru otomatis.</li>
                     <li>Salin key yang muncul (diawali <code>AIza...</code>).</li>

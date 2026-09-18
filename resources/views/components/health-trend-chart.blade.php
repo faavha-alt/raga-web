@@ -11,7 +11,7 @@
                 :class="activeMetric === key
                     ? 'border-telemetry-ember bg-telemetry-ember text-white'
                     : 'border-telemetry-line bg-telemetry-well text-telemetry-slate hover:border-telemetry-line-strong hover:text-telemetry-ink'"
-                class="rounded border px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.08em] transition"
+                class="inline-flex items-center justify-center min-h-11 sm:min-h-0 rounded border px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.08em] transition"
                 x-text="series[key].label"
             ></button>
         </template>
@@ -28,7 +28,7 @@
                     type="button"
                     @click="range = r"
                     :class="range === r ? 'bg-telemetry-surface text-telemetry-ink' : 'text-telemetry-slate hover:text-telemetry-ink'"
-                    class="rounded px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] transition"
+                    class="inline-flex items-center justify-center min-h-11 sm:min-h-0 rounded px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] transition"
                     x-text="r >= 365 ? '1Y' : (r >= 180 ? '6M' : r + 'D')"
                 ></button>
             </template>

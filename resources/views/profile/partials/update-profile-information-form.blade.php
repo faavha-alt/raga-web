@@ -31,7 +31,7 @@
 
                 <div class="min-w-0 flex-1">
                     <input id="avatar" name="avatar" type="file" accept="image/jpeg,image/png,image/webp"
-                           class="block w-full cursor-pointer rounded border border-telemetry-line bg-telemetry-surface text-sm text-telemetry-slate file:mr-3 file:cursor-pointer file:rounded-l file:border-0 file:bg-telemetry-well file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-telemetry-ink hover:file:bg-telemetry-line" />
+                           class="block w-full min-h-11 sm:min-h-0 cursor-pointer rounded border border-telemetry-line bg-telemetry-surface text-sm text-telemetry-slate file:mr-3 file:cursor-pointer file:rounded-l file:border-0 file:bg-telemetry-well file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-telemetry-ink hover:file:bg-telemetry-line" />
                     <p class="mt-1.5 text-xs text-telemetry-slate">JPG, PNG, atau WebP. Maksimal 2 MB.</p>
                 </div>
             </div>
@@ -69,7 +69,7 @@
                     <p class="text-sm mt-2 text-telemetry-ink">
                         {{ __('Your email address is unverified.') }}
 
-                        <button form="send-verification" class="underline text-sm text-telemetry-slate hover:text-telemetry-ink focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-telemetry-ember">
+                        <button form="send-verification" class="inline-flex items-center min-h-11 sm:min-h-0 underline text-sm text-telemetry-slate hover:text-telemetry-ink focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-telemetry-ember">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
