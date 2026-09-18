@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
         <title>{{ config('app.name', 'RAGA') }} — Your Body. Your Data. Your Progress.</title>
 
@@ -24,7 +24,7 @@
     <body class="font-sans antialiased bg-telemetry-canvas text-telemetry-ink">
         <div class="relative min-h-screen">
             <!-- Nav -->
-            <header class="relative border-b border-telemetry-line">
+            <header class="relative border-b border-telemetry-line pt-[env(safe-area-inset-top)]">
                 <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
                     <a href="/" class="inline-flex items-center gap-2">
                         <span class="flex h-9 w-9 items-center justify-center rounded bg-telemetry-ember font-display font-bold text-white">R</span>
@@ -105,7 +105,7 @@
                 </div>
             </section>
 
-            <footer class="relative border-t border-telemetry-line">
+            <footer class="relative border-t border-telemetry-line pb-[env(safe-area-inset-bottom)]">
                 <div class="max-w-6xl mx-auto px-6 py-8 text-center text-xs font-medium text-telemetry-slate">
                     RAGA — Phase 1 · Built for real training data.
                 </div>

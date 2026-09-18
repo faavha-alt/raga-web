@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'RAGA') }}</title>
@@ -24,7 +24,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-telemetry-ink antialiased">
-        <div class="relative flex min-h-screen flex-col items-center justify-center bg-telemetry-canvas px-4 py-10">
+        <div class="relative flex min-h-screen flex-col items-center justify-center bg-telemetry-canvas px-4 pb-[calc(2.5rem+env(safe-area-inset-bottom))] pt-[calc(2.5rem+env(safe-area-inset-top))]">
             <div class="relative w-full sm:max-w-md">
                 <div class="mb-8 flex justify-center">
                     <a href="/" class="inline-flex items-center gap-2">

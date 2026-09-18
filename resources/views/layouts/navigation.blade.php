@@ -46,14 +46,36 @@
         ['route' => 'settings', 'active' => 'settings', 'icon' => '⚙️', 'label' => 'Settings'],
     ];
     $mobileNav = array_values(array_filter($mobileNav, $keepRegistered));
+
+    // Bottom tab bar (khusus mobile, `lg:hidden`): 4–5 tujuan utama saja.
+    // Item diambil dari $mobileNav yang sudah ada supaya label/`active`-nya
+    // tetap satu sumber, lalu disaring lagi dengan Route::has() seperti di atas.
+    $tabRoutes = ['dashboard', 'feed', 'record.index', 'training', 'health'];
+    $tabNav = array_values(array_filter(
+        array_values(array_filter(
+            $mobileNav,
+            static fn (array $item): bool => in_array($item['route'], $tabRoutes, true),
+        )),
+        $keepRegistered,
+    ));
+
+    // Ikon SVG inline (stroke `currentColor`, 20px) untuk tab bar — dipilih
+    // per nama rute; emoji $mobileNav tidak dipakai di sini agar konsisten.
+    $tabIcons = [
+        'dashboard' => 'M3 10.5 12 3l9 7.5M5.5 9.5V20a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V9.5',
+        'feed' => 'M4 6h16M4 12h16M4 18h10',
+        'record.index' => 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z',
+        'training' => 'M4 9v6M8 6.5v11M16 6.5v11M20 9v6M8 12h8',
+        'health' => 'M12 20.5 4.9 13.4a4.6 4.6 0 1 1 6.5-6.5l.6.6.6-.6a4.6 4.6 0 1 1 6.5 6.5Z',
+    ];
 @endphp
 
 <header
     x-data="{ mobileOpen: false, userMenu: false }"
-    class="sticky top-0 z-40 border-b border-telemetry-line bg-white/95 backdrop-blur-xl"
+    class="sticky top-0 z-40 border-b border-telemetry-line bg-telemetry-surface pt-[env(safe-area-inset-top)]"
 >
     {{-- Baris utama --}}
-    <div class="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+    <div class="flex h-14 items-center justify-between gap-2 px-4 sm:px-6 lg:h-16 lg:gap-4 lg:px-8">
         <a href="{{ route('dashboard') }}" class="shrink-0">
             <x-application-logo />
         </a>
@@ -188,3 +210,36 @@
         </nav>
     </div>
 </header>
+
+{{-- Bottom tab bar — hanya mobile; di `lg` ke atas top nav di atas yang dipakai. --}}
+@if ($tabNav !== [])
+    <nav
+        aria-label="Navigasi utama"
+        class="fixed inset-x-0 bottom-0 z-40 border-t border-telemetry-line bg-telemetry-surface pb-[env(safe-area-inset-bottom)] lg:hidden"
+    >
+        <div class="flex items-stretch">
+            @foreach ($tabNav as $item)
+                <a
+                    href="{{ route($item['route']) }}"
+                    @class([
+                        'relative flex h-14 flex-1 flex-col items-center justify-center gap-0.5 px-1 transition-colors',
+                        'text-telemetry-ink' => request()->routeIs($item['active']),
+                        'text-telemetry-slate hover:bg-telemetry-well hover:text-telemetry-ink' => ! request()->routeIs($item['active']),
+                    ])
+                >
+                    @if (request()->routeIs($item['active']))
+                        <span class="absolute inset-x-4 top-0 h-0.5 bg-telemetry-ember" aria-hidden="true"></span>
+                    @endif
+
+                    <svg class="h-5 w-5 shrink-0" stroke="currentColor" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="{{ $tabIcons[$item['route']] ?? $tabIcons['dashboard'] }}" />
+                    </svg>
+
+                    <span @class(['telemetry-label truncate', 'text-telemetry-ink' => request()->routeIs($item['active'])])>
+                        {{ __($item['label']) }}
+                    </span>
+                </a>
+            @endforeach
+        </div>
+    </nav>
+@endif

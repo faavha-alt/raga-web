@@ -109,7 +109,7 @@
         x-show="visible"
         x-cloak
         x-transition.opacity
-        class="fixed bottom-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2"
+        class="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 lg:bottom-4"
     >
         <div class="rounded-lg border border-telemetry-line bg-telemetry-surface px-4 py-3 shadow-overlay">
             <div class="flex items-start gap-3">
@@ -146,9 +146,9 @@
         x-show="installable"
         x-cloak
         x-transition.opacity
-        class="fixed bottom-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2"
+        class="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 lg:bottom-4"
     >
-        <div class="flex items-center gap-3 rounded-lg border border-telemetry-line bg-white px-4 py-3 shadow-overlay">
+        <div class="flex items-center gap-3 rounded-lg border border-telemetry-line bg-telemetry-surface px-4 py-3 shadow-overlay">
             <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded bg-telemetry-ink text-base">📲</span>
             <p class="min-w-0 flex-1 text-xs font-medium text-telemetry-slate">
                 Pasang RAGA di layar utama untuk akses lebih cepat.

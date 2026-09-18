@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'RAGA') }}</title>
@@ -46,7 +46,7 @@
                 @endisset
 
                 <!-- Page Content -->
-                <main>
+                <main class="pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-0">
                     {{ $slot }}
                 </main>
             </div>
