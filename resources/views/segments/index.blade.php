@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
-                <h1 class="telemetry-value text-4xl sm:text-5xl leading-tight">
+                <h1 class="telemetry-value text-2xl sm:text-3xl lg:text-5xl leading-tight">
                     {{ __('Segments') }}
                 </h1>
-                <p class="mt-2 text-sm font-medium text-telemetry-slate">Potongan rute untuk diperlombakan — leaderboard per atlet.</p>
+                <p class="mt-1 text-sm font-medium text-telemetry-slate">Potongan rute untuk diperlombakan — leaderboard per atlet.</p>
             </div>
             <a href="{{ route('segments.create') }}"
                class="inline-flex items-center gap-2 rounded bg-telemetry-ember px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-telemetry-ember-dark">
@@ -14,8 +14,8 @@
         </div>
     </x-slot>
 
-    <div class="py-6 pb-16">
-        <div class="px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="py-4 sm:py-6 pb-16">
+        <div class="px-4 sm:px-6 lg:px-8 space-y-3 sm:space-y-6">
 
             @if (session('status'))
                 <div class="rounded border border-telemetry-emerald/20 bg-telemetry-emerald/10 px-4 py-3 text-sm font-semibold text-telemetry-emerald-deep">

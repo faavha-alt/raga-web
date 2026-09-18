@@ -1,12 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="telemetry-value text-4xl sm:text-5xl leading-tight">
+        <h1 class="telemetry-value text-2xl sm:text-3xl lg:text-5xl leading-tight">
             {{ $athlete->name }}
         </h1>
-        <p class="mt-2 text-sm font-medium text-telemetry-slate">Profil privat</p>
+        <p class="mt-1 text-sm font-medium text-telemetry-slate">Profil privat</p>
     </x-slot>
 
-    <div class="py-6 pb-16">
+    <div class="py-4 sm:py-6 pb-16">
         <div class="px-4 sm:px-6 lg:px-8 max-w-2xl">
             <x-card class="text-center py-12">
                 @if ($athlete->avatar_path)

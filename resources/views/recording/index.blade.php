@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="telemetry-value text-4xl sm:text-5xl leading-tight">
+        <h1 class="telemetry-value text-2xl sm:text-3xl lg:text-5xl leading-tight">
             Rekam Aktivitas
         </h1>
-        <p class="mt-2 text-sm font-medium text-telemetry-slate">Rekam lari, sepeda, atau jalan langsung dari GPS ponsel — tanpa Garmin.</p>
+        <p class="mt-1 text-sm font-medium text-telemetry-slate">Rekam lari, sepeda, atau jalan langsung dari GPS ponsel — tanpa Garmin.</p>
     </x-slot>
 
     @php
@@ -29,9 +29,9 @@
         ];
     @endphp
 
-    <div class="py-6 pb-16">
+    <div class="py-4 sm:py-6 pb-16">
         <div
-            class="px-4 sm:px-6 lg:px-8 space-y-6 max-w-5xl mx-auto"
+            class="px-4 sm:px-6 lg:px-8 space-y-3 sm:space-y-6 max-w-5xl mx-auto"
             x-data="recorder(@js($recorderConfig))"
             x-init="init()"
         >

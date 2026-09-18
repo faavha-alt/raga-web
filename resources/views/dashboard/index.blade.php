@@ -43,8 +43,8 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
-                <h1 class="telemetry-value text-4xl sm:text-5xl">{{ mb_strtoupper($greeting) }}, {{ mb_strtoupper($firstName) }}</h1>
-                <p class="mt-2 text-sm font-medium text-telemetry-slate">
+                <h1 class="telemetry-value text-2xl sm:text-3xl lg:text-5xl">{{ mb_strtoupper($greeting) }}, {{ mb_strtoupper($firstName) }}</h1>
+                <p class="mt-1 text-sm font-medium text-telemetry-slate">
                     Jalur atletikmu • status hari ini <span class="font-bold {{ $stateTone }}">{{ mb_strtolower($stateLabel) }}</span>
                 </p>
             </div>
@@ -61,11 +61,11 @@
         </div>
     </x-slot>
 
-    <div class="py-6 pb-16">
-        <div class="space-y-6 px-4 sm:px-6 lg:px-8">
+    <div class="py-4 sm:py-6 pb-16">
+        <div class="space-y-3 sm:space-y-6 px-4 sm:px-6 lg:px-8">
 
             {{-- 1. BEBAN MINGGU INI + PUNCAK 7 HARI --}}
-            <section class="grid gap-4 lg:grid-cols-5">
+            <section class="grid gap-3 sm:gap-4 lg:grid-cols-5">
                 <x-card class="lg:col-span-3">
                     <x-section-heading title="Minggu Ini // Beban Aerobik" hint="Senin – Hari Ini" />
 
@@ -75,7 +75,7 @@
                         </p>
 
                         @php $weekMinutes = intdiv($week['total_duration_seconds'], 60); @endphp
-                        <div class="mt-6 grid grid-cols-3 gap-4 border-t border-telemetry-line pt-4">
+                        <div class="mt-4 grid grid-cols-3 gap-4 border-t sm:mt-6 border-telemetry-line pt-4">
                             <div>
                                 <p class="telemetry-label">Aktivitas</p>
                                 <p class="mt-1 telemetry-value text-2xl">{{ $week['activity_count'] }}</p>
@@ -90,7 +90,7 @@
                             </div>
                         </div>
 
-                        <div class="mt-5">
+                        <div class="mt-4 sm:mt-5">
                             <x-weekly-bar-chart :series="$week['daily_series']" />
                         </div>
                     @else
@@ -113,7 +113,7 @@
             <x-card>
                 <x-section-heading title="Kondisi Fisiologis" hint="Model 30 Hari Terakhir" />
 
-                <div class="mb-5 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-telemetry-line pb-4">
+                <div class="mb-4 flex flex-wrap items-baseline sm:mb-5 gap-x-3 gap-y-1 border-b border-telemetry-line pb-4">
                     <span class="telemetry-label">Kondisi saat ini</span>
                     <span class="telemetry-value text-2xl {{ $stateTone }}">{{ $stateLabel }}</span>
                     <span class="telemetry-value text-2xl">
@@ -124,7 +124,7 @@
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <x-metric-tile label="Recovery" :value="$scores['recovery'] !== null ? round($scores['recovery']) : null" />
 
-                    <div class="border border-telemetry-line bg-telemetry-surface p-4">
+                    <div class="border border-telemetry-line bg-telemetry-surface p-3 sm:p-4">
                         <div class="flex items-center justify-between">
                             <p class="telemetry-label">Readiness</p>
                             <x-chip :variant="$readiness !== null && $readiness >= 75 ? 'recovery' : 'neutral'">{{ $stateLabel }}</x-chip>
@@ -132,7 +132,7 @@
                         <p class="mt-2.5 text-[28px] leading-none telemetry-value">{{ $readiness !== null ? round($readiness) : '--' }}</p>
                     </div>
 
-                    <div class="border border-telemetry-line bg-telemetry-surface p-4">
+                    <div class="border border-telemetry-line bg-telemetry-surface p-3 sm:p-4">
                         <div class="flex items-center justify-between">
                             <p class="telemetry-label">Konsistensi</p>
                             <x-chip variant="pace">{{ $scores['consistency_streak'] }} hari beruntun</x-chip>
@@ -142,7 +142,7 @@
                         </p>
                     </div>
 
-                    <div class="border border-telemetry-line bg-telemetry-surface p-4">
+                    <div class="border border-telemetry-line bg-telemetry-surface p-3 sm:p-4">
                         <div class="flex items-center justify-between">
                             <p class="telemetry-label">Beban (ACWR)</p>
                             <x-chip :variant="$loadChip">{{ $loadLabel }}</x-chip>
@@ -167,7 +167,7 @@
                 <x-section-heading title="Athlete Cognitive Engine" hint="Berbasis Data Kamu" />
 
                 @if (count($insights) > 0)
-                    <div class="grid gap-4 md:grid-cols-2">
+                    <div class="grid gap-3 md:grid-cols-2 sm:gap-4">
                         @foreach ($insights as $index => $insight)
                             <x-card>
                                 <div class="flex items-start justify-between gap-3">
@@ -220,7 +220,7 @@
                             </a>
                         </div>
 
-                        <div class="mt-5 grid grid-cols-2 gap-4 border-t border-telemetry-line pt-4 sm:grid-cols-3 lg:grid-cols-5">
+                        <div class="mt-4 grid grid-cols-2 gap-4 border-t sm:mt-5 border-telemetry-line pt-4 sm:grid-cols-3 lg:grid-cols-5">
                             <div>
                                 <p class="telemetry-label">Jarak</p>
                                 <p class="mt-1 telemetry-value text-xl">{{ $latest->distance_meters ? number_format($latest->distance_meters / 1000, 2).' km' : '--' }}</p>
@@ -245,7 +245,7 @@
                     </x-card>
 
                     @if ($recentSessions->count() > 1)
-                        <div class="mt-4 grid gap-4 md:grid-cols-2">
+                        <div class="mt-3 grid gap-4 md:grid-cols-2 sm:mt-4">
                             @foreach ($recentSessions->slice(1) as $session)
                                 @php $sessionMinutes = intdiv($session->durationSeconds(), 60); @endphp
                                 <x-card class="!p-4">

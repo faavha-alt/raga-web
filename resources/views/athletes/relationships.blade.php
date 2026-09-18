@@ -1,10 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
         <a href="{{ route('athletes.show', $athlete) }}" class="telemetry-label transition-colors hover:text-telemetry-ink">← {{ $athlete->name }}</a>
-        <h1 class="mt-2 telemetry-value text-4xl sm:text-5xl leading-tight">{{ $title }}</h1>
+        <h1 class="mt-2 telemetry-value text-2xl sm:text-3xl lg:text-5xl leading-tight">{{ $title }}</h1>
     </x-slot>
 
-    <div class="py-6 pb-16">
+    <div class="py-4 sm:py-6 pb-16">
         <div class="px-4 sm:px-6 lg:px-8 max-w-2xl space-y-4">
 
             @if (session('status'))

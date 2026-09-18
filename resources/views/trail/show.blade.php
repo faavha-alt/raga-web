@@ -1,13 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
         <div>
-            <h1 class="telemetry-value text-4xl sm:text-5xl">{{ $workout->name ?? 'Trail Run' }}</h1>
-            <p class="mt-2 text-sm font-medium text-telemetry-slate">{{ $workout->start_date->translatedFormat('d M Y, H:i') }}</p>
+            <h1 class="telemetry-value text-2xl sm:text-3xl lg:text-5xl">{{ $workout->name ?? 'Trail Run' }}</h1>
+            <p class="mt-1 text-sm font-medium text-telemetry-slate">{{ $workout->start_date->translatedFormat('d M Y, H:i') }}</p>
         </div>
     </x-slot>
 
-    <div class="py-6 pb-16">
-        <div class="px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="py-4 sm:py-6 pb-16">
+        <div class="px-4 sm:px-6 lg:px-8 space-y-3 sm:space-y-6">
 
             @php $mMin = intdiv($movingSeconds, 60); @endphp
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">

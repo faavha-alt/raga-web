@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="telemetry-value text-4xl sm:text-5xl leading-tight">
+        <h1 class="telemetry-value text-2xl sm:text-3xl lg:text-5xl leading-tight">
             {{ __('Profile') }}
         </h1>
     </x-slot>
 
-    <div class="py-6 pb-16">
+    <div class="py-4 sm:py-6 pb-16">
         <div class="px-4 sm:px-6 lg:px-8 space-y-4">
             <x-card>
                 <div class="max-w-xl">

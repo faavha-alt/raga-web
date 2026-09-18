@@ -1,13 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="telemetry-value text-4xl sm:text-5xl">
+        <h1 class="telemetry-value text-2xl sm:text-3xl lg:text-5xl">
             {{ __('Recovery & Readiness') }}
         </h1>
-        <p class="mt-2 text-sm font-medium text-telemetry-slate">Seberapa pulih tubuh kamu, dan seberapa siap untuk hari ini.</p>
+        <p class="mt-1 text-sm font-medium text-telemetry-slate">Seberapa pulih tubuh kamu, dan seberapa siap untuk hari ini.</p>
     </x-slot>
 
-    <div class="py-6 pb-16">
-        <div class="px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="py-4 sm:py-6 pb-16">
+        <div class="px-4 sm:px-6 lg:px-8 space-y-3 sm:space-y-6">
 
             <div class="rounded border border-telemetry-line bg-telemetry-well px-4 py-3 text-xs font-semibold text-telemetry-slate">
                 ℹ️ {{ $disclaimer }} Skor ini bukan angka medis — cuma cara transparan buat lihat pola tubuh kamu sendiri.

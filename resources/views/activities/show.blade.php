@@ -3,8 +3,8 @@
         <a href="{{ route('activities') }}" class="telemetry-label transition-colors hover:text-telemetry-ink">← Activities</a>
     </x-slot>
 
-    <div class="py-6 pb-16">
-        <div class="px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="py-4 sm:py-6 pb-16">
+        <div class="px-4 sm:px-6 lg:px-8 space-y-3 sm:space-y-6">
 
             @php
                 $icon = match (true) {

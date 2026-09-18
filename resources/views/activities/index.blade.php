@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="telemetry-value text-4xl sm:text-5xl">{{ mb_strtoupper(__('Activities')) }}</h1>
-        <p class="mt-2 text-sm font-medium text-telemetry-slate">Semua aktivitas yang tersinkron dari Garmin.</p>
+        <h1 class="telemetry-value text-2xl sm:text-3xl lg:text-5xl">{{ mb_strtoupper(__('Activities')) }}</h1>
+        <p class="mt-1 text-sm font-medium text-telemetry-slate">Semua aktivitas yang tersinkron dari Garmin.</p>
     </x-slot>
 
-    <div class="py-6 pb-16">
-        <div class="px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="py-4 sm:py-6 pb-16">
+        <div class="px-4 sm:px-6 lg:px-8 space-y-3 sm:space-y-6">
 
             {{-- Filter bar --}}
             <x-card class="!p-4">
@@ -77,7 +77,7 @@
                         $icon = \App\Support\ActivityTypeIcon::icon($workout->type);
                         $durationMin = intdiv($workout->duration_seconds, 60);
                     @endphp
-                    <a href="{{ route('activities.show', $workout) }}" class="flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-telemetry-well">
+                    <a href="{{ route('activities.show', $workout) }}" class="flex items-center justify-between gap-3 px-4 py-3.5 transition-colors hover:bg-telemetry-well sm:gap-4 sm:px-5 sm:py-4">
                         <div class="flex items-center gap-3 min-w-0">
                             <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded bg-telemetry-well text-xl">{{ $icon }}</span>
                             <div class="min-w-0">
@@ -91,7 +91,7 @@
                         </div>
                     </a>
                 @empty
-                    <div class="px-5 py-10 text-center text-sm text-telemetry-slate">Tidak ada aktivitas yang cocok dengan filter ini.</div>
+                    <div class="px-4 py-8 text-center text-sm text-telemetry-slate sm:px-5 sm:py-10">Tidak ada aktivitas yang cocok dengan filter ini.</div>
                 @endforelse
             </x-card>
 

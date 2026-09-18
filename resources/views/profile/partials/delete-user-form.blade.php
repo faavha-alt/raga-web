@@ -1,4 +1,4 @@
-<section class="space-y-6">
+<section class="space-y-3 sm:space-y-6">
     <header>
         <h2 class="telemetry-value text-lg">
             {{ __('Delete Account') }}

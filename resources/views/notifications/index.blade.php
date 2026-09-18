@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-end justify-between gap-3">
             <div>
-                <h1 class="telemetry-value text-4xl sm:text-5xl leading-tight">
+                <h1 class="telemetry-value text-2xl sm:text-3xl lg:text-5xl leading-tight">
                     Notifikasi
                 </h1>
-                <p class="mt-2 text-sm font-medium text-telemetry-slate">
+                <p class="mt-1 text-sm font-medium text-telemetry-slate">
                     Kabar terbaru dari atlet yang berinteraksi denganmu.
                 </p>
             </div>
@@ -19,7 +19,7 @@
         </div>
     </x-slot>
 
-    <div class="py-6 pb-16">
+    <div class="py-4 sm:py-6 pb-16">
         <div class="px-4 sm:px-6 lg:px-8 max-w-3xl space-y-4">
 
             @if (session('status'))

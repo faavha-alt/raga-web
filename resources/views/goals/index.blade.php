@@ -1,13 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <h1 class="telemetry-value text-4xl sm:text-5xl leading-tight">
+        <h1 class="telemetry-value text-2xl sm:text-3xl lg:text-5xl leading-tight">
             {{ __('Goals & Progress') }}
         </h1>
-        <p class="mt-2 text-sm font-medium text-telemetry-slate">Target latihan kamu dan seberapa jauh kamu sudah melangkah.</p>
+        <p class="mt-1 text-sm font-medium text-telemetry-slate">Target latihan kamu dan seberapa jauh kamu sudah melangkah.</p>
     </x-slot>
 
-    <div class="py-6 pb-16">
-        <div class="px-4 sm:px-6 lg:px-8 max-w-3xl space-y-6" x-data="{ type: '{{ old('type', 'weekly_distance') }}' }">
+    <div class="py-4 sm:py-6 pb-16">
+        <div class="px-4 sm:px-6 lg:px-8 max-w-3xl space-y-3 sm:space-y-6" x-data="{ type: '{{ old('type', 'weekly_distance') }}' }">
 
             @if (session('status'))
                 <div class="rounded border border-telemetry-emerald/20 bg-telemetry-emerald/10 px-4 py-3 text-sm font-semibold text-telemetry-emerald-deep">

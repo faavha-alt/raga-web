@@ -26,7 +26,7 @@ Halaman acuan yang SUDAH benar: `resources/views/dashboard/index.blade.php`,
 
 | Komponen | Guna |
 | --- | --- |
-| `<x-card>` | kontainer putih + border `telemetry-line`, padding 6 |
+| `<x-card>` | kontainer putih + border `telemetry-line`, padding `p-4 sm:p-6` |
 | `<x-metric-tile label=".." value=".." unit=".." />` | sel metrik besar |
 | `<x-section-heading title=".." hint=".." />` | judul seksi + keterangan kanan |
 | `<x-chip variant="recovery\|pace\|strain\|neutral">` | badge status mikro |
@@ -34,9 +34,27 @@ Halaman acuan yang SUDAH benar: `resources/views/dashboard/index.blade.php`,
 | `<x-primary-button>` / `<x-secondary-button>` / `<x-danger-button>` | aksi |
 
 Header halaman: `<x-slot name="header">` berisi
-`<h1 class="telemetry-value text-4xl sm:text-5xl">JUDUL</h1>` +
-`<p class="mt-2 text-sm font-medium text-telemetry-slate">subjudul</p>`,
+`<h1 class="telemetry-value text-2xl sm:text-3xl lg:text-5xl">JUDUL</h1>` +
+`<p class="mt-1 text-sm font-medium text-telemetry-slate">subjudul</p>`,
 opsional chip/status di kanan dengan `flex flex-wrap items-end justify-between gap-4`.
+
+## Densitas mobile (wajib, Fase 2)
+
+Skala kepadatan mobile→desktop: padat di HP (390px), lega di desktop.
+Angka kelas adalah satu sumber kebenaran.
+
+| Elemen | Kelas |
+| --- | --- |
+| Judul header halaman | `text-2xl sm:text-3xl lg:text-5xl` |
+| Subjudul header | `mt-1 text-sm font-medium text-telemetry-slate` |
+| Kartu `<x-card>` | `p-4 sm:p-6` |
+| Metric tile | `p-3 sm:p-4`, angka `text-2xl sm:text-[28px]` |
+| Section heading | `mb-2 sm:mb-3` |
+| Jarak antar-seksi halaman | `space-y-3 sm:space-y-6` |
+| Padding halaman | `py-4 sm:py-6 pb-16` |
+| Baris daftar | `px-4 py-3.5 sm:px-5 sm:py-4` |
+| Aksi baris (kudos/komentar) | tinggi sentuh `h-11 sm:h-8` (≥44px di HP) |
+| Tabel lebar | bungkus `overflow-x-auto`, sel `py-2 pr-3 sm:py-2.5 sm:pr-4` |
 
 ## Peta warna (kelas lama → baru)
 
@@ -71,5 +89,6 @@ Empty state: `<p class="py-6 text-center text-sm text-telemetry-slate">…</p>`.
 
 ## File yang TIDAK boleh disentuh
 
-`resources/views/components/**`, `resources/views/layouts/**`, dan `acuan_tampilan/**`
-(dimiliki agen lain). Tetap di dalam daftar file yang ditugaskan.
+`resources/views/layouts/**` (shell mobile Fase 1) dan `acuan_tampilan/**`.
+Komponen `resources/views/components/**` kini terbagi: perubahan kelas wajib
+mengikuti tabel densitas mobile di atas dan tetap presentasi saja.

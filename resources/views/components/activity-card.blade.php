@@ -31,7 +31,7 @@
 
 <x-card class="!p-0 overflow-hidden">
     @if ($showAuthor && $author)
-        <div class="flex items-center gap-3 px-5 pt-5">
+        <div class="flex items-center gap-2 px-4 pt-4 sm:gap-3 sm:px-5 sm:pt-5">
             <a href="{{ $author->username ? route('athletes.show', $author) : '#' }}" class="shrink-0">
                 @if ($author->avatar_path)
                     <img src="{{ asset($author->avatar_path) }}" alt="{{ $author->name }}"
@@ -59,7 +59,7 @@
         </div>
     @endif
 
-    <div class="px-5 py-4">
+    <div class="px-4 py-3 sm:px-5 sm:py-4">
         <div class="flex items-center gap-2">
             <span class="flex h-9 w-9 items-center justify-center rounded border border-telemetry-line bg-telemetry-well text-lg">{{ $icon }}</span>
             <div class="min-w-0">
@@ -70,7 +70,7 @@
             </div>
         </div>
 
-        <div class="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+        <div class="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm sm:mt-4 sm:gap-x-6">
             @if ($workout->distance_meters)
                 <div>
                     <p class="telemetry-label">Jarak</p>
@@ -101,7 +101,7 @@
         </div>
     </div>
 
-    <div class="flex items-center gap-4 border-t border-telemetry-line px-5 py-3">
+    <div class="flex items-center gap-3 border-t border-telemetry-line px-4 py-2.5 sm:gap-4 sm:px-5 sm:py-3">
         <button
             type="button"
             x-data="activityKudos({
@@ -115,7 +115,7 @@
             :class="given
                 ? 'border-telemetry-ember/25 bg-[rgba(255,62,29,0.08)] text-telemetry-ember-deep'
                 : 'border-telemetry-line text-telemetry-slate hover:border-telemetry-line-strong hover:text-telemetry-ember-deep'"
-            class="inline-flex h-8 items-center gap-1.5 rounded border px-3 text-xs font-bold uppercase tracking-[0.08em] transition disabled:opacity-60"
+            class="inline-flex h-11 items-center gap-1.5 sm:h-8 rounded border px-3 text-xs font-bold uppercase tracking-[0.08em] transition disabled:opacity-60"
             :aria-pressed="given ? 'true' : 'false'"
             aria-label="Beri kudos"
         >
@@ -123,7 +123,7 @@
             <span x-text="count">{{ $kudosCount }}</span>
         </button>
 
-        <a href="{{ route('activities.show', $workout) }}#comments" class="inline-flex h-8 items-center gap-1.5 rounded border border-transparent px-3 text-xs font-bold uppercase tracking-[0.08em] text-telemetry-slate transition hover:border-telemetry-line hover:text-telemetry-ember-deep">
+        <a href="{{ route('activities.show', $workout) }}#comments" class="inline-flex h-11 items-center gap-1.5 sm:h-8 rounded border border-transparent px-3 text-xs font-bold uppercase tracking-[0.08em] text-telemetry-slate transition hover:border-telemetry-line hover:text-telemetry-ember-deep">
             💬 <span>{{ $commentsCount }}</span>
         </a>
     </div>

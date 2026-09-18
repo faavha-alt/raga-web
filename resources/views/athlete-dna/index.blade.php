@@ -19,8 +19,8 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
-                <h1 class="telemetry-value text-4xl sm:text-5xl">ATHLETE DNA</h1>
-                <p class="mt-2 text-sm font-medium text-telemetry-slate">
+                <h1 class="telemetry-value text-2xl sm:text-3xl lg:text-5xl">ATHLETE DNA</h1>
+                <p class="mt-1 text-sm font-medium text-telemetry-slate">
                     Ringkasan analitik personal jangka panjang — semua angka dihitung dari datamu sendiri.
                 </p>
             </div>
@@ -28,8 +28,8 @@
         </div>
     </x-slot>
 
-    <div class="py-6 pb-16">
-        <div class="space-y-6 px-4 sm:px-6 lg:px-8">
+    <div class="py-4 sm:py-6 pb-16">
+        <div class="space-y-3 sm:space-y-6 px-4 sm:px-6 lg:px-8">
 
             {{-- 1. PROFIL + METRIK 30 HARI --}}
             <x-card>

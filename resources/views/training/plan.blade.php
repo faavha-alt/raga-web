@@ -1,13 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
         <div>
-            <h1 class="telemetry-value text-4xl sm:text-5xl">{{ $plan->name }}</h1>
-            <p class="mt-2 text-sm font-medium text-telemetry-slate">Detail rencana latihan, minggu, dan workout terencana.</p>
+            <h1 class="telemetry-value text-2xl sm:text-3xl lg:text-5xl">{{ $plan->name }}</h1>
+            <p class="mt-1 text-sm font-medium text-telemetry-slate">Detail rencana latihan, minggu, dan workout terencana.</p>
         </div>
     </x-slot>
 
-    <div class="py-6 pb-16">
-        <div class="px-4 sm:px-6 lg:px-8 max-w-4xl space-y-5">
+    <div class="py-4 sm:py-6 pb-16">
+        <div class="px-4 sm:px-6 lg:px-8 max-w-4xl space-y-3 sm:space-y-5">
 
             @if (session('status'))
                 <div class="rounded border border-telemetry-emerald/20 bg-[rgba(0,184,101,0.08)] px-4 py-3 text-sm font-semibold text-telemetry-emerald-deep">

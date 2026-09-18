@@ -28,14 +28,14 @@
             <table class="w-full min-w-[42rem] border-collapse text-sm">
                 <thead>
                     <tr class="border-b border-telemetry-line">
-                        <th class="py-2 pr-4 text-left telemetry-label">Split</th>
-                        <th class="py-2 pr-4 text-right telemetry-label">Jarak</th>
-                        <th class="py-2 pr-4 text-right telemetry-label">Waktu</th>
-                        <th class="py-2 pr-4 text-right telemetry-label">Pace</th>
-                        <th class="py-2 pr-4 text-right telemetry-label">D+ / D−</th>
-                        <th class="py-2 pr-4 text-right telemetry-label">Grade</th>
+                        <th class="py-2 pr-3 text-left telemetry-label sm:pr-4">Split</th>
+                        <th class="py-2 pr-3 text-right telemetry-label sm:pr-4">Jarak</th>
+                        <th class="py-2 pr-3 text-right telemetry-label sm:pr-4">Waktu</th>
+                        <th class="py-2 pr-3 text-right telemetry-label sm:pr-4">Pace</th>
+                        <th class="py-2 pr-3 text-right telemetry-label sm:pr-4">D+ / D−</th>
+                        <th class="py-2 pr-3 text-right telemetry-label sm:pr-4">Grade</th>
                         @if ($showHeartRate)
-                            <th class="py-2 pr-4 text-right telemetry-label">HR</th>
+                            <th class="py-2 pr-3 text-right telemetry-label sm:pr-4">HR</th>
                         @endif
                         <th class="py-2 text-right telemetry-label">Catatan</th>
                     </tr>
@@ -43,22 +43,22 @@
                 <tbody>
                     @foreach ($splits as $split)
                         <tr class="border-b border-telemetry-line/70 {{ $split['tag'] === 'fastest' ? 'bg-telemetry-well' : '' }}">
-                            <td class="py-2.5 pr-4">
+                            <td class="py-2 pr-3 sm:py-2.5 sm:pr-4">
                                 <span class="telemetry-value text-base">{{ str_pad((string) $split['index'], 2, '0', STR_PAD_LEFT) }}</span>
                             </td>
-                            <td class="py-2.5 pr-4 text-right telemetry-value text-sm">{{ number_format($split['distance_km'], 2) }}<span class="text-[10px] text-telemetry-slate"> km</span></td>
-                            <td class="py-2.5 pr-4 text-right telemetry-value text-sm">{{ $formatDuration($split['duration_seconds']) }}</td>
-                            <td class="py-2.5 pr-4 text-right telemetry-value text-sm">
+                            <td class="py-2 pr-3 sm:py-2.5 sm:pr-4 text-right telemetry-value text-sm">{{ number_format($split['distance_km'], 2) }}<span class="text-[10px] text-telemetry-slate"> km</span></td>
+                            <td class="py-2 pr-3 sm:py-2.5 sm:pr-4 text-right telemetry-value text-sm">{{ $formatDuration($split['duration_seconds']) }}</td>
+                            <td class="py-2 pr-3 sm:py-2.5 sm:pr-4 text-right telemetry-value text-sm">
                                 {{ $split['pace_seconds_per_km'] !== null ? sprintf('%d:%02d', intdiv($split['pace_seconds_per_km'], 60), $split['pace_seconds_per_km'] % 60) : '--' }}
                             </td>
-                            <td class="py-2.5 pr-4 text-right text-sm font-medium text-telemetry-slate">
+                            <td class="py-2 pr-3 sm:py-2.5 sm:pr-4 text-right text-sm font-medium text-telemetry-slate">
                                 +{{ number_format($split['elevation_gain']) }} / −{{ number_format($split['elevation_loss']) }}
                             </td>
-                            <td class="py-2.5 pr-4 text-right text-sm font-semibold {{ $split['avg_grade'] > 0 ? 'text-telemetry-ember-deep' : 'text-telemetry-chrono-deep' }}">
+                            <td class="py-2 pr-3 sm:py-2.5 sm:pr-4 text-right text-sm font-semibold {{ $split['avg_grade'] > 0 ? 'text-telemetry-ember-deep' : 'text-telemetry-chrono-deep' }}">
                                 {{ $split['avg_grade'] > 0 ? '+' : '' }}{{ number_format($split['avg_grade'], 1) }}%
                             </td>
                             @if ($showHeartRate)
-                                <td class="py-2.5 pr-4 text-right text-sm text-telemetry-slate">{{ $split['avg_heart_rate'] !== null ? round($split['avg_heart_rate']).' bpm' : '--' }}</td>
+                                <td class="py-2 pr-3 sm:py-2.5 sm:pr-4 text-right text-sm text-telemetry-slate">{{ $split['avg_heart_rate'] !== null ? round($split['avg_heart_rate']).' bpm' : '--' }}</td>
                             @endif
                             <td class="py-2.5 text-right">
                                 @if ($split['tag'] !== null && isset($tagMeta[$split['tag']]))

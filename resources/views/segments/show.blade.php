@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
-                <h1 class="telemetry-value text-4xl sm:text-5xl leading-tight">
+                <h1 class="telemetry-value text-2xl sm:text-3xl lg:text-5xl leading-tight">
                     {{ $segment->name }}
                 </h1>
-                <p class="mt-2 text-sm font-medium text-telemetry-slate">
+                <p class="mt-1 text-sm font-medium text-telemetry-slate">
                     {{ \App\Support\ActivityTypeIcon::icon($segment->activity_type) }}
                     {{ \App\Support\ActivityTypeIcon::label($segment->activity_type) }}
                     @if ($segment->start_label) · {{ $segment->start_label }} @endif
@@ -53,8 +53,8 @@
         $ranking = (int) ($leaderboard->currentPage() - 1) * $leaderboard->perPage();
     @endphp
 
-    <div class="py-6 pb-16">
-        <div class="px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="py-4 sm:py-6 pb-16">
+        <div class="px-4 sm:px-6 lg:px-8 space-y-3 sm:space-y-6">
 
             @if (session('status'))
                 <div class="rounded border border-telemetry-emerald/20 bg-telemetry-emerald/10 px-4 py-3 text-sm font-semibold text-telemetry-emerald-deep">

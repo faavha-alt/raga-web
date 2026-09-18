@@ -1,6 +1,6 @@
 @props(['series', 'baselines', 'metrics', 'dailyRows', 'disclaimer', 'ranges' => [7, 30, 90, 365]])
 
-<div class="space-y-6 px-4 sm:px-6 lg:px-8">
+<div class="space-y-3 sm:space-y-6 px-4 sm:px-6 lg:px-8">
 
     <x-card>
         <x-health-trend-chart :series="$series" :ranges="$ranges" />
@@ -36,7 +36,7 @@
         <x-section-heading title="Ringkasan Harian" />
         <x-card class="!p-0 divide-y divide-telemetry-line overflow-hidden">
             @forelse ($dailyRows as $row)
-                <div class="flex items-center justify-between gap-4 px-5 py-3 transition-colors hover:bg-telemetry-well">
+                <div class="flex items-center justify-between gap-3 px-4 py-3 transition-colors hover:bg-telemetry-well sm:gap-4 sm:px-5">
                     <span class="shrink-0 text-sm font-semibold text-telemetry-slate">{{ \Illuminate\Support\Carbon::parse($row['date'])->translatedFormat('D, d M') }}</span>
                     <div class="flex flex-wrap justify-end gap-x-4 gap-y-1">
                         @foreach ($metrics as $metric)
@@ -48,7 +48,7 @@
                     </div>
                 </div>
             @empty
-                <div class="px-5 py-6 text-center text-sm text-telemetry-slate">Belum ada data</div>
+                <div class="px-4 py-6 text-center text-sm text-telemetry-slate sm:px-5">Belum ada data</div>
             @endforelse
         </x-card>
     </div>
